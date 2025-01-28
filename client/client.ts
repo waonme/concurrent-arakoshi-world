@@ -1,25 +1,6 @@
-import { Api } from './api'
+import { Api, AssociationID, CCDocument, CCID, CSID, ComputeCCID, FQDN, KeyPair, LoadKey, LoadSubKey, MessageID, TimelineID } from '@concrnt/client'
 
-import { Socket } from './socket'
-import { TimelineReader } from './timeline'
-import { Subscription } from './subscription'
-
-import { 
-    Message as CoreMessage,
-    Association as CoreAssociation,
-    Entity as CoreEntity,
-    Timeline as CoreTimeline,
-    Domain as CoreDomain,
-    CCID,
-    FQDN,
-    MessageID,
-    AssociationID,
-    TimelineID,
-    BadgeRef,
-    CSID,
-} from "../model/core";
-
-import { Schemas, Schema } from "../schemas";
+import { Schemas, Schema } from "./schemas";
 import { 
     MarkdownMessageSchema,
     ReplyMessageSchema,
@@ -30,15 +11,11 @@ import {
     RerouteAssociationSchema,
     ProfileSchema,
     CommunityTimelineSchema,
+    PlaintextMessageSchema,
+    MediaMessageSchema,
 
-} from "../schemas/";
-
-import { ComputeCCID, KeyPair, LoadKey, LoadSubKey } from "../util/crypto";
-import { CreateCurrentOptions, CreateMediaCrntOptions, CreatePlaintextCrntOptions } from "../model/others";
-import { CCDocument, CoreProfile, QueryTimelineReader, fetchWithTimeout } from '..';
-import { UpgradeAssociationSchema } from '../schemas/upgradeAssociation';
-import { PlaintextMessageSchema } from '../schemas/plaintextMessage';
-import { MediaMessageSchema } from '../schemas/mediaMessage';
+} from "./schemas/";
+import { BadgeRef, CreateCurrentOptions, CreateMediaCrntOptions, CreatePlaintextCrntOptions } from './model';
 
 const cacheLifetime = 5 * 60 * 1000
 
@@ -63,7 +40,7 @@ export class Client {
     host: FQDN
     server?: CoreDomain
     keyPair?: KeyPair;
-    socket?: Socket
+    //socket?: Socket
     domainServices: Record<string, Service> = {}
     ackings: User[] = []
     ackers: User[] = []
@@ -569,7 +546,7 @@ export class Client {
             }
         }
 
-        const currentprof = (await this.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid))?.document.body
+        const currentprof = (await this.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid))?.getDocument().body
 
         const updated = await this.api.upsertProfile<ProfileSchema>(Schemas.profile, {
             username: updates.username ?? currentprof?.username,
@@ -587,6 +564,7 @@ export class Client {
         return updated
     }
 
+    /*
     async newSocket(): Promise<Socket> {
         if (!this.socket) {
             this.socket = new Socket(this.api, this)
@@ -611,6 +589,7 @@ export class Client {
         const socket = await this.newSocket()
         return new Subscription(socket)
     }
+    */
 }
 
 export class User implements CoreEntity {
