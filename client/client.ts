@@ -1,4 +1,27 @@
-import { Api, AssociationID, CCDocument, CCID, CSID, ComputeCCID, FQDN, KeyPair, LoadKey, LoadSubKey, MessageID, TimelineID } from '@concrnt/client'
+import {
+    Api,
+    CCID,
+    CSID,
+    AssociationID,
+    CCDocument,
+    ComputeCCID,
+    FQDN,
+    KeyPair,
+    LoadKey,
+    LoadSubKey,
+    MessageID,
+    TimelineID,
+    Entity as CoreEntity,
+    Domain as CoreDomain,
+    Timeline as CoreTimeline,
+    Profile as CoreProfile,
+    Association as CoreAssociation,
+    Message as CoreMessage,
+    fetchWithTimeout,
+    MasterKeyAuthProvider,
+    IndexedDBKVS,
+    SubKeyAuthProvider,
+} from '@concrnt/client'
 
 import { Schemas, Schema } from "./schemas";
 import { 
@@ -13,6 +36,7 @@ import {
     CommunityTimelineSchema,
     PlaintextMessageSchema,
     MediaMessageSchema,
+    UpgradeAssociationSchema,
 
 } from "./schemas/";
 import { BadgeRef, CreateCurrentOptions, CreateMediaCrntOptions, CreatePlaintextCrntOptions } from './model';
@@ -37,9 +61,9 @@ export class Client {
     api: Api
     ccid?: CCID
     ckid?: string
-    host: FQDN
     server?: CoreDomain
     keyPair?: KeyPair;
+
     //socket?: Socket
     domainServices: Record<string, Service> = {}
     ackings: User[] = []
@@ -49,59 +73,10 @@ export class Client {
 
     messageCache: Record<string, Cache<Promise<Message<any>>>> = {}
 
-    constructor(host: FQDN, keyPair?: KeyPair, ccid?: string, options?: {ckid?: string, client?: string}) {
-        this.keyPair = keyPair
-        this.ccid = ccid
-        this.host = host
-        this.ckid = options?.ckid
-        this.api = new Api({
-            host,
-            ccid: this.ccid,
-            privatekey: keyPair?.privatekey,
-            client: options?.client,
-            ckid: options?.ckid
-        })
-    }
-
-    static async createFromSubkey(subkey: string, opts?: ClientOptions): Promise<Client> {
-        const key = LoadSubKey(subkey)
-        if (!key) throw new Error('invalid subkey')
-
-        opts?.progressCallback?.("creating client")
-        const c = new Client(key.domain, key.keypair, key.ccid, {ckid: key.ckid, client: opts?.appName})
-        if (!c.ccid) throw new Error('invalid ccid')
-
-        opts?.progressCallback?.("loading user")
-        c.user = await c.getUser(c.ccid).catch((e) => {
-            console.error('CLIENT::create::getUser::error', e)
-            return null
-        })
-
-        const loadAA = async () => {
-            c.ackings = (await c.user?.getAcking()) ?? []
-            c.ackers = (await c.user?.getAcker()) ?? []
-        }
-        loadAA()
-
-        opts?.progressCallback?.("loading domain services")
-        c.domainServices = await fetchWithTimeout(key.domain, '/services', {}).then((res) => res.json()).catch((e) => {
-            console.error('CLIENT::create::fetch::error', e)
-            return {}
-        })
-
-        opts?.progressCallback?.("loading domain")
-        c.server = await c.api.getDomain(c.host).catch((e) => {
-            console.error('CLIENT::create::getDomain::error', e)
-            return null
-        }) ?? undefined
-
-        opts?.progressCallback?.("validating profile")
-        if (c.user && await c.checkProfileIsOk() === false) {
-            await c.setProfile({})
-        }
-
-        opts?.progressCallback?.("done")
-        return c
+    constructor(api: Api) {
+        this.api = api
+        this.ccid = api.authProvider.getCCID()
+        this.ckid = api.authProvider.getCKID()
     }
 
     static async create(privatekey: string, host: FQDN, opts?: ClientOptions): Promise<Client> {
@@ -109,8 +84,16 @@ export class Client {
         if (!keyPair) throw new Error('invalid private key')
         const ccid = ComputeCCID(keyPair.publickey)
 
-        opts?.progressCallback?.("creating client")
-        const c = new Client(host, keyPair, ccid, {client: opts?.appName})
+        opts?.progressCallback?.("initializing auth provider")
+        const authProvider = new MasterKeyAuthProvider(privatekey, ccid)
+
+        opts?.progressCallback?.("initializing cache engine")
+        const cacheEngine = new IndexedDBKVS('concrnt-client', 'kvs')
+
+        opts?.progressCallback?.("creating api client")
+        const api = new Api(authProvider, cacheEngine)
+
+        const c = new Client(api)
         if (!c.ccid) throw new Error('invalid ccid')
 
         opts?.progressCallback?.("loading user")
@@ -132,7 +115,7 @@ export class Client {
         })
 
         opts?.progressCallback?.("loading domain")
-        c.server = await c.api.getDomain(c.host).catch((e) => {
+        c.server = await c.api.getDomain(host).catch((e) => {
             console.error('CLIENT::create::getDomain::error', e)
             return null
         }) ?? undefined
@@ -142,6 +125,58 @@ export class Client {
             await c.setProfile({})
         }
 
+        return c
+    }
+
+    static async createFromSubkey(subkey: string, opts?: ClientOptions): Promise<Client> {
+        const key = LoadSubKey(subkey)
+        if (!key) throw new Error('invalid subkey')
+
+        opts?.progressCallback?.("initializing auth provider")
+        const authProvider = new SubKeyAuthProvider(subkey)
+
+        opts?.progressCallback?.("initializing cache engine")
+        const cacheEngine = new IndexedDBKVS('concrnt-client', 'kvs')
+
+        opts?.progressCallback?.("creating api client")
+        const api = new Api(authProvider, cacheEngine)
+
+        const host = api.authProvider.getHost()
+
+        opts?.progressCallback?.("creating client")
+        const c = new Client(api)
+        if (!c.ccid) throw new Error('invalid ccid')
+
+        opts?.progressCallback?.("loading user")
+        c.user = await c.getUser(c.ccid).catch((e) => {
+            console.error('CLIENT::create::getUser::error', e)
+            return null
+        })
+
+        const loadAA = async () => {
+            c.ackings = (await c.user?.getAcking()) ?? []
+            c.ackers = (await c.user?.getAcker()) ?? []
+        }
+        loadAA()
+
+        opts?.progressCallback?.("loading domain services")
+        c.domainServices = await fetchWithTimeout(key.domain, '/services', {}).then((res) => res.json()).catch((e) => {
+            console.error('CLIENT::create::fetch::error', e)
+            return {}
+        })
+
+        opts?.progressCallback?.("loading domain")
+        c.server = await c.api.getDomain(host).catch((e) => {
+            console.error('CLIENT::create::getDomain::error', e)
+            return null
+        }) ?? undefined
+
+        opts?.progressCallback?.("validating profile")
+        if (c.user && await c.checkProfileIsOk() === false) {
+            await c.setProfile({})
+        }
+
+        opts?.progressCallback?.("done")
         return c
     }
 
@@ -533,7 +568,7 @@ export class Client {
                         {},
                         {
                             id: associationStream.id + '@' + this.ccid,
-                            // semanticID: 'world.concrnt.t-assoc',
+                            semanticID: 'world.concrnt.t-assoc',
                             owner: this.ccid,
                             indexable: false,
                             policy: 'https://policy.concrnt.world/t/inline-read-write.json',
@@ -557,7 +592,7 @@ export class Client {
             badges: updates.badges ?? currentprof?.badges
         }, { semanticID: 'world.concrnt.p'})
 
-        this.api.invalidateProfile('world.concrnt.p', this.ccid)
+        this.api.invalidateProfile(`world.concrnt.p@${this.ccid}`)
 
         await this.reloadUser()
 
@@ -592,23 +627,24 @@ export class Client {
     */
 }
 
-export class User implements CoreEntity {
+export class User implements Omit<CoreEntity, 'getAffiliationDocument' | 'getTombstoneDocument'> {
 
-    api: Api
     client: Client
 
-    ccid: CCID
-    alias?: string
-    tag: string
-    domain: FQDN 
-    cdate: string
-    score: number
+    // ---------- //
 
-    affiliationDocument: string
-    affiliationSignature: string
+    ccid: CCID;
+    alias?: string;
+    tag: string;
+    domain: FQDN;
+    cdate: string;
+    score: number;
+    affiliationDocument: string;
+    affiliationSignature: string;
+    tombstoneDocument?: string;
+    tombstoneSignature?: string;
 
-    tombstoneDocument?: string
-    tombstoneSignature?: string
+    // ---------- //
 
     profile?: ProfileSchema
 
@@ -635,35 +671,32 @@ export class User implements CoreEntity {
             affiliationDocument: this.affiliationDocument,
             affiliationSignature: this.affiliationSignature,
             tombstoneDocument: this.tombstoneDocument,
-            tombstoneSignature: this.tombstoneSignature,
-            profile: this.profile
+            tombstoneSignature: this.tombstoneSignature
         }
     }
-
 
     constructor(client: Client,
                 domain: FQDN,
                 entity: CoreEntity,
                 profile?: ProfileSchema
     ) {
-        this.api = client.api
         this.client = client
+        this.domain = domain
+        this.profile = profile
+
         this.ccid = entity.ccid
         this.alias = entity.alias
         this.tag = entity.tag
-        this.domain = domain
         this.cdate = entity.cdate
         this.score = entity.score
         this.affiliationDocument = entity.affiliationDocument
         this.affiliationSignature = entity.affiliationSignature
         this.tombstoneDocument = entity.tombstoneDocument
         this.tombstoneSignature = entity.tombstoneSignature
-
-        this.profile = profile
     }
 
     static async load(client: Client, id: CCID, hint?: string): Promise<User | null> {
-        const domain = await client.api.resolveAddress(id, hint).catch((_e) => {
+        const domain = await client.api.resolveDomain(id, hint).catch((_e) => {
             return null
         })
         if (!domain) return null
@@ -676,89 +709,92 @@ export class User implements CoreEntity {
             return null
         })
 
-        return new User(client, domain, entity, profile?.document.body ?? undefined)
+        return new User(client, domain, entity, profile?.getDocument().body ?? undefined)
     }
 
     async getAcking(): Promise<User[]> {
-        const acks = await this.api.getAcking(this.ccid)
+        const acks = await this.client.api.getAcking(this.ccid)
         const users = await Promise.all(acks.map((e) => User.load(this.client, e.to)))
         return users.filter((e) => e !== null) as User[]
     }
 
     async getAcker(): Promise<User[]> {
-        const acks = await this.api.getAcker(this.ccid)
+        const acks = await this.client.api.getAcker(this.ccid)
         const users = await Promise.all(acks.map((e) => User.load(this.client, e.from)))
         return users.filter((e) => e !== null) as User[]
     }
 
     async Ack(): Promise<void> {
-        await this.api.ack(this.ccid)
+        await this.client.api.ack(this.ccid)
         await this.client.reloadAckings()
     }
 
     async UnAck(): Promise<void> {
-        await this.api.unack(this.ccid)
+        await this.client.api.unack(this.ccid)
         await this.client.reloadAckings()
     }
 
 
 }
 
-export class Association<T> implements CoreAssociation<T> {
-    api: Api
+export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'getDocument'> {
+
     client: Client
 
-    author: CCID
-    cdate: string
-    id: AssociationID
+    // ---------- //
+
+    id: AssociationID;
+    author: CCID;
+    owner: CCID | CSID;
+    schema: string;
+    signature: string;
+    target: MessageID;
+    cdate: string;
+
+    // ---------- //
+
     document: CCDocument.Association<T>
     _document: string
-    schema: Schema
-    signature: string
-    target: MessageID
-    targetType: 'messages' | 'characters'
-
-    owner?: CCID
-
     authorUser?: User
+    get targetType(): 'messages' | 'characters' {
+        if (this.target[0] === 'm') {
+            return 'messages'
+        } else {
+            return 'characters'
+        }
+
+    }
 
     constructor(client: Client, data: CoreAssociation<T>) {
-        this.api = client.api
         this.client = client
-        this.author = data.author
-        this.cdate = data.cdate
+
         this.id = data.id
-        this.document = data.document
-        this._document = data._document
+        this.author = data.author
+        this.owner = data.owner
         this.schema = data.schema
         this.signature = data.signature
         this.target = data.target
+        this.cdate = data.cdate
 
-        if (data.target[0] === 'm') {
-            this.targetType = 'messages'
-        } else {
-            this.targetType = 'characters'
-        }
+        this.document = JSON.parse(data.document)
+        this._document = data.document
     }
 
-    toJSON() {
+    toJSON(): Omit<CoreAssociation<T>, 'getDocument'> {
         return {
-            author: this.author,
-            cdate: this.cdate,
             id: this.id,
-            document: this.document,
-            _document: this._document,
+            author: this.author,
+            owner: this.owner,
             schema: this.schema,
+            document: this._document,
             signature: this.signature,
             target: this.target,
-            targetType: this.targetType,
-            owner: this.owner,
-            authorUser: this.authorUser
+            cdate: this.cdate,
         }
     }
 
     static async load<T>(client: Client, id: AssociationID, owner: CCID): Promise<Association<T> | null> {
-        const coreAss = await client.api.getAssociationWithOwner(id, owner).catch((e) => {
+        const coreAss = await client.api.getAssociationWithOwner<T>(id, owner).catch((e) => {
             console.error('CLIENT::getAssociation::readAssociationWithOwner::error', e)
             return null
         })
@@ -772,9 +808,8 @@ export class Association<T> implements CoreAssociation<T> {
         return association
     }
 
-    static async loadByBody<T>(client: Client, body: CoreAssociation<T>, owner?: string): Promise<Association<T> | null> {
+    static async loadByBody<T>(client: Client, body: CoreAssociation<T>): Promise<Association<T> | null> {
         const association = new Association<T>(client, body)
-        association.owner = owner
         association.authorUser = await client.getUser(association.author) ?? undefined
 
         return association
@@ -795,31 +830,35 @@ export class Association<T> implements CoreAssociation<T> {
     }
 
     async delete(): Promise<void> {
-        const { content } = await this.api.deleteAssociation(this.id, this.owner ?? this.author)
-        this.api.invalidateMessage(content.target)
+        const { content } = await this.client.api.deleteAssociation(this.id, this.owner ?? this.author)
+        this.client.api.invalidateMessage(content.target)
     }
 }
 
-export class Timeline<T> implements CoreTimeline<T> {
+export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'getDocument'> {
 
-    api: Api
     client: Client
-    cacheKey?: string
 
-    id: TimelineID
-    indexable: boolean
-    owner: CCID | CSID
-    author: CCID
-    schema: CCID
-    document: CCDocument.Timeline<T>
-    signature: string
-    cdate: string
-    mdate: string
-    policy?: string
-    policyParams?: any
+    // ---------- //
+
+    id: TimelineID;
+    indexable: boolean;
+    owner: CCID | CSID;
+    author: CCID;
+    schema: string;
+    policy?: string;
+    policyParams?: any;
+    document: CCDocument.Timeline<T>;
+    signature: string;
+    cdate: string;
+    mdate: string;
+
+    // ---------- //
+
+    cacheKey?: string
+    _document: string
 
     constructor(client: Client, data: CoreTimeline<T>) {
-        this.api = client.api
         this.client = client
 
         this.id = data.id
@@ -827,7 +866,8 @@ export class Timeline<T> implements CoreTimeline<T> {
         this.owner = data.owner
         this.author = data.author
         this.schema = data.schema
-        this.document = data.document
+        this.document = JSON.parse(data.document)
+        this._document = data.document
         this.signature = data.signature
         this.cdate = data.cdate
         this.mdate = data.mdate
@@ -841,14 +881,14 @@ export class Timeline<T> implements CoreTimeline<T> {
         }
     }
 
-    toJSON() {
+    toJSON(): Omit<CoreTimeline<T>, 'getDocument'> {
         return {
             id: this.id,
             indexable: this.indexable,
             owner: this.owner,
             author: this.author,
             schema: this.schema,
-            document: this.document,
+            document: this._document,
             signature: this.signature,
             cdate: this.cdate,
             mdate: this.mdate,
@@ -870,18 +910,41 @@ export class Timeline<T> implements CoreTimeline<T> {
 
     async getAssociations(): Promise<Association<any>[]> {
         const coreass = await this.client.api.getTimelineAssociations(this.id)
-        const ass: Array<Association<any> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<any>(this.client, e, this.owner)))
+        const ass: Array<Association<any> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<any>(this.client, e)))
         return ass.filter(e => e) as Array<Association<any>>
     }
 
     invalidate(): void {
-        if (this.cacheKey) this.api.invalidateTimeline(this.cacheKey)
+        if (this.cacheKey) this.client.api.invalidateTimeline(this.cacheKey)
     }
 }
 
-export class Message<T> implements CoreMessage<T> {
+export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocument'> {
 
-    api: Api
+    client: Client
+
+    // ---------- //
+    id: MessageID;
+    author: CCID;
+    schema: string;
+    document: CCDocument.Message<T>
+    signature: string;
+    timelines: TimelineID[];
+    policy?: string;
+    policyParams?: string;
+    associations: CoreAssociation<any>[];
+    ownAssociations: CoreAssociation<any>[];
+    cdate: string;
+    // ---------- //
+
+    _document: string
+    authorUser?: User
+    associationCounts?: Record<string, number>
+    reactionCounts?: Record<string, number>
+    postedStreams?: Timeline<any>[]
+    onUpdate?: () => void
+
+    /*
     user: User
     client: Client
     associations: Array<CoreAssociation<any>>
@@ -890,33 +953,23 @@ export class Message<T> implements CoreMessage<T> {
     cdate: string
     id: MessageID
     document: CCDocument.Message<T>
-    _document: string
     schema: Schema
     signature: string
     timelines: TimelineID[]
     policy?: string
     policyParams?: any
-
-    onUpdate?: () => void
-
-    associationCounts?: Record<string, number>
-    reactionCounts?: Record<string, number>
-    postedStreams?: Timeline<any>[]
-
-    authorUser?: User
+    */
 
     constructor(client: Client, data: CoreMessage<T>) {
-        this.api = client.api
-        this.user = client.user!
         this.client = client
         this.associations = data.associations ?? []
         this.ownAssociations = data.ownAssociations ?? []
         this.author = data.author
         this.cdate = data.cdate
         this.id = data.id
-        this.document = data.document
-        this._document = data._document
-        this.schema = data.schema
+        this._document = data.document
+        this.document = JSON.parse(data.document)
+        this.schema = data.schema as Schema
         this.signature = data.signature
         this.timelines = data.timelines
         this.policy = data.policy
@@ -937,7 +990,6 @@ export class Message<T> implements CoreMessage<T> {
             cdate: this.cdate,
             id: this.id,
             document: this.document,
-            _document: this._document,
             schema: this.schema,
             signature: this.signature,
             timelines: this.timelines,
@@ -983,13 +1035,13 @@ export class Message<T> implements CoreMessage<T> {
 
     async getReplyAssociations(): Promise<Association<ReplyAssociationSchema>[]> {
         const coreass = await this.client.api.getMessageAssociationsByTarget<ReplyAssociationSchema>(this.id, this.author, {schema: Schemas.replyAssociation})
-        const ass: Array<Association<ReplyAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<ReplyAssociationSchema>(this.client, e, this.author)))
+        const ass: Array<Association<ReplyAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<ReplyAssociationSchema>(this.client, e)))
         return ass.filter(e => e) as Array<Association<ReplyAssociationSchema>>
     }
 
     async getRerouteAssociations(): Promise<Association<RerouteAssociationSchema>[]> {
         const coreass = await this.client.api.getMessageAssociationsByTarget<RerouteAssociationSchema>(this.id, this.author, {schema: Schemas.rerouteAssociation})
-        const ass: Array<Association<LikeAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<RerouteAssociationSchema>(this.client, e, this.author)))
+        const ass: Array<Association<LikeAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<RerouteAssociationSchema>(this.client, e)))
         return ass.filter(e => e) as Array<Association<RerouteAssociationSchema>>
     }
 
@@ -998,9 +1050,10 @@ export class Message<T> implements CoreMessage<T> {
         const results = await Promise.all(
             associations.map(
                 async (e) => {
+                    const assDoc = e.getDocument()
                     return {
-                        association: await Association.loadByBody<ReplyAssociationSchema>(this.client, e, this.author) ?? undefined,
-                        message: await this.client.getMessage<ReplyMessageSchema>(e.document.body.messageId, e.document.body.messageAuthor) ?? undefined
+                        association: await Association.loadByBody<ReplyAssociationSchema>(this.client, e) ?? undefined,
+                        message: await this.client.getMessage<ReplyMessageSchema>(assDoc.body.messageId, assDoc.body.messageAuthor) ?? undefined
                     }
                 }
             )
@@ -1013,9 +1066,10 @@ export class Message<T> implements CoreMessage<T> {
         const results = await Promise.all(
             associations.map(
                 async (e) => {
+                    const assDoc = e.getDocument()
                     return {
-                        association: await Association.loadByBody<RerouteAssociationSchema>(this.client, e, this.author) ?? undefined,
-                        message: await this.client.getMessage<RerouteMessageSchema>(e.document.body.messageId, e.document.body.messageAuthor) ?? undefined
+                        association: await Association.loadByBody<RerouteAssociationSchema>(this.client, e) ?? undefined,
+                        message: await this.client.getMessage<RerouteMessageSchema>(assDoc.body.messageId, assDoc.body.messageAuthor) ?? undefined
                     }
                 }
             )
@@ -1025,7 +1079,7 @@ export class Message<T> implements CoreMessage<T> {
 
     async getFavorites(): Promise<Association<LikeAssociationSchema>[]> {
         const coreass = await this.client.api.getMessageAssociationsByTarget<LikeAssociationSchema>(this.id, this.author, {schema: Schemas.likeAssociation})
-        const ass: Array<Association<LikeAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<LikeAssociationSchema>(this.client, e, this.author)))
+        const ass: Array<Association<LikeAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<LikeAssociationSchema>(this.client, e)))
         return ass.filter(e => e) as Array<Association<LikeAssociationSchema>>
     }
 
@@ -1035,7 +1089,7 @@ export class Message<T> implements CoreMessage<T> {
             query = {schema: Schemas.reactionAssociation, variant: imgUrl}
         }
         const coreass = await this.client.api.getMessageAssociationsByTarget<ReactionAssociationSchema>(this.id, this.author, query)
-        const ass: Array<Association<ReactionAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<ReactionAssociationSchema>(this.client, e, this.author)))
+        const ass: Array<Association<ReactionAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<ReactionAssociationSchema>(this.client, e)))
         return ass.filter(e => e) as Array<Association<ReactionAssociationSchema>>
     }
 
@@ -1057,27 +1111,32 @@ export class Message<T> implements CoreMessage<T> {
 
     async favorite(): Promise<CoreAssociation<LikeAssociationSchema>> {
         const author = await this.getAuthor()
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + this.user.ccid]
+        const user = this.client.user
+        if (!user) throw new Error('user is not set')
+        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
-        const dummyAssoc: CoreAssociation<LikeAssociationSchema> = {
+        const dummyAssoc: Omit<CoreAssociation<LikeAssociationSchema>, 'getDocument'> = {
             id: new Date().getTime().toString(),
-            author: this.user.ccid,
+            author: user.ccid,
+            owner: author.ccid,
             schema: Schemas.likeAssociation,
             target: this.id,
             cdate: new Date().toISOString(),
-            document: {
+            document: JSON.stringify({
                 type: 'association',
                 body: {},
                 schema: Schemas.likeAssociation,
-                signer: this.user.ccid,
+                signer: user.ccid,
                 target: this.id,
                 owner: this.author,
                 variant: '',
                 timelines: targetStream,
                 signedAt: new Date()
-            },
-            _document: '',
-            signature: 'DUMMY'
+            }),
+            signature: 'DUMMY',
+            getDocument: () => {
+                return JSON.parse(dummyAssoc.document)
+            }
         }
 
         this.associations.push(dummyAssoc)
@@ -1088,7 +1147,7 @@ export class Message<T> implements CoreMessage<T> {
         this.onUpdate?.()
 
         this.client.invalidateMessage(this.id)
-        const result = this.api.createAssociation<LikeAssociationSchema>(Schemas.likeAssociation, {}, this.id, author.ccid, targetStream)
+        const result = this.client.api.createAssociation<LikeAssociationSchema>(Schemas.likeAssociation, {}, this.id, author.ccid, targetStream)
         .then((resp) => {
             return resp
         })
@@ -1101,29 +1160,31 @@ export class Message<T> implements CoreMessage<T> {
 
     async reaction(shortcode: string, imageUrl: string): Promise<CoreAssociation<ReactionAssociationSchema>>{
         const author = await this.getAuthor()
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + this.user.ccid]
+        const user = this.client.user
+        if (!user) throw new Error('user is not set')
+        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
-        const dummyAssoc: CoreAssociation<ReactionAssociationSchema> = {
+        const dummyAssoc: Omit<CoreAssociation<ReactionAssociationSchema>, 'getDocument'> = {
             id: new Date().getTime().toString(),
-            author: this.user.ccid,
+            author: user.ccid,
+            owner: author.ccid,
             schema: Schemas.reactionAssociation,
             target: this.id,
             cdate: new Date().toISOString(),
-            document: {
+            document: JSON.stringify({
                 type: 'association',
                 body: {
                     shortcode,
                     imageUrl
                 },
                 schema: Schemas.reactionAssociation,
-                signer: this.user.ccid,
+                signer: user.ccid,
                 target: this.id,
                 owner: this.author,
                 variant: '',
                 timelines: targetStream,
                 signedAt: new Date()
-            },
-            _document: '',
+            }),
             signature: 'DUMMY'
         }
 
@@ -1134,7 +1195,7 @@ export class Message<T> implements CoreMessage<T> {
         }
         this.onUpdate?.()
 
-        this.api.invalidateMessage(this.id)
+        this.client.api.invalidateMessage(this.id)
         const result = this.client.api.createAssociation<ReactionAssociationSchema>(
             Schemas.reactionAssociation,
             {
@@ -1156,7 +1217,9 @@ export class Message<T> implements CoreMessage<T> {
 
     async upgrade(txhash: string): Promise<CoreAssociation<UpgradeAssociationSchema>>{
         const author = await this.getAuthor()
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + this.user.ccid]
+        const user = this.client.user
+        if (!user) throw new Error('user is not set')
+        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
         const result = await this.client.api.createAssociation<UpgradeAssociationSchema>(
             Schemas.upgradeAssociation,
             {
@@ -1167,7 +1230,7 @@ export class Message<T> implements CoreMessage<T> {
             targetStream,
             txhash
         )
-        this.api.invalidateMessage(this.id)
+        this.client.api.invalidateMessage(this.id)
         return result
     }
 
@@ -1195,10 +1258,13 @@ export class Message<T> implements CoreMessage<T> {
         this.onUpdate?.()
 
         this.client.invalidateMessage(this.id)
-        await this.api.deleteAssociation(a.id, this.author)
+        await this.client.api.deleteAssociation(a.id, this.author)
     }
 
     async reply(streams: string[], body: string, options?: CreateCurrentOptions) {
+
+        const user = this.client.user
+        if (!user) throw new Error('user is not set')
 
         let policy = undefined
         let policyParams = undefined
@@ -1210,7 +1276,7 @@ export class Message<T> implements CoreMessage<T> {
             })
         }
 
-        const data = await this.api.createMessage<ReplyMessageSchema>(
+        const data = await this.client.api.createMessage<ReplyMessageSchema>(
           Schemas.replyMessage,
           {
               body,
@@ -1227,11 +1293,11 @@ export class Message<T> implements CoreMessage<T> {
         )
 
         const author = await this.getAuthor()
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + this.user.ccid]
+        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
-        await this.api.createAssociation<ReplyAssociationSchema>(
+        await this.client.api.createAssociation<ReplyAssociationSchema>(
           Schemas.replyAssociation,
-          { messageId: data.content.id, messageAuthor: this.user.ccid },
+          { messageId: data.content.id, messageAuthor: user.ccid },
           this.id,
           this.author,
           targetStream || []
@@ -1239,6 +1305,9 @@ export class Message<T> implements CoreMessage<T> {
     }
 
     async reroute(streams: string[], body?: string, options?: CreateCurrentOptions) {
+
+        const user = this.client.user
+        if (!user) throw new Error('user is not set')
 
         let policy = undefined
         let policyParams = undefined
@@ -1250,7 +1319,7 @@ export class Message<T> implements CoreMessage<T> {
             })
         }
 
-        const { content } = await this.api.createMessage<RerouteMessageSchema>(
+        const { content } = await this.client.api.createMessage<RerouteMessageSchema>(
             Schemas.rerouteMessage,
             {
                 body,
@@ -1268,9 +1337,9 @@ export class Message<T> implements CoreMessage<T> {
         const created = content
 
         const author = await this.getAuthor()
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + this.user.ccid]
+        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
-        await this.api.createAssociation<RerouteAssociationSchema>(
+        await this.client.api.createAssociation<RerouteAssociationSchema>(
             Schemas.rerouteAssociation,
             { messageId: created.id, messageAuthor: created.author },
             this.id,
@@ -1280,6 +1349,6 @@ export class Message<T> implements CoreMessage<T> {
     }
 
     async delete() {
-        return this.api.deleteMessage(this.id)
+        return this.client.api.deleteMessage(this.id)
     }
 }
