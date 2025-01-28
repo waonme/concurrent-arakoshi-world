@@ -16,7 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
-  "exclude": ["functions/**/*"],
+  "include": ["src", "client"],
+  "exclude": ["functions/**/*", "./client/collectSchemas.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
