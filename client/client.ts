@@ -21,6 +21,8 @@ import {
     MasterKeyAuthProvider,
     IndexedDBKVS,
     SubKeyAuthProvider,
+    Socket,
+    SocketListener,
 } from '@concrnt/client'
 
 import { Schemas, Schema } from "./schemas";
@@ -64,7 +66,7 @@ export class Client {
     server?: CoreDomain
     keyPair?: KeyPair;
 
-    //socket?: Socket
+    socket?: Socket
     domainServices: Record<string, Service> = {}
     ackings: User[] = []
     ackers: User[] = []
@@ -227,8 +229,7 @@ export class Client {
         delete this.messageCache[id]
     }
 
-    async createMarkdownCrnt(body: string, streams: TimelineID[], options?: CreateCurrentOptions): Promise<Error | null> {
-        if (!this.ccid) return new Error('ccid is not set')
+    async createMarkdownCrnt(body: string, streams: TimelineID[], options?: CreateCurrentOptions): Promise<CoreMessage<MarkdownMessageSchema>> {
         let policy = undefined
         let policyParams = undefined
         let policyDefaults = undefined
@@ -246,7 +247,7 @@ export class Client {
             })
         }
 
-        const newMessage = await this.api.createMessage<MarkdownMessageSchema>(
+        const created = await this.api.createMessage<MarkdownMessageSchema>(
             Schemas.markdownMessage,
             {
                 body,
@@ -265,13 +266,12 @@ export class Client {
             for(const mention of options.mentions) {
                 associationStream.push('world.concrnt.t-notify@' + mention)
             }
-            await this.api.createAssociation(Schemas.mentionAssociation, {}, newMessage.content.id, this.ccid, associationStream)
+            await this.api.createAssociation(Schemas.mentionAssociation, {}, created.id, created.author, associationStream)
         }
-        return newMessage
+        return created
     }
 
-    async createPlainTextCrnt(body: string, streams: TimelineID[], options?: CreatePlaintextCrntOptions): Promise<Error | null> {
-        if (!this.ccid) return new Error('ccid is not set')
+    async createPlainTextCrnt(body: string, streams: TimelineID[], options?: CreatePlaintextCrntOptions): Promise<CoreMessage<MarkdownMessageSchema>> {
 
         let policy = undefined
         let policyParams = undefined
@@ -306,8 +306,7 @@ export class Client {
         return newMessage
     }
 
-    async createMediaCrnt(body: string, streams: TimelineID[], options?: CreateMediaCrntOptions): Promise<Error | null> {
-        if (!this.ccid) return new Error('ccid is not set')
+    async createMediaCrnt(body: string, streams: TimelineID[], options?: CreateMediaCrntOptions): Promise<CoreMessage<MarkdownMessageSchema>> {
 
         let policy = undefined
         let policyParams = undefined
@@ -599,15 +598,20 @@ export class Client {
         return updated
     }
 
-    /*
     async newSocket(): Promise<Socket> {
         if (!this.socket) {
-            this.socket = new Socket(this.api, this)
+            this.socket = new Socket(this.api)
             await this.socket.waitOpen()
         }
         return this.socket!
     }
 
+    async newSubscription(): Promise<SocketListener> {
+        const socket = await this.newSocket()
+        return new SocketListener(socket)
+    }
+
+    /*
     async newTimelineReader(opts?: {withoutSocket: boolean}): Promise<TimelineReader> {
         if (opts?.withoutSocket) {
             return new TimelineReader(this.api, undefined)
@@ -618,11 +622,6 @@ export class Client {
 
     async newTimelineQuery(): Promise<QueryTimelineReader> {
         return new QueryTimelineReader(this.api)
-    }
-
-    async newSubscription(): Promise<Subscription> {
-        const socket = await this.newSocket()
-        return new Subscription(socket)
     }
     */
 }
@@ -898,7 +897,7 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'getDocum
     }
 
     static async load<T>(client: Client, id: TimelineID): Promise<Timeline<T> | null> {
-        const coreTimeline = await client.api.getTimeline(id).catch((_e) => {
+        const coreTimeline = await client.api.getTimeline<T>(id).catch((_e) => {
             return null
         })
         if (!coreTimeline) return null
@@ -943,22 +942,6 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
     reactionCounts?: Record<string, number>
     postedStreams?: Timeline<any>[]
     onUpdate?: () => void
-
-    /*
-    user: User
-    client: Client
-    associations: Array<CoreAssociation<any>>
-    ownAssociations: Array<CoreAssociation<any>>
-    author: CCID
-    cdate: string
-    id: MessageID
-    document: CCDocument.Message<T>
-    schema: Schema
-    signature: string
-    timelines: TimelineID[]
-    policy?: string
-    policyParams?: any
-    */
 
     constructor(client: Client, data: CoreMessage<T>) {
         this.client = client
@@ -1115,7 +1098,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
         if (!user) throw new Error('user is not set')
         const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
-        const dummyAssoc: Omit<CoreAssociation<LikeAssociationSchema>, 'getDocument'> = {
+        const dummyAssocBase: Omit<CoreAssociation<LikeAssociationSchema>, 'getDocument'> = {
             id: new Date().getTime().toString(),
             author: user.ccid,
             owner: author.ccid,
@@ -1134,10 +1117,9 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
                 signedAt: new Date()
             }),
             signature: 'DUMMY',
-            getDocument: () => {
-                return JSON.parse(dummyAssoc.document)
-            }
         }
+
+        const dummyAssoc = Object.setPrototypeOf(dummyAssocBase, Association.prototype)
 
         this.associations.push(dummyAssoc)
         this.ownAssociations.push(dummyAssoc)
@@ -1164,7 +1146,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
         if (!user) throw new Error('user is not set')
         const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
-        const dummyAssoc: Omit<CoreAssociation<ReactionAssociationSchema>, 'getDocument'> = {
+        const dummyAssocBase: Omit<CoreAssociation<ReactionAssociationSchema>, 'getDocument'> = {
             id: new Date().getTime().toString(),
             author: user.ccid,
             owner: author.ccid,
@@ -1187,6 +1169,8 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
             }),
             signature: 'DUMMY'
         }
+
+        const dummyAssoc = Object.setPrototypeOf(dummyAssocBase, Association.prototype)
 
         this.associations.push(dummyAssoc)
         this.ownAssociations.push(dummyAssoc)
@@ -1243,11 +1227,13 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
             }
         }
 
+        const document = a.getDocument()
+
         if (a.schema === Schemas.reactionAssociation) {
             if (this.reactionCounts) {
-                this.reactionCounts[a.document.body.imageUrl] = (this.reactionCounts[a.document.body.imageUrl] ?? 0) - 1
-                if (this.reactionCounts[a.document.body.imageUrl] <= 0) {
-                    delete this.reactionCounts[a.document.body.imageUrl]
+                this.reactionCounts[document.body.imageUrl] = (this.reactionCounts[document.body.imageUrl] ?? 0) - 1
+                if (this.reactionCounts[document.body.imageUrl] <= 0) {
+                    delete this.reactionCounts[document.body.imageUrl]
                 }
             }
         }
@@ -1276,7 +1262,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
             })
         }
 
-        const data = await this.client.api.createMessage<ReplyMessageSchema>(
+        const created = await this.client.api.createMessage<ReplyMessageSchema>(
           Schemas.replyMessage,
           {
               body,
@@ -1297,7 +1283,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
 
         await this.client.api.createAssociation<ReplyAssociationSchema>(
           Schemas.replyAssociation,
-          { messageId: data.content.id, messageAuthor: user.ccid },
+          { messageId: created.id, messageAuthor: created.author },
           this.id,
           this.author,
           targetStream || []
@@ -1319,7 +1305,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
             })
         }
 
-        const { content } = await this.client.api.createMessage<RerouteMessageSchema>(
+        const created = await this.client.api.createMessage<RerouteMessageSchema>(
             Schemas.rerouteMessage,
             {
                 body,
@@ -1334,7 +1320,6 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
                 policyParams
             }
         )
-        const created = content
 
         const author = await this.getAuthor()
         const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
