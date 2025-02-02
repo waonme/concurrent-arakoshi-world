@@ -28,27 +28,29 @@ export default function GuestProfilePage(): JSX.Element {
 
     useEffect(() => {
         if (!id) return
-        const client = new Client('ariake.concrnt.net')
-        initializeClient(client)
 
-        client.getUser(id).then((u) => {
-            if (!u) return
-            setUser(u)
-            const timelineID = subProfileID ? 'world.concrnt.t-subhome.' + subProfileID + '@' + u.ccid : u.homeTimeline
-            setTargetStream([timelineID])
+        Client.createAsGuest('ariake.concrnt.net').then((client) => {
+            initializeClient(client)
 
-            client.api.getTimeline(timelineID).then((t) => {
-                if (!t) return
-                if (t.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' || !t.policyParams) {
-                    setIsPrivateTimeline(false)
-                    return
-                }
-                try {
-                    const params = JSON.parse(t.policyParams)
-                    setIsPrivateTimeline(params.isReadPublic === false)
-                } catch (e) {
-                    console.error(e)
-                }
+            client.getUser(id).then((u) => {
+                if (!u) return
+                setUser(u)
+                const timelineID = subProfileID ? 'world.concrnt.t-subhome.' + subProfileID + '@' + u.ccid : u.homeTimeline
+                setTargetStream([timelineID])
+
+                client.api.getTimeline(timelineID).then((t) => {
+                    if (!t) return
+                    if (t.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' || !t.policyParams) {
+                        setIsPrivateTimeline(false)
+                        return
+                    }
+                    try {
+                        const params = JSON.parse(t.policyParams)
+                        setIsPrivateTimeline(params.isReadPublic === false)
+                    } catch (e) {
+                        console.error(e)
+                    }
+                })
             })
         })
     }, [id, path.hash])

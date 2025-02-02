@@ -122,7 +122,7 @@ export const StorageProvider = ({ children }: { children: JSX.Element | JSX.Elem
                 const xhr = new XMLHttpRequest()
                 xhr.open('POST', `https://${client.host}/storage/files`, true)
                 xhr.setRequestHeader('Content-Type', file.type)
-                xhr.setRequestHeader('Authorization', `Bearer ${client.api.generateApiToken(client.host)}`)
+                xhr.setRequestHeader('Authorization', `Bearer ${client.api.authProvider.getAuthToken(client.host)}`)
 
                 xhr.upload.onprogress = (e) => {
                     if (e.lengthComputable) {

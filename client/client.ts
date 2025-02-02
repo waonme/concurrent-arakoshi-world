@@ -23,6 +23,8 @@ import {
     SubKeyAuthProvider,
     Socket,
     SocketListener,
+    InMemoryKVS,
+    GuestAuthProvider,
 } from '@concrnt/client'
 
 import { Schemas, Schema } from "./schemas";
@@ -184,6 +186,20 @@ export class Client {
         }
 
         opts?.progressCallback?.("done")
+        return c
+    }
+    
+    static async createAsGuest(host: FQDN, _opts?: ClientOptions): Promise<Client> {
+        const cacheEngine = new InMemoryKVS()
+        const authProvider = new GuestAuthProvider(host)
+        const api = new Api(authProvider, cacheEngine)
+        const c = new Client(api)
+
+        c.server = await c.api.getDomain(host).catch((e) => {
+            console.error('CLIENT::create::getDomain::error', e)
+            return null
+        }) ?? undefined
+
         return c
     }
 

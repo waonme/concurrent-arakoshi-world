@@ -44,32 +44,33 @@ export default function GuestMessagePage(): JSX.Element {
     const [client, initializeClient] = useState<Client>()
     useEffect(() => {
         if (!authorID || !messageID) return
-        const client = new Client('ariake.concrnt.net')
-        initializeClient(client)
 
         let isMounted = true
-        client
-            .getMessage<any>(messageID, authorID)
-            .then((msg) => {
-                if (!isMounted || !msg) return
-                setMessage(msg)
+        Client.createAsGuest('ariake.concrnt.net').then((client) => {
+            initializeClient(client)
+            client
+                .getMessage<any>(messageID, authorID)
+                .then((msg) => {
+                    if (!isMounted || !msg) return
+                    setMessage(msg)
 
-                msg.getReplyMessages().then((replies) => {
-                    if (!isMounted) return
-                    setReplies(replies)
-                })
-
-                if (msg.schema === Schemas.replyMessage) {
-                    msg.getReplyTo().then((replyTo) => {
+                    msg.getReplyMessages().then((replies) => {
                         if (!isMounted) return
-                        setReplyTo(replyTo)
+                        setReplies(replies)
                     })
-                }
-            })
-            .finally(() => {
-                if (!isMounted) return
-                setIsFetching(false)
-            })
+
+                    if (msg.schema === Schemas.replyMessage) {
+                        msg.getReplyTo().then((replyTo) => {
+                            if (!isMounted) return
+                            setReplyTo(replyTo)
+                        })
+                    }
+                })
+                .finally(() => {
+                    if (!isMounted) return
+                    setIsFetching(false)
+                })
+        })
 
         return () => {
             isMounted = false

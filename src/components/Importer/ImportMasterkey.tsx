@@ -53,21 +53,22 @@ export function ImportMasterKey(): JSX.Element {
 
         const timer = setTimeout(() => {
             try {
-                const client = new Client(searchTarget, keypair, ccid)
-                client.api
-                    .getEntity(ccid, searchTarget)
-                    .then((entity) => {
-                        if (entity?.domain) {
-                            setDomainInput(entity.domain)
-                            setErrorMessage('')
-                        } else {
-                            setDomainAutoDetectionFailed(true)
+                Client.createAsGuest(searchTarget).then((client) => {
+                    client.api
+                        .getEntity(ccid, searchTarget)
+                        .then((entity) => {
+                            if (entity?.domain) {
+                                setDomainInput(entity.domain)
+                                setErrorMessage('')
+                            } else {
+                                setDomainAutoDetectionFailed(true)
+                                setErrorMessage(t('notFound'))
+                            }
+                        })
+                        .catch((_) => {
                             setErrorMessage(t('notFound'))
-                        }
-                    })
-                    .catch((_) => {
-                        setErrorMessage(t('notFound'))
-                    })
+                        })
+                })
             } catch (e) {
                 console.error(e)
             }
@@ -82,14 +83,13 @@ export function ImportMasterKey(): JSX.Element {
         if (!domainInput || !keypair || !ccid) return
         const timer = setTimeout(() => {
             try {
-                const client = new Client(domainInput, keypair, ccid)
-                client.api.fetchWithCredential(domainInput, '/api/v1/entity', {}).then((res) => {
-                    if (res.ok) {
+                Client.create(keypair.privatekey, domainInput).then((client) => {
+                    client.api.fetchWithCredential(domainInput, '/api/v1/entity', {}).then((_) => {
                         setErrorMessage('')
                         setRegistrationOK(true)
-                    } else {
+                    }).catch((_) => {
                         setRegistrationOK(false)
-                    }
+                    })
                 })
             } catch (e) {
                 console.error(e)

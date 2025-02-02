@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { Box, Button, Paper, Typography } from '@mui/material'
 import { useParams, Link as NavLink } from 'react-router-dom'
 import { Timeline } from '../components/Timeline/main'
-import { Client, type CoreTimeline } from '@concurrent-world/client'
+import { Client } from 'client'
+import { Timeline as CoreTimeline } from '@concrnt/client'
 import { FullScreenLoading } from '../components/ui/FullScreenLoading'
 import { ClientProvider } from '../context/ClientContext'
 import { TimelineHeader } from '../components/TimelineHeader'
@@ -27,21 +28,23 @@ export default function GuestTimelinePage(): JSX.Element {
         if (!id) return
         setTargetStream([id])
         const resolver = id.split('@')[1]
-        const client = new Client(resolver)
-        initializeClient(client)
 
-        client.api.getTimeline(id).then((e) => {
-            if (!e) return
-            setTimeline(e)
+        Client.createAsGuest(resolver).then((client) => {
+            initializeClient(client)
 
-            if (e.policy === 'https://policy.concrnt.world/t/inline-read-write.json' && e?.policyParams) {
-                try {
-                    const params = JSON.parse(e.policyParams)
-                    setIsPrivateTimeline(!params.isReadPublic)
-                } catch (e) {
-                    setIsPrivateTimeline(true)
+            client.api.getTimeline(id).then((e) => {
+                if (!e) return
+                setTimeline(e)
+
+                if (e.policy === 'https://policy.concrnt.world/t/inline-read-write.json' && e?.policyParams) {
+                    try {
+                        const params = JSON.parse(e.policyParams)
+                        setIsPrivateTimeline(!params.isReadPublic)
+                    } catch (e) {
+                        setIsPrivateTimeline(true)
+                    }
                 }
-            }
+            })
         })
     }, [id])
 
@@ -51,12 +54,12 @@ export default function GuestTimelinePage(): JSX.Element {
         <MediaViewerProvider>
             <>
                 <Helmet>
-                    <title>{`#${timeline.document.body.name || 'No Title'} - Concrt`}</title>
+                    <title>{`#${timeline.parsedDoc.body.name || 'No Title'} - Concrt`}</title>
                     <meta
                         name="description"
                         content={
-                            timeline.document.body.description ||
-                            `Concrnt timeline ${timeline.document.body.name || 'No Title'}`
+                            timeline.parsedDoc.body.description ||
+                            `Concrnt timeline ${timeline.parsedDoc.body.name || 'No Title'}`
                         }
                     />
                     <link rel="canonical" href={`https://concrnt.com/timeline/${id}`} />
@@ -105,7 +108,7 @@ export default function GuestTimelinePage(): JSX.Element {
                                 }}
                             >
                                 <TimelineHeader
-                                    title={timeline.document.body.name || 'No Title'}
+                                    title={timeline.parsedDoc.body.name || 'No Title'}
                                     titleIcon={isPrivateTimeline ? <LockIcon /> : <TagIcon />}
                                 />
 

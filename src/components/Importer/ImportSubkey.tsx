@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import { Client } from '@concurrent-world/client'
+import { Client } from 'client'
 
 export const ImportSubkey = (): JSX.Element => {
     const { t } = useTranslation('', { keyPrefix: 'import' })
