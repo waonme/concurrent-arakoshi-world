@@ -2,7 +2,7 @@ import { Box, Typography, Tooltip, Menu, IconButton } from '@mui/material'
 import { TimeDiff } from '../ui/TimeDiff'
 import { useMemo, useState } from 'react'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import { type Message, type ReplyMessageSchema, type MarkdownMessageSchema } from '@concurrent-world/client'
+import { type Message, type ReplyMessageSchema, type MarkdownMessageSchema } from 'client'
 
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { useClient } from '../../context/ClientContext'

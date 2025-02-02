@@ -1,11 +1,9 @@
 import { Box, Button, Typography } from '@mui/material'
 import { forwardRef } from 'react'
-import { useClient } from '../../context/ClientContext'
 import { useSnackbar } from 'notistack'
 import { usePreference } from '../../context/PreferenceContext'
 
 export const Debugger = forwardRef<HTMLDivElement>((props, ref): JSX.Element => {
-    const { client } = useClient()
     const { enqueueSnackbar } = useSnackbar()
 
     const [_progress, setProgress] = usePreference('tutorialProgress')
@@ -47,14 +45,6 @@ export const Debugger = forwardRef<HTMLDivElement>((props, ref): JSX.Element => 
                         チュートリアルをリセット
                     </Button>
                 </Box>
-                <Typography variant="h4">ConnectedDomains</Typography>
-                {client.api.domainCache &&
-                    Object.keys(client.api.domainCache).map((domain, _) => (
-                        <Box key={domain}>
-                            <Typography>{domain}</Typography>
-                            <pre>{JSON.stringify(client.api.domainCache[domain], null, 2)}</pre>
-                        </Box>
-                    ))}
             </Box>
         </div>
     )

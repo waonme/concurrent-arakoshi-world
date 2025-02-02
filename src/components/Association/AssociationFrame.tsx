@@ -7,7 +7,7 @@ import {
     type RerouteAssociationSchema,
     Schemas,
     type ReadAccessRequestAssociationSchema
-} from '@concurrent-world/client'
+} from 'client'
 import { useClient } from '../../context/ClientContext'
 import { Box, ListItem, type SxProps, Typography, alpha, useTheme } from '@mui/material'
 import { MessageSkeleton } from '../MessageSkeleton'

@@ -5,7 +5,7 @@ import {
     type ReplyMessageSchema,
     type MarkdownMessageSchema,
     type User
-} from '@concurrent-world/client'
+} from 'client'
 import { ContentWithCCAvatar } from '../ContentWithCCAvatar'
 import { Box, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from '@mui/material'
 import { TimeDiff } from '../ui/TimeDiff'

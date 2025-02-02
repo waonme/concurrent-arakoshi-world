@@ -1,4 +1,4 @@
-import { GenerateIdentity } from '@concurrent-world/client'
+import { GenerateIdentity } from '@concrnt/client'
 import { Box, Button, Typography } from '@mui/material'
 import { forwardRef, useState } from 'react'
 

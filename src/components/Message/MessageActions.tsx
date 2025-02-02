@@ -18,7 +18,7 @@ import {
     type ReplyMessageSchema,
     Schemas,
     type MarkdownMessageSchema
-} from '@concurrent-world/client'
+} from 'client'
 import { useState } from 'react'
 import ContentPasteIcon from '@mui/icons-material/ContentPaste'
 import ManageSearchIcon from '@mui/icons-material/ManageSearch'

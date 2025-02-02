@@ -11,19 +11,17 @@ import {
     Tabs,
     TextField,
     Typography,
-    alpha,
-    useTheme
 } from '@mui/material'
 import { StreamPicker } from './ui/StreamPicker'
 import { useEffect, useState } from 'react'
 import { usePreference } from '../context/PreferenceContext'
 import {
-    type CoreSubscription,
     type Timeline,
     type CommunityTimelineSchema,
     type ListSubscriptionSchema,
     Schemas
-} from '@concurrent-world/client'
+} from 'client'
+import { Subscription } from '@concrnt/client'
 import { useClient } from '../context/ClientContext'
 import { ListItemTimeline } from './ui/ListItemTimeline'
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove'
@@ -36,10 +34,9 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { useEmojiPicker } from '../context/EmojiPickerContext'
 import { CCIconButton } from './ui/CCIconButton'
 import EmojiEmotions from '@mui/icons-material/EmojiEmotions'
-import { CheckBox } from '@mui/icons-material'
 
 export interface ListSettingsProps {
-    subscription: CoreSubscription<any>
+    subscription: Subscription<any>
     onModified?: () => void
 }
 
@@ -65,8 +62,8 @@ export function ListSettings(props: ListSettingsProps): JSX.Element {
     const emojiPicker = useEmojiPicker()
 
     useEffect(() => {
-        setListName(props.subscription.document.body.name)
-        setIconURL(props.subscription.document.body.iconURL ?? '')
+        setListName(props.subscription.getDocument().body.name)
+        setIconURL(props.subscription.getDocument().body.iconURL ?? '')
 
         if (!list) return
         Promise.all(list.defaultPostStreams.map((streamID) => client.getTimeline(streamID))).then((streams) => {
@@ -281,7 +278,7 @@ export function ListSettings(props: ListSettingsProps): JSX.Element {
                             })
                         },
                         {
-                            description: props.subscription.document.body.name,
+                            description: props.subscription.getDocument().body.name,
                             confirmText: t('confirmDelete')
                         }
                     )

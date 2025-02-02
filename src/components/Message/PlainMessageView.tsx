@@ -6,9 +6,9 @@ import {
     type Message,
     type PlaintextMessageSchema,
     Schemas,
-    type CoreProfile,
     type RerouteMessageSchema
-} from '@concurrent-world/client'
+} from 'client'
+import { Profile } from '@concrnt/client'
 import { PostedStreams } from './PostedStreams'
 import { ContentWithCCAvatar } from '../ContentWithCCAvatar'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
@@ -38,12 +38,12 @@ export const PlainMessageView = (props: PlainMessageViewProps): JSX.Element => {
 
     const { client } = useClient()
 
-    const [characterOverride, setProfileOverride] = useState<CoreProfile<any> | undefined>(undefined)
+    const [characterOverride, setProfileOverride] = useState<Profile<any> | undefined>(undefined)
 
     useEffect(() => {
         if (!(client && props.message.document.body.profileOverride?.profileID)) return
         client.api
-            .getProfileByID(props.message.document.body.profileOverride?.profileID, props.message.author)
+            .getProfile(props.message.document.body.profileOverride?.profileID, props.message.author)
             .then((profile) => {
                 setProfileOverride(profile ?? undefined)
             })
@@ -70,10 +70,10 @@ export const PlainMessageView = (props: PlainMessageViewProps): JSX.Element => {
             message={props.message}
             author={props.message.authorUser}
             profileOverride={props.message.document.body.profileOverride}
-            avatarOverride={characterOverride?.document.body.avatar}
+            avatarOverride={characterOverride?.getDocument().body.avatar}
         >
             <MessageHeader
-                usernameOverride={characterOverride?.document.body.username}
+                usernameOverride={characterOverride?.getDocument().body.username}
                 message={props.message}
                 additionalMenuItems={props.additionalMenuItems}
                 timeLink={props.message.document.meta?.apObjectRef} // Link to external message

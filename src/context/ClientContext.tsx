@@ -1,10 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import type { Client } from '@concurrent-world/client'
 import { usePersistent } from '../hooks/usePersistent'
 
 // @ts-expect-error vite dynamic import
 import { branch, sha } from '~build/info'
 import { FullScreenLoading } from '../components/ui/FullScreenLoading'
+import { type Client } from 'client'
 
 const branchName = branch || window.location.host.split('.')[0]
 const versionString = `${location.hostname}-${branchName as string}-${sha.slice(0, 7) as string}`
@@ -38,7 +38,7 @@ export const ClientProvider = (props: ClientProviderProps): JSX.Element => {
         if (props.client) return
 
         const loader = async (): Promise<void> => {
-            const { Client } = await import('@concurrent-world/client')
+            const { Client } = await import('../../client/client')
 
             if (prvkey !== '') {
                 Client.create(prvkey, domain, {

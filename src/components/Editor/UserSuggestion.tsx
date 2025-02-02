@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Box, Collapse, List, ListItemButton, ListItemIcon, ListItemText, Paper, Popper } from '@mui/material'
 import caretPosition from 'textarea-caret'
-import { type User } from '@concurrent-world/client'
+import { type User } from 'client'
 import { useClient } from '../../context/ClientContext'
 
 export interface UserSuggestionProps {

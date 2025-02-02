@@ -1,6 +1,6 @@
 import { Button } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { type User } from '@concurrent-world/client'
+import { type User } from 'client'
 import { useTranslation } from 'react-i18next'
 import { useClient } from '../context/ClientContext'
 

@@ -6,13 +6,13 @@ import {
     type Message,
     type ReplyMessageSchema,
     type MarkdownMessageSchema,
-    type CoreProfile
-} from '@concurrent-world/client'
+} from 'client'
 import { MarkdownRendererLite } from '../ui/MarkdownRendererLite'
 import { MarkdownRenderer } from '../ui/MarkdownRenderer'
 import { useEffect, useState } from 'react'
 import { useClient } from '../../context/ClientContext'
 import { CCLink } from '../ui/CCLink'
+import { Profile } from '@concrnt/client'
 
 export interface OneLineMessageViewProps {
     message: Message<MarkdownMessageSchema | ReplyMessageSchema>
@@ -21,14 +21,14 @@ export interface OneLineMessageViewProps {
 export const OneLineMessageView = (props: OneLineMessageViewProps): JSX.Element => {
     const { client } = useClient()
 
-    const [characterOverride, setProfileOverride] = useState<CoreProfile<any> | undefined>(undefined)
+    const [characterOverride, setProfileOverride] = useState<Profile<any> | undefined>(undefined)
 
     const externalLink = props.message.document.meta?.apObjectRef // Link to external message
 
     useEffect(() => {
         if (!(client && props.message.document.body.profileOverride?.profileID)) return
         client.api
-            .getProfileByID(props.message.document.body.profileOverride?.profileID, props.message.author)
+            .getProfile(props.message.document.body.profileOverride?.profileID, props.message.author)
             .then((profile) => {
                 setProfileOverride(profile ?? undefined)
             })
@@ -58,7 +58,7 @@ export const OneLineMessageView = (props: OneLineMessageViewProps): JSX.Element 
                     avatarURL={props.message.authorUser?.profile?.avatar}
                     identiconSource={props.message.author}
                     avatarOverride={
-                        characterOverride?.document.body.avatar ?? props.message.document.body.profileOverride?.avatar
+                        characterOverride?.getDocument().body.avatar ?? props.message.document.body.profileOverride?.avatar
                     }
                     sx={{
                         width: { xs: '38px', sm: '48px' },

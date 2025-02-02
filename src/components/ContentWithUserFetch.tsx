@@ -4,7 +4,7 @@ import { Link as routerLink } from 'react-router-dom'
 import { CCAvatar } from './ui/CCAvatar'
 import { useClient } from '../context/ClientContext'
 import { useEffect, useState } from 'react'
-import { type User } from '@concurrent-world/client'
+import { type User } from 'client'
 
 export interface ContentWithUserFetchProps {
     ccid: string

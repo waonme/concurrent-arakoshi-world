@@ -2,7 +2,7 @@ import { Alert, AlertTitle, Box, Button, TextField, Typography } from '@mui/mate
 import { useEffect, useState } from 'react'
 import { useClient } from '../../context/ClientContext'
 import { useSnackbar } from 'notistack'
-import { Schemas } from '@concurrent-world/client'
+import { Schemas } from 'client'
 
 import { useTranslation } from 'react-i18next'
 import { useGlobalState } from '../../context/GlobalState'
@@ -31,9 +31,8 @@ export const ApSetup = (): JSX.Element => {
                 }
             }
             client.api
-                .fetchWithCredential(client.api.host, `/ap/api/entity?id=${userID}`, requestOptions)
-                .then(async (res) => await res.json())
-                .then((profile) => {
+                .fetchWithCredential(client.host, `/ap/api/entity?id=${userID}`, requestOptions)
+                .then((_profile) => {
                     setEntityFound(true)
                 })
                 .catch((_e) => {
@@ -91,7 +90,7 @@ export const ApSetup = (): JSX.Element => {
         client.api.subscribe('world.concrnt.t-ap@' + client.ccid, Object.keys(listedSubscriptions)[0])
 
         await client.api
-            .fetchWithCredential(client.api.host, `/ap/api/entity`, {
+            .fetchWithCredential(client.host, `/ap/api/entity`, {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
@@ -103,7 +102,6 @@ export const ApSetup = (): JSX.Element => {
                     followstream: followstream.id
                 })
             })
-            .then(async (res) => await res.json())
             .catch((e) => {
                 enqueueSnackbar(`register entity failed: ${e}`, {
                     variant: 'error'

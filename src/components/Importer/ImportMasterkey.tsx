@@ -4,6 +4,8 @@ import Typography from '@mui/material/Typography'
 import { useEffect, useMemo, useState } from 'react'
 import {
     Client,
+} from 'client'
+import {
     LoadKey,
     ComputeCCID,
     IsValid256k1PrivateKey,
@@ -12,7 +14,8 @@ import {
     LoadIdentity,
     GenerateIdentity,
     ComputeCKID
-} from '@concurrent-world/client'
+} from '@concrnt/client'
+
 import { Box, IconButton, InputAdornment } from '@mui/material'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'

@@ -11,10 +11,10 @@ import {
     type RerouteMessageSchema,
     Schemas,
     type MarkdownMessageSchema,
-    type ReactionAssociationSchema
-} from '@concurrent-world/client'
+    type ReactionAssociationSchema,
+    type UpgradeAssociationSchema
+} from 'client'
 import { useClient } from '../../context/ClientContext'
-import { type UpgradeAssociationSchema } from '@concurrent-world/client/dist/types/schemas/upgradeAssociation'
 import { useConcord } from '../../context/ConcordContext'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
 import { enqueueSnackbar } from 'notistack'
@@ -53,7 +53,7 @@ export const MessageReactions = (props: MessageReactionsProps): JSX.Element => {
             })
             .then((associations) => {
                 for (const association of associations) {
-                    const txhash = association.document.body.txhash
+                    const txhash = association.getDocument().body.txhash
                     concord.getRawTx(txhash).then(async (tx) => {
                         if (!tx) return
                         const memo = tx.body.memo
@@ -92,7 +92,7 @@ export const MessageReactions = (props: MessageReactionsProps): JSX.Element => {
     const ownReactions = Object.fromEntries(
         props.message?.ownAssociations
             .filter((association) => association.schema === Schemas.reactionAssociation)
-            .map((association) => [association.document.body.imageUrl, association])
+            .map((association) => [association.getDocument().body.imageUrl, association])
     )
 
     const loadReactionMembers = (reaction: string): void => {

@@ -28,7 +28,7 @@ import { type Dispatch, type SetStateAction, useRef, useCallback, useState } fro
 import { useTranslation } from 'react-i18next'
 import { type WorldMedia, type Emoji, type EmojiLite } from '../../model'
 import { UserPicker } from '../ui/UserPicker'
-import { type User } from '@concurrent-world/client'
+import { type User } from 'client'
 import { usePersistent } from '../../hooks/usePersistent'
 import { genBlurHash } from '../../util'
 import { useGlobalState } from '../../context/GlobalState'

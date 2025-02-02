@@ -18,13 +18,10 @@ import { usePreference } from './context/PreferenceContext'
 import TickerProvider from './context/Ticker'
 import { ContactsPage } from './pages/Contacts'
 import {
-    Schemas,
-    type Subscription,
-    type ProfileSchema,
-    type ReplyAssociationSchema,
     type TimelineEvent,
-    type CCDocument
-} from '@concurrent-world/client'
+    type CCDocument,
+    type SocketListener
+} from '@concrnt/client'
 import { UrlSummaryProvider } from './context/urlSummaryContext'
 import { StorageProvider } from './context/StorageContext'
 import { MarkdownRendererLite } from './components/ui/MarkdownRendererLite'
@@ -43,6 +40,8 @@ import { ConfirmProvider } from './context/Confirm'
 import { type ConcurrentTheme } from './model'
 import { TimelineDrawerProvider } from './context/TimelineDrawer'
 import { UserDrawerProvider } from './context/UserDrawer'
+import { Schemas } from 'client'
+import type { ProfileSchema, ReplyAssociationSchema } from 'client'
 
 const SwitchMasterToSub = lazy(() => import('./components/SwitchMasterToSub'))
 
@@ -54,7 +53,7 @@ function App(): JSX.Element {
 
     const theme = useTheme<ConcurrentTheme>()
 
-    const subscription = useRef<Subscription>()
+    const listener = useRef<SocketListener>()
 
     const identity = JSON.parse(localStorage.getItem('Identity') || 'null')
     const [progress] = usePreference('tutorialProgress')
@@ -137,13 +136,13 @@ function App(): JSX.Element {
 
     useEffect(() => {
         if (!client) return
-        client.newSubscription().then((sub) => {
-            subscription.current = sub
-            subscription.current.listen([
+        client.newSocketListener().then((l) => {
+            listener.current = l
+            l.listen([
                 ...(client?.user?.notificationTimeline ? [client?.user?.notificationTimeline] : [])
             ])
-            sub.on('AssociationCreated', (event: TimelineEvent) => {
-                const a = event.document as CCDocument.Association<any>
+            l.on('AssociationCreated', (event: TimelineEvent) => {
+                const a = event.getDocument() as CCDocument.Association<any>
 
                 if (!a) return
                 if (a.schema === Schemas.replyAssociation) {
@@ -156,15 +155,15 @@ function App(): JSX.Element {
                                     .getProfileBySemanticID<ProfileSchema>('world.concrnt.p', a.signer)
                                     .then((c) => {
                                         playNotificationRef.current()
-                                        const profile = c?.document.body
+                                        const profile = c?.getDocument().body
                                         enqueueSnackbar(
                                             <Box display="flex" flexDirection="column">
                                                 <Typography>
                                                     {profile?.username ?? 'anonymous'} replied to your message:{' '}
                                                 </Typography>
                                                 <MarkdownRendererLite
-                                                    messagebody={m.document.body.body as string}
-                                                    emojiDict={m.document.body.emojis ?? {}}
+                                                    messagebody={m.getDocument().body.body as string}
+                                                    emojiDict={m.getDocument().body.emojis ?? {}}
                                                     limit={128}
                                                 />
                                             </Box>
@@ -175,19 +174,20 @@ function App(): JSX.Element {
                 }
 
                 if (a.schema === Schemas.rerouteAssociation) {
+                    if (!event.item) return
                     client?.api.getMessageWithAuthor(a.target, event.item.owner).then((m) => {
                         m &&
                             client?.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', a.signer).then((c) => {
                                 playNotificationRef.current()
-                                const profile = c?.document.body
+                                const profile = c?.getDocument().body
                                 enqueueSnackbar(
                                     <Box display="flex" flexDirection="column">
                                         <Typography>
                                             {profile?.username ?? 'anonymous'} rerouted to your message:{' '}
                                         </Typography>
                                         <MarkdownRendererLite
-                                            messagebody={m.document.body.body as string}
-                                            emojiDict={m.document.body.emojis ?? {}}
+                                            messagebody={m.getDocument().body.body as string}
+                                            emojiDict={m.getDocument().body.emojis ?? {}}
                                             limit={128}
                                         />
                                     </Box>
@@ -198,6 +198,7 @@ function App(): JSX.Element {
                 }
 
                 if (a.schema === Schemas.likeAssociation) {
+                    if (!event.item) return
                     client?.api.getMessageWithAuthor(a.target, event.item.owner).then(async (m) => {
                         if (!m) return
                         let username = a.body.profileOverride?.username
@@ -206,7 +207,7 @@ function App(): JSX.Element {
                                 'world.concrnt.p',
                                 a.signer
                             )
-                            username = profile?.document.body.username
+                            username = profile?.getDocument().body.username
                         }
 
                         playNotificationRef.current()
@@ -214,8 +215,8 @@ function App(): JSX.Element {
                             <Box display="flex" flexDirection="column">
                                 <Typography>{username ?? 'anonymous'} liked your message: </Typography>
                                 <MarkdownRendererLite
-                                    messagebody={m.document.body.body as string}
-                                    emojiDict={m.document.body.emojis ?? {}}
+                                    messagebody={m.getDocument().body.body as string}
+                                    emojiDict={m.getDocument().body.emojis ?? {}}
                                     limit={128}
                                 />
                             </Box>
@@ -225,6 +226,7 @@ function App(): JSX.Element {
                 }
 
                 if (a.schema === Schemas.reactionAssociation) {
+                    if (!event.item) return
                     client.api.getMessageWithAuthor(a.target, event.item.owner).then(async (m) => {
                         if (!m) return
                         let username = a.body.profileOverride?.username
@@ -233,7 +235,7 @@ function App(): JSX.Element {
                                 'world.concrnt.p',
                                 a.signer
                             )
-                            username = profile?.document.body.username
+                            username = profile?.getDocument().body.username
                         }
 
                         playNotificationRef.current()
@@ -244,8 +246,8 @@ function App(): JSX.Element {
                                     <img src={a.body.imageUrl as string} style={{ height: '1em' }} />
                                 </Typography>
                                 <MarkdownRendererLite
-                                    messagebody={m.document.body.body as string}
-                                    emojiDict={m.document.body.emojis ?? {}}
+                                    messagebody={m.getDocument().body.body as string}
+                                    emojiDict={m.getDocument().body.emojis ?? {}}
                                     limit={128}
                                 />
                             </Box>
@@ -254,17 +256,18 @@ function App(): JSX.Element {
                 }
 
                 if (a.schema === Schemas.mentionAssociation) {
+                    if (!event.item) return
                     client?.api.getMessageWithAuthor(a.target, event.item.owner).then((m) => {
                         m &&
                             client.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', a.signer).then((c) => {
                                 playNotificationRef.current()
-                                const profile = c?.document.body
+                                const profile = c?.getDocument().body
                                 enqueueSnackbar(
                                     <Box display="flex" flexDirection="column">
                                         {profile?.username ?? 'anonymous'} mentioned you:{' '}
                                         <MarkdownRendererLite
-                                            messagebody={m.document.body.body as string}
-                                            emojiDict={m.document.body.emojis ?? {}}
+                                            messagebody={m.getDocument().body.body as string}
+                                            emojiDict={m.getDocument().body.emojis ?? {}}
                                             limit={128}
                                         />
                                     </Box>
@@ -383,7 +386,7 @@ function App(): JSX.Element {
                                 padding: '10px'
                             }}
                         >
-                            あなたのドメイン{client.api.host}
+                            あなたのドメイン{client.host}
                             は現在オフラインの為、読み込み専用モードです。復旧までしばらくお待ちください。
                         </Typography>
                     )}

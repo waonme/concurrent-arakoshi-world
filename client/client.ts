@@ -75,6 +75,11 @@ export class Client {
 
     messageCache: Record<string, Cache<Promise<Message<any>>>> = {}
 
+    get host(): string {
+        if (!this.user) throw new Error('user is not found')
+        return this.user.domain
+    }
+
     constructor(api: Api) {
         this.api = api
         this.ccid = api.authProvider.getCCID()
@@ -606,7 +611,7 @@ export class Client {
         return this.socket!
     }
 
-    async newSubscription(): Promise<SocketListener> {
+    async newSocketListener(): Promise<SocketListener> {
         const socket = await this.newSocket()
         return new SocketListener(socket)
     }

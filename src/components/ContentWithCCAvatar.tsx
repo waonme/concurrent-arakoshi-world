@@ -3,13 +3,13 @@ import {
     type Message,
     type ReplyMessageSchema,
     type ProfileSchema,
-    type User
-} from '@concurrent-world/client'
+    type User,
+    type ProfileOverride
+} from 'client'
 import { Box, IconButton, ListItem, Paper, type SxProps, Tooltip } from '@mui/material'
 import { UserProfileCard } from './UserProfileCard'
 import { Link as routerLink, useNavigate, useLocation } from 'react-router-dom'
 import { CCAvatar } from './ui/CCAvatar'
-import { type ProfileOverride } from '@concurrent-world/client/dist/types/model/core'
 
 export interface ContentWithCCAvatarProps {
     message?: Message<MarkdownMessageSchema | ReplyMessageSchema>

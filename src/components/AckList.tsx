@@ -1,4 +1,4 @@
-import { type User } from '@concurrent-world/client'
+import { type User } from 'client'
 import { useEffect, useState } from 'react'
 import { Box, Chip, Tab, Tabs, Typography } from '@mui/material'
 import { CCAvatar } from './ui/CCAvatar'

@@ -6,7 +6,7 @@ import {
     type MarkdownMessageSchema,
     type MediaMessageSchema,
     type PlaintextMessageSchema
-} from '@concurrent-world/client'
+} from 'client'
 import { useClient } from '../../context/ClientContext'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { ReplyMessageFrame } from './ReplyMessageFrame'

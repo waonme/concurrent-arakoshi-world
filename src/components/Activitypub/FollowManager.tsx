@@ -19,14 +19,13 @@ export const ApFollowManager = (): JSX.Element => {
 
     const follow = (target: string): void => {
         client.api
-            .fetchWithCredential(client.api.host, `/ap/api/follow/${target}`, {
+            .fetchWithCredential(client.host, `/ap/api/follow/${target}`, {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
                 }
             })
-            .then(async (res) => await res.json())
-            .then((data) => {
+            .then((_data) => {
                 getStats()
                 setDrawerOpen(false)
             })
@@ -34,24 +33,22 @@ export const ApFollowManager = (): JSX.Element => {
 
     const unFollow = (target: string): void => {
         client.api
-            .fetchWithCredential(client.api.host, `/ap/api/follow/${target}`, {
+            .fetchWithCredential(client.host, `/ap/api/follow/${target}`, {
                 method: 'DELETE',
                 headers: {
                     'content-type': 'application/json'
                 }
             })
-            .then(async (res) => await res.json())
-            .then((data) => {
+            .then((_data) => {
                 getStats()
             })
     }
 
     const getStats = (): void => {
         client.api
-            .fetchWithCredential(client.api.host, `/ap/api/stats`, {})
-            .then(async (res) => await res.json())
+            .fetchWithCredential<Stats>(client.host, `/ap/api/stats`, {})
             .then((data) => {
-                setStats(data.content)
+                setStats(data)
             })
     }
 
@@ -152,15 +149,14 @@ export const APUserCard = memo<{ url: string; remove?: (_: { URL: string; shortI
 
         useEffect(() => {
             client.api
-                .fetchWithCredential(client.api.host, `/ap/api/resolve/${encodeURIComponent(props.url)}`, {
+                .fetchWithCredential(client.host, `/ap/api/resolve/${encodeURIComponent(props.url)}`, {
                     method: 'GET',
                     headers: {
                         accept: 'application/ld+json'
                     }
                 })
-                .then(async (res) => await res.json())
                 .then((data) => {
-                    setPerson(data.content)
+                    setPerson(data)
                 })
         }, [props.url])
 

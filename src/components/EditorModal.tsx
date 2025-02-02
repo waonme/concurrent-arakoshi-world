@@ -3,7 +3,7 @@ import { CCPostEditor, type CCPostEditorProps, type EditorMode } from './Editor/
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useGlobalState } from '../context/GlobalState'
 import { usePreference } from '../context/PreferenceContext'
-import { type CommunityTimelineSchema, type Message, type Timeline } from '@concurrent-world/client'
+import { type CommunityTimelineSchema, type Message, type Timeline } from 'client'
 import { MessageContainer } from './Message/MessageContainer'
 
 export interface EditorModalState {

@@ -5,11 +5,10 @@ import {
     type ReplyMessageSchema,
     type MarkdownMessageSchema,
     type User
-} from '@concurrent-world/client'
+} from 'client'
 import { ContentWithCCAvatar } from '../ContentWithCCAvatar'
-import { Box, Link, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { TimeDiff } from '../ui/TimeDiff'
-import { Link as RouterLink } from 'react-router-dom'
 import { type ReactElement, useEffect, useState } from 'react'
 import { CCLink } from '../ui/CCLink'
 
