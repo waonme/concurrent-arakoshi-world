@@ -37,13 +37,18 @@
         "explore": {
             "title": "探索",
             "domains": "域",
-            "community": "社区",
+            "communities": "社区",
+            "peoples": "人们",
             "createNew": "创建新的",
             "createNewCommunity": {
                 "title": "创建新的社区",
-                "desc1": "创建一个新的信息流在 ",
+                "desc1": "创建一个新的社区在 ",
                 "desc2": " 上，使用以下设置。"
-            }
+            },
+            "reroll": "重新抽选",
+            "searchForPeoples": "输入想要搜索的人",
+            "searchForCommunities": "输入想要搜索的社区",
+            "quicklook": "快速浏览"
         },
         "devtool": {
             "title": "开发者工具"
@@ -127,6 +132,7 @@
             "community": "社区",
             "user": "用户",
             "pin": "固定",
+            "isIconTab": "使用图标选项卡",
             "delete": "删除",
             "reallyDelete": "确定要删除这个列表吗？",
             "confirmDelete": "确定"
@@ -151,7 +157,7 @@
             "basic": "基本",
             "showEditorOnTop": "在顶部显示编辑器",
             "showEditorOnTopMobile": "在顶部显示编辑器（移动端）",
-            "autoSwitchMediaType": "附加图片时自动切换帖子类型",
+            "autoSwitchMediaPostType": "附加图片时自动切换帖子类型",
             "developerMode": "开发者模式",
             "generateInviteCode": "生成邀请码",
             "inviteCode": "邀请码（24 小时内有效）",
