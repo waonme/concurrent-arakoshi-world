@@ -1,4 +1,4 @@
-import { type CoreProfile } from '@concurrent-world/client'
+import { type Profile } from '@concrnt/client'
 import { Box, Button, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
@@ -6,7 +6,7 @@ import { CCDrawer } from './CCDrawer'
 import { CCEditor } from './cceditor'
 
 export interface ProfilePropertiesProps {
-    character: CoreProfile<any>
+    character: Profile<any>
     showCreateLink?: boolean
 }
 
@@ -55,10 +55,10 @@ export const ProfileProperties = (props: ProfilePropertiesProps): JSX.Element =>
             <Box>
                 {properties.map(
                     (property, index) =>
-                        property.key in props.character.document.body && (
+                        property.key in props.character.parsedDoc.body && (
                             <Box key={index} px={1} mb={1}>
                                 <Typography variant="body1">
-                                    {property.title}: {props.character.document.body[property.key]}
+                                    {property.title}: {props.character.parsedDoc.body[property.key]}
                                 </Typography>
                             </Box>
                         )
@@ -105,7 +105,7 @@ export const ProfileProperties = (props: ProfilePropertiesProps): JSX.Element =>
                         </Button>
                     </Box>
                     {schema && (
-                        <CCEditor disabled schema={schema} value={props.character.document.body} setValue={() => {}} />
+                        <CCEditor disabled schema={schema} value={props.character.parsedDoc.body} setValue={() => {}} />
                     )}
                 </Box>
             </CCDrawer>

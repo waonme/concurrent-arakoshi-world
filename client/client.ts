@@ -585,7 +585,7 @@ export class Client {
             }
         }
 
-        const currentprof = (await this.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid))?.getDocument().body
+        const currentprof = (await this.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid))?.parsedDoc.body
 
         const updated = await this.api.upsertProfile<ProfileSchema>(Schemas.profile, {
             username: updates.username ?? currentprof?.username,
@@ -631,7 +631,7 @@ export class Client {
     */
 }
 
-export class User implements Omit<CoreEntity, 'getAffiliationDocument' | 'getTombstoneDocument'> {
+export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTombstoneDoc'> {
 
     client: Client
 
@@ -713,7 +713,7 @@ export class User implements Omit<CoreEntity, 'getAffiliationDocument' | 'getTom
             return null
         })
 
-        return new User(client, domain, entity, profile?.getDocument().body ?? undefined)
+        return new User(client, domain, entity, profile?.parsedDoc.body ?? undefined)
     }
 
     async getAcking(): Promise<User[]> {
@@ -741,7 +741,7 @@ export class User implements Omit<CoreEntity, 'getAffiliationDocument' | 'getTom
 
 }
 
-export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'getDocument'> {
+export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'parsedDoc'> {
 
     client: Client
 
@@ -784,7 +784,7 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'ge
         this._document = data.document
     }
 
-    toJSON(): Omit<CoreAssociation<T>, 'getDocument'> {
+    toJSON(): Omit<CoreAssociation<T>, 'parsedDoc'> {
         return {
             id: this.id,
             author: this.author,
@@ -839,7 +839,7 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'ge
     }
 }
 
-export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'getDocument'> {
+export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDoc'> {
 
     client: Client
 
@@ -885,7 +885,7 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'getDocum
         }
     }
 
-    toJSON(): Omit<CoreTimeline<T>, 'getDocument'> {
+    toJSON(): Omit<CoreTimeline<T>, 'parsedDoc'> {
         return {
             id: this.id,
             indexable: this.indexable,
@@ -923,7 +923,7 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'getDocum
     }
 }
 
-export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocument'> {
+export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyParams' | 'parsedDoc' | 'parsedPolicy'> {
 
     client: Client
 
@@ -935,13 +935,14 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
     signature: string;
     timelines: TimelineID[];
     policy?: string;
-    policyParams?: string;
+    policyParams: any;
     associations: CoreAssociation<any>[];
     ownAssociations: CoreAssociation<any>[];
     cdate: string;
     // ---------- //
 
     _document: string
+    _policyParams?: string
     authorUser?: User
     associationCounts?: Record<string, number>
     reactionCounts?: Record<string, number>
@@ -961,6 +962,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
         this.signature = data.signature
         this.timelines = data.timelines
         this.policy = data.policy
+        this._policyParams = data.policyParams
         if (data.policyParams) {
             try {
                 this.policyParams = JSON.parse(data.policyParams)
@@ -1038,7 +1040,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
         const results = await Promise.all(
             associations.map(
                 async (e) => {
-                    const assDoc = e.getDocument()
+                    const assDoc = e.parsedDoc
                     return {
                         association: await Association.loadByBody<ReplyAssociationSchema>(this.client, e) ?? undefined,
                         message: await this.client.getMessage<ReplyMessageSchema>(assDoc.body.messageId, assDoc.body.messageAuthor) ?? undefined
@@ -1054,7 +1056,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
         const results = await Promise.all(
             associations.map(
                 async (e) => {
-                    const assDoc = e.getDocument()
+                    const assDoc = e.parsedDoc
                     return {
                         association: await Association.loadByBody<RerouteAssociationSchema>(this.client, e) ?? undefined,
                         message: await this.client.getMessage<RerouteMessageSchema>(assDoc.body.messageId, assDoc.body.messageAuthor) ?? undefined
@@ -1103,7 +1105,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
         if (!user) throw new Error('user is not set')
         const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
-        const dummyAssocBase: Omit<CoreAssociation<LikeAssociationSchema>, 'getDocument'> = {
+        const dummyAssocBase: Omit<CoreAssociation<LikeAssociationSchema>, 'parsedDoc'> = {
             id: new Date().getTime().toString(),
             author: user.ccid,
             owner: author.ccid,
@@ -1151,7 +1153,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
         if (!user) throw new Error('user is not set')
         const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
-        const dummyAssocBase: Omit<CoreAssociation<ReactionAssociationSchema>, 'getDocument'> = {
+        const dummyAssocBase: Omit<CoreAssociation<ReactionAssociationSchema>, 'parsedDoc'> = {
             id: new Date().getTime().toString(),
             author: user.ccid,
             owner: author.ccid,
@@ -1232,7 +1234,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'getDocumen
             }
         }
 
-        const document = a.getDocument()
+        const document = a.parsedDoc
 
         if (a.schema === Schemas.reactionAssociation) {
             if (this.reactionCounts) {

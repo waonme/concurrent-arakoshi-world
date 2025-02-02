@@ -18,7 +18,8 @@ import { usePreference } from '../../context/PreferenceContext'
 import { useClient } from '../../context/ClientContext'
 import { useEffect, useState } from 'react'
 import { useSnackbar } from 'notistack'
-import { IssueJWT, Schemas } from '@concurrent-world/client'
+import { IssueJWT } from '@concrnt/client'
+import { Schemas } from 'client'
 import { useTranslation } from 'react-i18next'
 import { type JobRequest, type NotificationSubscription } from '../../model'
 
@@ -57,7 +58,7 @@ export const GeneralSettings = (): JSX.Element => {
 
     useEffect(() => {
         setCurrentLanguage(i18n.resolvedLanguage || 'en')
-        fetch(`https://${client.api.host}/api/v1/domain`, {
+        fetch(`https://${client.host}/api/v1/domain`, {
             cache: 'no-cache'
         }).then((res) => {
             res.json().then((data) => {
@@ -66,11 +67,9 @@ export const GeneralSettings = (): JSX.Element => {
         })
         client.api
             .fetchWithCredential(client.host, `/api/v1/notification/${client.ccid}/concrnt.world`, {})
-            .then((res) => {
-                res.json().then((data) => {
-                    setNotification(data.content)
-                    setSchemas(data.content.schemas)
-                })
+            .then((data: any) => {
+                setNotification(data)
+                setSchemas(data.schemas)
             })
     }, [reload])
 
@@ -527,12 +526,12 @@ export const GeneralSettings = (): JSX.Element => {
                     {invitationCode === '' ? (
                         <Button
                             onClick={(_) => {
-                                if (client.api.host === undefined) {
+                                if (client.host === undefined) {
                                     return
                                 }
                                 if (!client?.keyPair?.privatekey) return
                                 const jwt = IssueJWT(client.keyPair.privatekey, {
-                                    iss: client.api.ckid || client.api.ccid,
+                                    iss: client.ckid || client.ccid,
                                     aud: client.host,
                                     sub: 'CONCRNT_INVITE',
                                     exp: Math.floor((new Date().getTime() + 24 * 60 * 60 * 1000) / 1000).toString()

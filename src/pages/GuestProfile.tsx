@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Box, Button, Divider, Paper, Typography } from '@mui/material'
 import { useLocation, useParams, Link as NavLink } from 'react-router-dom'
 import { Timeline } from '../components/Timeline/main'
-import { Client, type User } from '@concurrent-world/client'
+import { Client, type User } from 'client'
 import { FullScreenLoading } from '../components/ui/FullScreenLoading'
 import { ClientProvider } from '../context/ClientContext'
 

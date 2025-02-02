@@ -1,4 +1,5 @@
-import { Client, type CoreDomain } from '@concurrent-world/client'
+import { Client } from 'client'
+import { Domain } from '@concrnt/client'
 import { useEffect, useState } from 'react'
 import { useClient } from '../context/ClientContext'
 import { Box, Typography, Avatar, TextField, Stepper, Step, StepLabel, StepContent, Button } from '@mui/material'
@@ -12,9 +13,9 @@ import { type JobRequest } from '../model'
 
 export function Migrator(): JSX.Element {
     const { client } = useClient()
-    const [currentDomain, setCurrentDomain] = useState<CoreDomain | null>(null)
+    const [currentDomain, setCurrentDomain] = useState<Domain | null>(null)
     const [destFqdn, setDestFqdn] = usePersistent<string>('migrator-dest-fqdn', '')
-    const [destinationDomain, setDestinationDomain] = useState<CoreDomain | null>(null)
+    const [destinationDomain, setDestinationDomain] = useState<Domain | null>(null)
     const activeStep = parseInt(location.hash.replace('#', '')) || 0
     const setActiveStep = (step: number): void => {
         window.location.hash = step.toString()
@@ -251,7 +252,7 @@ export function Migrator(): JSX.Element {
         }
     ]
 
-    if (client.api.ckid)
+    if (client.ckid)
         return (
             <>
                 <Typography>引っ越しは重要なアカウント操作のため、マスターキーでのログインが必要です。</Typography>

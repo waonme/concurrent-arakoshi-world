@@ -1,6 +1,7 @@
 import { Box, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 
-import { type CoreProfile, type Message, type RerouteMessageSchema } from '@concurrent-world/client'
+import { type Message, type RerouteMessageSchema } from 'client'
+import { Profile } from '@concrnt/client'
 import RepeatIcon from '@mui/icons-material/Repeat'
 import { CCAvatar } from '../ui/CCAvatar'
 import { Link as RouterLink } from 'react-router-dom'
@@ -29,15 +30,15 @@ export const RerouteMessageFrame = (props: RerouteMessageFrameProp): JSX.Element
     const { client } = useClient()
     const inspector = useInspector()
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null)
-    const [character, setProfile] = useState<CoreProfile<any> | null>(null)
+    const [character, setProfile] = useState<Profile<any> | null>(null)
     const confirm = useConfirm()
 
     const profileOverride = props.message.document.body.profileOverride
 
     const avatarURL =
-        character?.document.body.avatar ?? profileOverride?.avatar ?? props.message.authorUser?.profile?.avatar
+        character?.parsedDoc.body.avatar ?? profileOverride?.avatar ?? props.message.authorUser?.profile?.avatar
     const username =
-        character?.document.body.username ??
+        character?.parsedDoc.body.username ??
         profileOverride?.username ??
         props.message.authorUser?.profile?.username ??
         'Anonymous'
@@ -45,7 +46,7 @@ export const RerouteMessageFrame = (props: RerouteMessageFrameProp): JSX.Element
 
     useEffect(() => {
         if (profileOverride?.profileID) {
-            client.api.getProfileByID(profileOverride.profileID, props.message.author).then((character) => {
+            client.api.getProfile(profileOverride.profileID, props.message.author).then((character) => {
                 setProfile(character ?? null)
             })
         }

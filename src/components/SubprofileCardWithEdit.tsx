@@ -1,5 +1,4 @@
 import {
-    type CoreProfile,
     type ProfileSchema,
     Schemas,
     type SubprofileTimelineSchema,
@@ -7,7 +6,9 @@ import {
     type User,
     type Association,
     type ReadAccessRequestAssociationSchema
-} from '@concurrent-world/client'
+} from 'client'
+
+import { Profile } from '@concrnt/client'
 
 import { useClient } from '../context/ClientContext'
 import { useEffect, useState } from 'react'
@@ -32,7 +33,7 @@ import { WatchRequestAcceptButton } from './WatchRequestAccpetButton'
 
 interface SubprofileCardWithEditProps {
     mainProfile: ProfileSchema
-    subProfile: CoreProfile<any>
+    subProfile: Profile<any>
     onModified?: () => void
 }
 
@@ -48,7 +49,7 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
 
     const [schemaURLDraft, setSchemaURLDraft] = useState<string>('https://schema.concrnt.world/p/basic.json')
     const [schemaURL, setSchemaURL] = useState<any>(null)
-    const [editingProfile, setEditingProfile] = useState<CoreProfile<any> | null>(null)
+    const [editingProfile, setEditingProfile] = useState<Profile<any> | null>(null)
     const [subprofileDraft, setSubprofileDraft] = useState<any>(null)
 
     const [openReaderEditor, setOpenReaderEditor] = useState<boolean>(false)
@@ -145,7 +146,7 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
         <MenuItem
             key="edit"
             onClick={() => {
-                setSubprofileDraft(props.subProfile.document.body)
+                setSubprofileDraft(props.subProfile.parsedDoc.body)
                 setEditingProfile(props.subProfile)
                 setSchemaURL(props.subProfile.schema)
                 setSchemaURLDraft(props.subProfile.schema)

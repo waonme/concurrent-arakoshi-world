@@ -142,7 +142,7 @@ function App(): JSX.Element {
                 ...(client?.user?.notificationTimeline ? [client?.user?.notificationTimeline] : [])
             ])
             l.on('AssociationCreated', (event: TimelineEvent) => {
-                const a = event.getDocument() as CCDocument.Association<any>
+                const a = event.parsedDoc as CCDocument.Association<any>
 
                 if (!a) return
                 if (a.schema === Schemas.replyAssociation) {
@@ -155,15 +155,15 @@ function App(): JSX.Element {
                                     .getProfileBySemanticID<ProfileSchema>('world.concrnt.p', a.signer)
                                     .then((c) => {
                                         playNotificationRef.current()
-                                        const profile = c?.getDocument().body
+                                        const profile = c?.parsedDoc.body
                                         enqueueSnackbar(
                                             <Box display="flex" flexDirection="column">
                                                 <Typography>
                                                     {profile?.username ?? 'anonymous'} replied to your message:{' '}
                                                 </Typography>
                                                 <MarkdownRendererLite
-                                                    messagebody={m.getDocument().body.body as string}
-                                                    emojiDict={m.getDocument().body.emojis ?? {}}
+                                                    messagebody={m.parsedDoc.body.body as string}
+                                                    emojiDict={m.parsedDoc.body.emojis ?? {}}
                                                     limit={128}
                                                 />
                                             </Box>
@@ -179,15 +179,15 @@ function App(): JSX.Element {
                         m &&
                             client?.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', a.signer).then((c) => {
                                 playNotificationRef.current()
-                                const profile = c?.getDocument().body
+                                const profile = c?.parsedDoc.body
                                 enqueueSnackbar(
                                     <Box display="flex" flexDirection="column">
                                         <Typography>
                                             {profile?.username ?? 'anonymous'} rerouted to your message:{' '}
                                         </Typography>
                                         <MarkdownRendererLite
-                                            messagebody={m.getDocument().body.body as string}
-                                            emojiDict={m.getDocument().body.emojis ?? {}}
+                                            messagebody={m.parsedDoc.body.body as string}
+                                            emojiDict={m.parsedDoc.body.emojis ?? {}}
                                             limit={128}
                                         />
                                     </Box>
@@ -207,7 +207,7 @@ function App(): JSX.Element {
                                 'world.concrnt.p',
                                 a.signer
                             )
-                            username = profile?.getDocument().body.username
+                            username = profile?.parsedDoc.body.username
                         }
 
                         playNotificationRef.current()
@@ -215,8 +215,8 @@ function App(): JSX.Element {
                             <Box display="flex" flexDirection="column">
                                 <Typography>{username ?? 'anonymous'} liked your message: </Typography>
                                 <MarkdownRendererLite
-                                    messagebody={m.getDocument().body.body as string}
-                                    emojiDict={m.getDocument().body.emojis ?? {}}
+                                    messagebody={m.parsedDoc.body.body as string}
+                                    emojiDict={m.parsedDoc.body.emojis ?? {}}
                                     limit={128}
                                 />
                             </Box>
@@ -235,7 +235,7 @@ function App(): JSX.Element {
                                 'world.concrnt.p',
                                 a.signer
                             )
-                            username = profile?.getDocument().body.username
+                            username = profile?.parsedDoc.body.username
                         }
 
                         playNotificationRef.current()
@@ -246,8 +246,8 @@ function App(): JSX.Element {
                                     <img src={a.body.imageUrl as string} style={{ height: '1em' }} />
                                 </Typography>
                                 <MarkdownRendererLite
-                                    messagebody={m.getDocument().body.body as string}
-                                    emojiDict={m.getDocument().body.emojis ?? {}}
+                                    messagebody={m.parsedDoc.body.body as string}
+                                    emojiDict={m.parsedDoc.body.emojis ?? {}}
                                     limit={128}
                                 />
                             </Box>
@@ -261,13 +261,13 @@ function App(): JSX.Element {
                         m &&
                             client.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', a.signer).then((c) => {
                                 playNotificationRef.current()
-                                const profile = c?.getDocument().body
+                                const profile = c?.parsedDoc.body
                                 enqueueSnackbar(
                                     <Box display="flex" flexDirection="column">
                                         {profile?.username ?? 'anonymous'} mentioned you:{' '}
                                         <MarkdownRendererLite
-                                            messagebody={m.getDocument().body.body as string}
-                                            emojiDict={m.getDocument().body.emojis ?? {}}
+                                            messagebody={m.parsedDoc.body.body as string}
+                                            emojiDict={m.parsedDoc.body.emojis ?? {}}
                                             limit={128}
                                         />
                                     </Box>

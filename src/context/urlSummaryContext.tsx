@@ -1,4 +1,4 @@
-import { fetchWithTimeout } from '@concurrent-world/client'
+import { fetchWithTimeout } from '@concrnt/client'
 import { createContext, useCallback, useContext, useRef } from 'react'
 
 export interface Summary {

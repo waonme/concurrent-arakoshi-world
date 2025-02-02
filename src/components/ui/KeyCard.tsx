@@ -1,4 +1,4 @@
-import { type Key } from '@concurrent-world/client/dist/types/model/core'
+import { type Key } from '@concrnt/client'
 import { alpha, useTheme, IconButton } from '@mui/material'
 import { type ConcurrentTheme } from '../../model'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'

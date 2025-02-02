@@ -1,12 +1,11 @@
 import { Tooltip, Paper } from '@mui/material'
 import {
-    type CommunityTimelineSchema,
-    type CoreTimeline,
-    type ProfileSchema,
     Schemas,
+    type CommunityTimelineSchema,
+    type ProfileSchema,
     type SubprofileTimelineSchema,
-    type Timeline
-} from '@concurrent-world/client'
+    type Timeline,
+} from 'client'
 import TagIcon from '@mui/icons-material/Tag'
 import { useClient } from '../../context/ClientContext'
 import { useEffect, useState } from 'react'
@@ -34,17 +33,17 @@ export const TimelineChip = (props: TimelineChipProps): JSX.Element => {
 
             if (!t) return
             if (t.schema === Schemas.emptyTimeline) {
-                const timeline: CoreTimeline<CommunityTimelineSchema> = t
+                const timeline: Timeline<CommunityTimelineSchema> = t
                 client.getUser(timeline.author).then((user) => {
                     setProfile(user?.profile)
                 })
             } else if (t.schema === Schemas.subprofileTimeline) {
-                const timeline: CoreTimeline<SubprofileTimelineSchema> = t
+                const timeline: Timeline<SubprofileTimelineSchema> = t
                 client.api
-                    .getProfileByID<ProfileSchema>(timeline.document.body.subprofile, timeline.author)
+                    .getProfile<ProfileSchema>(timeline.document.body.subprofile, timeline.author)
                     .then((profile) => {
                         if (!profile) return
-                        setProfile(profile.document.body)
+                        setProfile(profile.parsedDoc.body)
                     })
             }
         })

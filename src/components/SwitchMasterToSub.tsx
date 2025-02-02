@@ -1,7 +1,7 @@
 import { Box, Button, Grid, MenuItem, Select, TextField, Typography } from '@mui/material'
 import { useClient } from '../context/ClientContext'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ComputeCKID, type Identity, GenerateIdentity } from '@concurrent-world/client'
+import { ComputeCKID, type Identity, GenerateIdentity } from '@concrnt/client'
 import { Trans, useTranslation } from 'react-i18next'
 import EmailIcon from '@mui/icons-material/Email'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'

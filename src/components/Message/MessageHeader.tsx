@@ -28,7 +28,7 @@ export const MessageHeader = (props: MessageHeaderProps): JSX.Element => {
     }, [props.message, client])
 
     const isWhisper = props.message?.policy === 'https://policy.concrnt.world/m/whisper.json'
-    const participants: string[] = isWhisper ? props.message.policyParams?.participants : []
+    const participants: string[] = isWhisper ? props.message.policyParams.participants : []
 
     return (
         <Box

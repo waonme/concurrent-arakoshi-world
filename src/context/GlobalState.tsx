@@ -1,10 +1,12 @@
 import {
     type Timeline,
-    type CoreEntity,
     type CommunityTimelineSchema,
-    type CoreSubscription,
-    type CoreProfile
-} from '@concurrent-world/client'
+} from 'client'
+import {
+    Entity,
+    Subscription,
+    Profile
+} from '@concrnt/client'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useClient } from './ClientContext'
 import { usePreference } from './PreferenceContext'
@@ -18,9 +20,9 @@ export interface GlobalState {
     isMobileSize: boolean
 
     allKnownTimelines: Array<Timeline<CommunityTimelineSchema>>
-    allKnownSubscriptions: Array<CoreSubscription<any>>
-    listedSubscriptions: Record<string, CoreSubscription<any>>
-    allProfiles: Array<CoreProfile<any>>
+    allKnownSubscriptions: Array<Subscription<any>>
+    listedSubscriptions: Record<string, Subscription<any>>
+    allProfiles: Array<Profile<any>>
     reloadList: () => void
     getImageURL: (url?: string, params?: { maxWidth?: number; maxHeight?: number; format?: string }) => string
     setSwitchToSub: (state: boolean) => void
@@ -38,7 +40,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProps): JSX.Element
     const [lists] = usePreference('lists')
 
     const [isDomainOffline, setDomainIsOffline] = useState<boolean>(false)
-    const [entity, setEntity] = useState<CoreEntity | null>(null)
+    const [entity, setEntity] = useState<Entity | null>(null)
     const isCanonicalUser = entity ? entity.domain === client?.host : true
     const [isRegistered, setIsRegistered] = useState<boolean>(true)
     const identity = JSON.parse(localStorage.getItem('Identity') || 'null')
@@ -46,10 +48,10 @@ export const GlobalStateProvider = ({ children }: GlobalStateProps): JSX.Element
     const theme = useTheme()
     const isMobileSize = useMediaQuery(theme.breakpoints.down('sm'))
 
-    const [allProfiles, setAllProfiles] = useState<Array<CoreProfile<any>>>([])
+    const [allProfiles, setAllProfiles] = useState<Array<Profile<any>>>([])
     const [allKnownTimelines, setAllKnownTimelines] = useState<Array<Timeline<CommunityTimelineSchema>>>([])
-    const [allKnownSubscriptions, setAllKnownSubscriptions] = useState<Array<CoreSubscription<any>>>([])
-    const [listedSubscriptions, setListedSubscriptions] = useState<Record<string, CoreSubscription<any>>>({})
+    const [allKnownSubscriptions, setAllKnownSubscriptions] = useState<Array<Subscription<any>>>([])
+    const [listedSubscriptions, setListedSubscriptions] = useState<Record<string, Subscription<any>>>({})
 
     const [switchToSubOpen, setKeyModalOpen] = useState<boolean>(false)
 
@@ -94,7 +96,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProps): JSX.Element
             )
         ).then((subs) => {
             if (unmounted) return
-            const validsubsarr = subs.filter((e) => e[1]) as Array<[string, CoreSubscription<any>]>
+            const validsubsarr = subs.filter((e) => e[1]) as Array<[string, Subscription<any>]>
             const listedSubs = Object.fromEntries(validsubsarr)
             setListedSubscriptions(listedSubs)
 
@@ -130,7 +132,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProps): JSX.Element
                     })
             )
         ).then((subs) => {
-            const validsubsarr = subs.filter((e) => e[1]) as Array<[string, CoreSubscription<any>]>
+            const validsubsarr = subs.filter((e) => e[1]) as Array<[string, Subscription<any>]>
             const listedSubs = Object.fromEntries(validsubsarr)
             setListedSubscriptions(listedSubs)
 
@@ -153,16 +155,19 @@ export const GlobalStateProvider = ({ children }: GlobalStateProps): JSX.Element
 
     useEffect(() => {
         client.api
-            .fetchWithCredential(client.host, '/api/v1/entity', {
+            .fetchWithCredential<Entity>(client.host, '/api/v1/entity', {
                 method: 'GET'
             })
-            .then((res) => {
+            .then((data) => {
+                setEntity(data)
+                /*
                 if (res.status === 403) {
                     setIsRegistered(false)
                 }
                 res.json().then((json) => {
                     setEntity(json.content)
                 })
+                */
             })
             .catch((e) => {
                 console.error(e)

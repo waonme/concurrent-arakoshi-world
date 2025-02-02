@@ -1,12 +1,13 @@
 import { Box } from '@mui/material'
 import { ProfileEditor } from '../ProfileEditor'
-import { type CoreProfile, type Client, type ProfileSchema } from '@concurrent-world/client'
+import { type Client, type ProfileSchema } from 'client'
+import { type Profile } from '@concrnt/client'
 import { StorageProvider } from '../../context/StorageContext'
 import { useTranslation } from 'react-i18next'
 
 interface CreateProfileProps {
     next: () => void
-    setProfile: (profile: CoreProfile<ProfileSchema>) => void
+    setProfile: (profile: Profile<ProfileSchema>) => void
     client: Client | undefined
 }
 

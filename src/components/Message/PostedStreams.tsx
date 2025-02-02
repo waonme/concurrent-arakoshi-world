@@ -4,7 +4,7 @@ import {
     Schemas,
     type MarkdownMessageSchema,
     type RerouteMessageSchema
-} from '@concurrent-world/client'
+} from 'client'
 import { Box, Tooltip } from '@mui/material'
 import { useCallback, useMemo, useRef } from 'react'
 

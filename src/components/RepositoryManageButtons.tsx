@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useClient } from '../context/ClientContext'
 import { Alert, Box, Button, TextField } from '@mui/material'
-import { type CCDocument, Schemas, Sign } from '@concurrent-world/client'
+import { Schemas } from 'client'
+import { type CCDocument, Sign } from '@concrnt/client'
 import { useSnackbar } from 'notistack'
 
 interface v0data {
@@ -65,19 +66,11 @@ export function RepositoryImportButton(props: { domain?: string; onImport?: (err
                         },
                         body: chunk
                     },
-                    1000 * 60 * 10 // 10 minutes
+                    // 1000 * 60 * 10 // 10 minutes // TODO
                 )
-                .then((res) => {
-                    if (res.ok) {
-                        setProgress(`imported ${i}/${chunks.length}`)
-                        res.json().then((data) => {
-                            console.log('imported', i, data)
-                        })
-                    } else {
-                        console.error('failed to import')
-                        setImportStatus('error')
-                        props.onImport?.(`failed to import: ${res.statusText}`)
-                    }
+                .then((data) => {
+                    setProgress(`imported ${i}/${chunks.length}`)
+                    console.log('imported', i, data)
                 })
                 .catch((e) => {
                     console.error(e)
@@ -181,7 +174,7 @@ export function V0RepositoryImportButton(): JSX.Element {
         const log = logs.join('\n')
         client.api
             .fetchWithCredential(
-                client.api.host,
+                client.host,
                 '/api/v1/repository',
                 {
                     method: 'POST',
@@ -190,19 +183,15 @@ export function V0RepositoryImportButton(): JSX.Element {
                     },
                     body: log
                 },
-                1000 * 60 * 10 // 10 minutes
+                // 1000 * 60 * 10 // 10 minutes // TODO
             )
-            .then((res) => {
-                if (res.ok) {
-                    console.log('imported')
-                    res.json().then((data) => {
-                        console.log(data)
-                    })
-                    setImportStatus('success')
-                } else {
-                    console.error('failed to import')
-                    setImportStatus('error')
-                }
+            .then((data) => {
+                console.log('imported')
+                console.log(data)
+                setImportStatus('success')
+            }).catch((e) => {
+                console.error(e)
+                setImportStatus('error')
             })
     }
 
@@ -251,10 +240,9 @@ export function RepositoryExportButton(): JSX.Element {
 
         client.api
             .fetchWithCredential(client.host, '/api/v1/repositories/sync', {})
-            .then((res) => res.json())
             .then((data) => {
-                console.log(data.content)
-                setSyncStatus(data.content)
+                console.log(data)
+                setSyncStatus(data)
             })
     }, [])
 
@@ -277,9 +265,8 @@ export function RepositoryExportButton(): JSX.Element {
                             onClick={() =>
                                 client.api
                                     .fetchWithCredential(client.host, '/api/v1/repositories/sync', {})
-                                    .then((res) => res.json())
                                     .then((data) => {
-                                        setSyncStatus(data.content)
+                                        setSyncStatus(data)
                                     })
                             }
                         >
@@ -304,10 +291,9 @@ export function RepositoryExportButton(): JSX.Element {
                                     .fetchWithCredential(client.host, '/api/v1/repositories/sync', {
                                         method: 'POST'
                                     })
-                                    .then((res) => res.json())
                                     .then((data) => {
                                         console.log(data)
-                                        setSyncStatus(data.content)
+                                        setSyncStatus(data)
                                         enqueueSnackbar('更新をリクエストしました。しばらくお待ちください。', {
                                             variant: 'info'
                                         })
@@ -334,8 +320,7 @@ export function RepositoryExportButton(): JSX.Element {
                 disabled={syncStatus?.status === 'syncing' || !isDateValid}
                 onClick={() => {
                     client.api
-                        .fetchWithCredential(client.host, '/api/v1/repository', {})
-                        .then((res) => res.blob())
+                        .fetchWithCredentialBlob(client.host, '/api/v1/repository', {})
                         .then((blob) => {
                             const url = window.URL.createObjectURL(blob)
                             const a = document.createElement('a')

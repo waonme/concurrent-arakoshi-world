@@ -22,7 +22,7 @@ import buildTime from '~build/time'
 // @ts-expect-error vite dynamic import
 import { branch, sha } from '~build/info'
 import { useGlobalState } from '../../context/GlobalState'
-import { type Identity } from '@concurrent-world/client'
+import { type Identity } from '@concrnt/client'
 
 const branchName = branch || window.location.host.split('.')[0]
 

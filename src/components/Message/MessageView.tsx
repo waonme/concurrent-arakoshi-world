@@ -9,8 +9,8 @@ import {
     type ReplyMessageSchema,
     type MarkdownMessageSchema,
     Schemas,
-    type CoreProfile
-} from '@concurrent-world/client'
+} from 'client'
+import { Profile } from '@concrnt/client'
 import { PostedStreams } from './PostedStreams'
 import { ContentWithCCAvatar } from '../ContentWithCCAvatar'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
@@ -40,12 +40,12 @@ export const MessageView = (props: MessageViewProps): JSX.Element => {
 
     const { client } = useClient()
 
-    const [characterOverride, setProfileOverride] = useState<CoreProfile<any> | undefined>(undefined)
+    const [characterOverride, setProfileOverride] = useState<Profile<any> | undefined>(undefined)
 
     useEffect(() => {
         if (!(client && props.message.document.body.profileOverride?.profileID)) return
         client.api
-            .getProfileByID(props.message.document.body.profileOverride?.profileID, props.message.author)
+            .getProfile(props.message.document.body.profileOverride?.profileID, props.message.author)
             .then((profile) => {
                 setProfileOverride(profile ?? undefined)
             })
@@ -72,11 +72,11 @@ export const MessageView = (props: MessageViewProps): JSX.Element => {
             message={props.message}
             author={props.message.authorUser}
             profileOverride={props.message.document.body.profileOverride}
-            avatarOverride={characterOverride?.document.body.avatar}
-            characterOverride={characterOverride?.document.body}
+            avatarOverride={characterOverride?.parsedDoc.body.avatar}
+            characterOverride={characterOverride?.parsedDoc.body}
         >
             <MessageHeader
-                usernameOverride={characterOverride?.document.body.username}
+                usernameOverride={characterOverride?.parsedDoc.body.username}
                 message={props.message}
                 additionalMenuItems={props.additionalMenuItems}
                 timeLink={props.message.document.meta?.apObjectRef} // Link to external message

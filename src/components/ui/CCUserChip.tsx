@@ -1,11 +1,10 @@
 import { Tooltip, Paper } from '@mui/material'
 import { UserProfileCard } from '../UserProfileCard'
-import { type User } from '@concurrent-world/client'
+import { ProfileOverride, type User } from 'client'
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail'
 import { useClient } from '../../context/ClientContext'
 import { useEffect, useState } from 'react'
 import { CCAvatar } from './CCAvatar'
-import { type ProfileOverride } from '@concurrent-world/client/dist/types/model/core'
 import { CCChip } from './CCChip'
 
 export interface CCUserChipProps {

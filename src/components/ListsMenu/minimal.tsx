@@ -19,8 +19,8 @@ export const MinimalListsMenu = (): JSX.Element => {
             }}
         >
             {Object.keys(lists).map((key) => {
-                const iconURL = listedSubscriptions[key]?.document?.body?.iconURL
-                const name = listedSubscriptions[key]?.document?.body?.name
+                const iconURL = listedSubscriptions[key]?.parsedDoc?.body?.iconURL
+                const name = listedSubscriptions[key]?.parsedDoc?.body?.name
 
                 return (
                     <Avatar

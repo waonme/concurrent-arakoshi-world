@@ -4,7 +4,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useClient } from '../../context/ClientContext'
 import BoringAvatar from 'boring-avatars'
 import html2canvas from 'html2canvas'
-import { type CCDocument } from '@concurrent-world/client'
+import { type CCDocument } from '@concrnt/client'
 
 export function Passport(): JSX.Element {
     const { client } = useClient()
@@ -26,7 +26,7 @@ export function Passport(): JSX.Element {
             ccid={client.ccid || ''}
             name={client?.user?.profile?.username || ''}
             avatar={client?.user?.profile?.avatar || ''}
-            host={client.api.host || ''}
+            host={client.host || ''}
             cdate={affiliationDate?.toLocaleDateString() || 'N/A'}
             trust={100}
         />

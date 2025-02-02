@@ -23,13 +23,12 @@ import Tilt from 'react-parallax-tilt'
 import { Passport } from '../theming/Passport'
 import { useEffect, useMemo, useState } from 'react'
 import { useClient } from '../../context/ClientContext'
-import { type Key } from '@concurrent-world/client/dist/types/model/core'
 import { usePreference } from '../../context/PreferenceContext'
 import { useTranslation } from 'react-i18next'
 import { Codeblock } from '../ui/Codeblock'
 
 import { KeyCard } from '../ui/KeyCard'
-import { Sign, type Identity } from '@concurrent-world/client'
+import { Sign, type Identity, Key, MasterKeyAuthProvider } from '@concrnt/client'
 import { enqueueSnackbar } from 'notistack'
 import { useGlobalState } from '../../context/GlobalState'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -100,7 +99,7 @@ export const KeyTree = (props: KeyTreeProps): JSX.Element => {
     const theme = useTheme<ConcurrentTheme>()
     const { t } = useTranslation('', { keyPrefix: 'settings.identity' })
 
-    const key: Key = props.certChain.key ?? {
+    const keyBase: Omit<Key, 'parsedEnactDoc' | 'parsedRevokeDoc'> = props.certChain.key ?? {
         id: props.certChain.id,
         root: props.certChain.id,
         parent: 'cck1null',
@@ -110,7 +109,9 @@ export const KeyTree = (props: KeyTreeProps): JSX.Element => {
         validUntil: 'null'
     }
 
-    const currentKey = client.api.ckid ?? client.api.ccid
+    const key = Object.setPrototypeOf(keyBase, Key.prototype)
+
+    const currentKey = client.ckid ?? client.ccid
 
     const [target, setTarget] = useState<string | null>(null)
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -212,7 +213,7 @@ export const IdentitySettings = (): JSX.Element => {
     const [certChain, setCertChain] = useState<CertChain | null>(null)
     const [devMode] = usePreference('devMode')
 
-    const subkey = client.api.ckid
+    const subkey = client.ckid
     const [forceUpdate, setForceUpdate] = useState(0)
     const forceUpdateCallback = (): void => {
         setForceUpdate(forceUpdate + 1)
@@ -382,7 +383,8 @@ _concrnt.${aliasDraft} TXT "hint=${client.host}"`}</Codeblock>
                             action={
                                 <CCIconButton
                                     onClick={() => {
-                                        navigator.clipboard.writeText(client.api.privatekey ?? '')
+                                        const authProvider = client.api.authProvider as MasterKeyAuthProvider
+                                        navigator.clipboard.writeText(authProvider.privatekey)
                                         enqueueSnackbar('Copied', { variant: 'info' })
                                     }}
                                 >

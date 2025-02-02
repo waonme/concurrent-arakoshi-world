@@ -2,7 +2,8 @@ import { useTranslation } from 'react-i18next'
 
 import { visit } from 'unist-util-visit'
 import { inspect } from 'unist-util-inspect'
-import { Sign, type CCDocument, type Timeline } from '@concurrent-world/client'
+import { Sign, type CCDocument } from '@concrnt/client'
+import { Timeline } from 'client'
 import { encode } from 'blurhash'
 
 export const convertToGoogleTranslateCode = (lang: string): string => {

@@ -1,5 +1,6 @@
 import { Box, Button, Divider, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
-import { type CommunityTimelineSchema, Schemas, type CoreProfile, type Timeline } from '@concurrent-world/client'
+import { type CommunityTimelineSchema, Schemas, type Timeline } from 'client'
+import { Profile } from '@concrnt/client'
 import { useClient } from '../context/ClientContext'
 import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
@@ -22,7 +23,7 @@ interface StreamWithDomain {
 
 interface ProfileWithDomain {
     domain: string
-    profile: CoreProfile<any>
+    profile: Profile<any>
 }
 
 export function Explorer(): JSX.Element {
@@ -65,8 +66,8 @@ export function Explorer(): JSX.Element {
     const { enqueueSnackbar } = useSnackbar()
 
     const selectedDomains = useMemo(() => {
-        return hashQuery.domains?.split(',') ?? [client.api.host]
-    }, [hashQuery, client.api.host])
+        return hashQuery.domains?.split(',') ?? [client.host]
+    }, [hashQuery, client.host])
 
     const updateHash = (key: string, value: string): void => {
         hashQuery[key] = value
@@ -78,7 +79,6 @@ export function Explorer(): JSX.Element {
 
     const load = (): void => {
         client.api.getDomains().then((e) => {
-            if (!client.api.host) return
             const domains = [client.host, ...e.filter((e) => e.fqdn !== client.host).map((e) => e.fqdn)]
             setDomains(domains)
         })
@@ -139,7 +139,7 @@ export function Explorer(): JSX.Element {
                         .flat()
                         .reverse()
                         .filter((e) => {
-                            return 'username' in e.profile.document.body && 'avatar' in e.profile.document.body
+                            return 'username' in e.profile.parsedDoc.body && 'avatar' in e.profile.parsedDoc.body
                         })
                         .sort((a, b) => {
                             if (a.profile.cdate < b.profile.cdate) return 1
@@ -185,8 +185,6 @@ export function Explorer(): JSX.Element {
             }).map((e) => e.obj)
         )
     }, [search])
-
-    if (!client.api.host) return <>loading...</>
 
     return (
         <>
@@ -316,7 +314,7 @@ export function Explorer(): JSX.Element {
                                 </Typography>
                                 <Typography variant="body1" gutterBottom>
                                     {t('createNewCommunity.desc1')}
-                                    {client.api.host}
+                                    {client.host}
                                     {t('createNewCommunity.desc2')}
                                 </Typography>
                                 <Divider />

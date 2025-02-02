@@ -3,11 +3,11 @@ import { useClient } from '../../context/ClientContext'
 import { Avatar, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material'
 import { CCAvatar } from './CCAvatar'
 import { useGlobalState } from '../../context/GlobalState'
-import { type CoreProfile } from '@concurrent-world/client'
+import { type Profile } from '@concrnt/client'
 
 export interface ProfilePickerProps {
-    selected?: CoreProfile<any>
-    setSelected: (subprofile?: CoreProfile<any>) => void
+    selected?: Profile<any>
+    setSelected: (subprofile?: Profile<any>) => void
 }
 
 export const ProfilePicker = (props: ProfilePickerProps): JSX.Element => {
@@ -29,7 +29,7 @@ export const ProfilePicker = (props: ProfilePickerProps): JSX.Element => {
                 }}
             >
                 <CCAvatar
-                    avatarURL={props.selected?.document.body.avatar ?? client?.user?.profile?.avatar}
+                    avatarURL={props.selected?.parsedDoc.body.avatar ?? client?.user?.profile?.avatar}
                     sx={{
                         width: { xs: '38px', sm: '48px' },
                         height: { xs: '38px', sm: '48px' }
@@ -70,7 +70,7 @@ export const ProfilePicker = (props: ProfilePickerProps): JSX.Element => {
                             }}
                         >
                             <ListItemIcon>
-                                <Avatar alt={p.document.body.username} src={p.document.body.avatar} variant="square" />
+                                <Avatar alt={p.parsedDoc.body.username} src={p.parsedDoc.body.avatar} variant="square" />
                             </ListItemIcon>
                         </MenuItem>
                     )

@@ -1,4 +1,4 @@
-import { Schemas } from '@concurrent-world/client'
+import { Schemas } from 'client'
 import { Box, type SxProps } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { CCChip } from './ui/CCChip'

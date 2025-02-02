@@ -83,13 +83,11 @@ export function Jobs(): JSX.Element {
     const [jobScheduled, setJobScheduled] = useState<number>(1)
 
     const loadJobs = async (): Promise<void> => {
-        const res = await client?.api.fetchWithCredential(client.host, '/api/v1/jobs', {
+        client?.api.fetchWithCredential<Job[]>(client.host, '/api/v1/jobs', {
             method: 'GET'
+        }).then(async (data) => {
+            setJobs(data ?? [])
         })
-        if (res.ok) {
-            const json = await res.json()
-            setJobs(json.content)
-        }
     }
 
     useEffect(() => {

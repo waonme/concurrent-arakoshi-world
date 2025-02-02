@@ -58,7 +58,7 @@ export const OneLineMessageView = (props: OneLineMessageViewProps): JSX.Element 
                     avatarURL={props.message.authorUser?.profile?.avatar}
                     identiconSource={props.message.author}
                     avatarOverride={
-                        characterOverride?.getDocument().body.avatar ?? props.message.document.body.profileOverride?.avatar
+                        characterOverride?.parsedDoc.body.avatar ?? props.message.document.body.profileOverride?.avatar
                     }
                     sx={{
                         width: { xs: '38px', sm: '48px' },

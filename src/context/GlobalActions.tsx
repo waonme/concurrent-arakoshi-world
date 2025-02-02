@@ -2,7 +2,7 @@ import { Box, Paper, Modal, Typography, Divider, Button, Drawer, useTheme, Toolt
 import { InspectorProvider } from '../context/Inspector'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useClient } from './ClientContext'
-import { type CommunityTimelineSchema, Schemas, type CoreTimeline } from '@concurrent-world/client'
+import { type CommunityTimelineSchema, Schemas, Timeline } from 'client'
 import { usePreference } from './PreferenceContext'
 import { ProfileEditor } from '../components/ProfileEditor'
 import { Menu } from '../components/Menu/Menu'
@@ -58,7 +58,7 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
     const setupAccountRequired = client?.user !== null && client?.user.profile === undefined
     const noListDetected = Object.keys(lists).length === 0
 
-    const [timelines, setTimelines] = useState<Array<CoreTimeline<CommunityTimelineSchema>>>([])
+    const [timelines, setTimelines] = useState<Array<Timeline<CommunityTimelineSchema>>>([])
     const [selectedTieline, setSelectedTimeline] = useState<string | undefined>(undefined)
 
     const setupList = useCallback(

@@ -72,10 +72,10 @@ export const MediaMessageView = (props: MediaMessageViewProps): JSX.Element => {
             message={props.message}
             author={props.message.authorUser}
             profileOverride={props.message.document.body.profileOverride}
-            avatarOverride={characterOverride?.getDocument()?.body.avatar}
+            avatarOverride={characterOverride?.parsedDoc?.body.avatar}
         >
             <MessageHeader
-                usernameOverride={characterOverride?.getDocument()?.body.username}
+                usernameOverride={characterOverride?.parsedDoc?.body.username}
                 message={props.message}
                 additionalMenuItems={props.additionalMenuItems}
                 timeLink={props.message.document.meta?.apObjectRef} // Link to external message

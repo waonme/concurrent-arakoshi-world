@@ -4,7 +4,7 @@ import { PassportRenderer } from '../theming/Passport'
 import { useTranslation } from 'react-i18next'
 
 import LaunchIcon from '@mui/icons-material/Launch'
-import { type Identity } from '@concurrent-world/client'
+import { type Identity } from '@concrnt/client'
 
 export function RegistrationWelcome(props: {
     customSetup: () => void

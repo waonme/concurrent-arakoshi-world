@@ -62,8 +62,8 @@ export function ListSettings(props: ListSettingsProps): JSX.Element {
     const emojiPicker = useEmojiPicker()
 
     useEffect(() => {
-        setListName(props.subscription.getDocument().body.name)
-        setIconURL(props.subscription.getDocument().body.iconURL ?? '')
+        setListName(props.subscription.parsedDoc.body.name)
+        setIconURL(props.subscription.parsedDoc.body.iconURL ?? '')
 
         if (!list) return
         Promise.all(list.defaultPostStreams.map((streamID) => client.getTimeline(streamID))).then((streams) => {
@@ -278,7 +278,7 @@ export function ListSettings(props: ListSettingsProps): JSX.Element {
                             })
                         },
                         {
-                            description: props.subscription.getDocument().body.name,
+                            description: props.subscription.parsedDoc.body.name,
                             confirmText: t('confirmDelete')
                         }
                     )

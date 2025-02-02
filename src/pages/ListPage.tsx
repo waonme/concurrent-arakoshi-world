@@ -6,11 +6,13 @@ import { Timeline } from '../components/Timeline'
 import { useClient } from '../context/ClientContext'
 import {
     type CommunityTimelineSchema,
-    type Timeline as CoreTimeline,
-    type CoreSubscription,
     type ListSubscriptionSchema,
-    type CoreSubscriptionItem
-} from '@concurrent-world/client'
+    Timeline as TypeTimeline
+} from 'client'
+import {
+    Subscription as CoreSubscription,
+    SubscriptionItem as CoreSubscriptionItem
+} from '@concrnt/client'
 import TuneIcon from '@mui/icons-material/Tune'
 import ExploreIcon from '@mui/icons-material/Explore'
 import { ListSettings } from '../components/ListSettings'
@@ -25,7 +27,6 @@ import { useEditorModal } from '../components/EditorModal'
 import { type StreamList } from '../model'
 import { Helmet } from 'react-helmet-async'
 import { useGlobalActions } from '../context/GlobalActions'
-import { timeline } from '@google/model-viewer/lib/utilities/animation'
 
 export function ListPage(): JSX.Element {
     const { client } = useClient()
@@ -64,7 +65,7 @@ export function ListPage(): JSX.Element {
         if (!list) return []
         return list.defaultPostStreams
             .map((streamID) => allKnownTimelines.find((e) => (e.cacheKey ?? e.id) === streamID))
-            .filter((e) => e !== undefined) as Array<CoreTimeline<CommunityTimelineSchema>>
+            .filter((e) => e !== undefined) as Array<TypeTimeline<CommunityTimelineSchema>>
     }, [list, allKnownTimelines])
 
     const defaultPostHome = useMemo(() => {
@@ -177,8 +178,8 @@ export function ListPage(): JSX.Element {
     return (
         <>
             <Helmet>
-                <title>{`${subscription?.document.body.name ?? 'No Name'} - Concrnt`}</title>
-                <meta name="description" content={subscription?.document.body.description ?? ''} />
+                <title>{`${subscription?.parsedDoc.body.name ?? 'No Name'} - Concrnt`}</title>
+                <meta name="description" content={subscription?.parsedDoc.body.description ?? ''} />
             </Helmet>
             <Box
                 sx={{
@@ -190,11 +191,11 @@ export function ListPage(): JSX.Element {
                 }}
             >
                 <TimelineHeader
-                    title={subscription?.document.body.name ?? 'No Name'}
+                    title={subscription?.parsedDoc.body.name ?? 'No Name'}
                     titleIcon={
-                        subscription?.document.body.iconURL ? (
+                        subscription?.parsedDoc.body.iconURL ? (
                             <img
-                                src={subscription.document.body.iconURL}
+                                src={subscription.parsedDoc.body.iconURL}
                                 alt="list icon"
                                 style={{
                                     height: '1.125rem'
@@ -220,7 +221,7 @@ export function ListPage(): JSX.Element {
                     scrollButtons={false}
                 >
                     {pinnedSubscriptions.map((sub) => {
-                        const useIcon = sub.document.body.iconURL && lists[sub.id].isIconTab
+                        const useIcon = sub.parsedDoc.body.iconURL && lists[sub.id].isIconTab
 
                         return (
                             <Tab
@@ -229,14 +230,14 @@ export function ListPage(): JSX.Element {
                                 label={
                                     useIcon ? (
                                         <img
-                                            src={sub.document.body.iconURL}
+                                            src={sub.parsedDoc.body.iconURL}
                                             alt="list icon"
                                             style={{
                                                 height: '1.125rem'
                                             }}
                                         />
                                     ) : (
-                                        sub.document.body.name
+                                        sub.parsedDoc.body.name
                                     )
                                 }
                                 onTouchStart={(a) => {

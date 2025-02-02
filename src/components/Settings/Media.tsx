@@ -79,12 +79,8 @@ export const MediaSettings = (): JSX.Element => {
     useEffect(() => {
         if (storageProvider !== 'domain') return
         const url = itr.cursor ? `/storage/files?limit=9&${itr.mode}=${itr.cursor}` : '/storage/files?limit=9'
-        client.api.fetchWithCredential(client.host, url, {}).then((res) => {
-            if (res.ok) {
-                res.json().then((resp) => {
-                    setFileResponse(resp)
-                })
-            }
+        client.api.fetchWithCredential<FileResponse>(client.host, url, {}).then((data) => {
+                setFileResponse(data)
         })
     }, [storageProvider, itr])
 
@@ -93,14 +89,12 @@ export const MediaSettings = (): JSX.Element => {
             .fetchWithCredential(client.host, `/storage/file/${id}`, {
                 method: 'DELETE'
             })
-            .then((res) => {
-                if (res.ok) {
-                    setFileResponse({
-                        content: fileResponse?.content.filter((e) => e.id !== id) ?? [],
-                        next: fileResponse?.next,
-                        prev: fileResponse?.prev
-                    })
-                }
+            .then((_) => {
+                setFileResponse({
+                    content: fileResponse?.content.filter((e) => e.id !== id) ?? [],
+                    next: fileResponse?.next,
+                    prev: fileResponse?.prev
+                })
             })
     }
 

@@ -8,7 +8,8 @@ import { MarkdownRenderer } from '../components/ui/MarkdownRenderer'
 import { Link as NavLink } from 'react-router-dom'
 
 import { useEffect, useMemo, useState } from 'react'
-import { type CCDocument, type CoreProfile, type User } from '@concurrent-world/client'
+import {  type User } from 'client'
+import { type CCDocument, type Profile as TypeProfile } from '@concrnt/client'
 import { useClient } from '../context/ClientContext'
 import { CCDrawer } from './ui/CCDrawer'
 import { AckList } from '../components/AckList'
@@ -43,7 +44,7 @@ export function Profile(props: ProfileProps): JSX.Element {
     const [ackingUserCount, setAckingUserCount] = useState<number | undefined>(undefined)
     const [ackerUserCount, setAckerUserCount] = useState<number | undefined>(undefined)
 
-    const [subProfile, setSubProfile] = useState<CoreProfile<any> | null>(null)
+    const [subProfile, setSubProfile] = useState<TypeProfile<any> | null>(null)
 
     const { t } = useTranslation('', { keyPrefix: 'common' })
 
@@ -80,7 +81,7 @@ export function Profile(props: ProfileProps): JSX.Element {
             setSubProfile(null)
             return
         }
-        client.api.getProfileByID(props.overrideSubProfileID, props.user.ccid).then((character) => {
+        client.api.getProfile(props.overrideSubProfileID, props.user.ccid).then((character) => {
             setSubProfile(character ?? null)
         })
     }, [client, props.overrideSubProfileID, props.user])
@@ -134,7 +135,7 @@ export function Profile(props: ProfileProps): JSX.Element {
                 }}
                 onClick={() => {
                     if (subProfile) {
-                        subProfile.document.body.avatar && mediaViewer.openSingle(subProfile.document.body.avatar)
+                        subProfile.parsedDoc.body.avatar && mediaViewer.openSingle(subProfile.parsedDoc.body.avatar)
                     } else {
                         props.user?.profile?.avatar && mediaViewer.openSingle(props.user?.profile?.avatar)
                     }
@@ -144,7 +145,7 @@ export function Profile(props: ProfileProps): JSX.Element {
                     isLoading={!props.user}
                     alt={props.user?.profile?.username}
                     avatarURL={props.user?.profile?.avatar}
-                    avatarOverride={subProfile ? subProfile.document.body.avatar : undefined}
+                    avatarOverride={subProfile ? subProfile.parsedDoc.body.avatar : undefined}
                     identiconSource={props.user?.ccid}
                     sx={{
                         width: '100px',
@@ -268,7 +269,7 @@ export function Profile(props: ProfileProps): JSX.Element {
                         }}
                     >
                         {props.user ? (
-                            subProfile?.document.body.username ?? props.user.profile?.username ?? 'anonymous'
+                            subProfile?.parsedDoc.body.username ?? props.user.profile?.username ?? 'anonymous'
                         ) : (
                             <Skeleton variant="text" width={200} />
                         )}
@@ -302,7 +303,7 @@ export function Profile(props: ProfileProps): JSX.Element {
                     }}
                 >
                     <MarkdownRenderer
-                        messagebody={subProfile?.document.body.description ?? props.user?.profile?.description ?? ''}
+                        messagebody={subProfile?.parsedDoc.body.description ?? props.user?.profile?.description ?? ''}
                         emojiDict={{}}
                     />
                 </Box>
@@ -310,7 +311,7 @@ export function Profile(props: ProfileProps): JSX.Element {
                 <Box>
                     <Typography variant="caption">
                         {props.user ? (
-                            `現住所: ${props.user?.domain !== '' ? props.user.domain : client.api.host}` +
+                            `現住所: ${props.user?.domain !== '' ? props.user.domain : client.host}` +
                             ` (${affiliationDate?.toLocaleDateString() ?? ''}~)`
                         ) : (
                             <Skeleton variant="text" width={200} />

@@ -10,7 +10,7 @@ import {
     type ReplyMessageSchema,
     type RerouteMessageSchema,
     Schemas
-} from '@concurrent-world/client'
+} from 'client'
 import { FullScreenLoading } from '../components/ui/FullScreenLoading'
 import { ClientProvider } from '../context/ClientContext'
 import TickerProvider from '../context/Ticker'

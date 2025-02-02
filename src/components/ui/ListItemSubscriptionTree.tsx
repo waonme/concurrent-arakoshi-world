@@ -5,7 +5,8 @@ import { Link as RouterLink } from 'react-router-dom'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import { ListItemTimeline } from './ListItemTimeline'
 import { usePreference } from '../../context/PreferenceContext'
-import { type ListSubscriptionSchema, type CoreSubscription } from '@concurrent-world/client'
+import { type ListSubscriptionSchema } from 'client'
+import { type Subscription } from '@concrnt/client'
 import { useGlobalState } from '../../context/GlobalState'
 
 export interface ListItemSubscriptionTreeProps {
@@ -28,10 +29,10 @@ export const ListItemSubscriptionTree = (props: ListItemSubscriptionTreeProps): 
 
     const { allKnownSubscriptions } = useGlobalState()
     const subscription = allKnownSubscriptions.find((sub) => sub.id === props.id) as
-        | CoreSubscription<ListSubscriptionSchema>
+        | Subscription<ListSubscriptionSchema>
         | undefined
 
-    const iconURL = subscription?.document.body.iconURL
+    const iconURL = subscription?.parsedDoc.body.iconURL
 
     return (
         <>
@@ -106,7 +107,7 @@ export const ListItemSubscriptionTree = (props: ListItemSubscriptionTreeProps): 
                     to={`/#${props.id}`}
                 >
                     {subscription ? (
-                        <ListItemText primary={subscription.document.body.name || 'No name'} />
+                        <ListItemText primary={subscription.parsedDoc.body.name || 'No name'} />
                     ) : (
                         <ListItemText primary="❓ Not found" />
                     )}

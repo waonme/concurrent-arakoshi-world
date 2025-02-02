@@ -19,7 +19,7 @@ import {
     type Association,
     type ReadAccessRequestAssociationSchema,
     Schemas
-} from '@concurrent-world/client'
+} from 'client'
 import IosShareIcon from '@mui/icons-material/IosShare'
 import { CCEditor, type CCEditorError } from './ui/cceditor'
 import { useSnackbar } from 'notistack'

@@ -2,11 +2,10 @@ import { Alert, Box, IconButton, List, ListItem, Paper, Typography } from '@mui/
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useClient } from './ClientContext'
-import { ValidateSignature, type CoreMessage, type CoreAssociation } from '@concurrent-world/client'
+import { ValidateSignature, type Message, type Association, type Key } from '@concrnt/client'
 import { Codeblock } from '../components/ui/Codeblock'
 import { MessageContainer } from '../components/Message/MessageContainer'
 import { CCDrawer } from '../components/ui/CCDrawer'
-import { type Key } from '@concurrent-world/client/dist/types/model/core'
 import { KeyCard } from '../components/ui/KeyCard'
 import { ListItemTimeline } from '../components/ui/ListItemTimeline'
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove'
@@ -27,8 +26,8 @@ export const InspectorProvider = (props: InspectorProps): JSX.Element => {
     const { client } = useClient()
     const { enqueueSnackbar } = useSnackbar()
     const [inspectingItem, inspectItem] = useState<{ messageId: string; author: string } | null>(null)
-    const [message, setMessage] = useState<CoreMessage<any> | undefined>()
-    const [associations, setAssociations] = useState<Array<CoreAssociation<any>>>([])
+    const [message, setMessage] = useState<Message<any> | undefined>()
+    const [associations, setAssociations] = useState<Array<Association<any>>>([])
     const [keyResolution, setKeyResolution] = useState<Key[]>([])
 
     useEffect(() => {
@@ -39,8 +38,8 @@ export const InspectorProvider = (props: InspectorProps): JSX.Element => {
             if (!msg) return
             if (!isMounted) return
             setMessage(msg)
-            if (msg.document.keyID && msg.document.keyID !== '') {
-                client.api.getKeyResolution(msg.document.keyID, inspectingItem.author).then((keys) => {
+            if (msg.parsedDoc.keyID && msg.parsedDoc.keyID !== '') {
+                client.api.getKeyResolution(msg.parsedDoc.keyID, inspectingItem.author).then((keys) => {
                     if (!isMounted) return
                     setKeyResolution(keys)
                 })
@@ -60,9 +59,9 @@ export const InspectorProvider = (props: InspectorProps): JSX.Element => {
     const signatureIsValid = useMemo(() => {
         if (message) {
             return ValidateSignature(
-                message._document,
+                message.document,
                 message.signature,
-                message.document.keyID ?? message.document.signer
+                message.parsedDoc.keyID ?? message.parsedDoc.signer
             )
         }
         return false
@@ -79,7 +78,7 @@ export const InspectorProvider = (props: InspectorProps): JSX.Element => {
 
     const isSignedBySubkey = useMemo(() => {
         if (message) {
-            return message.document.keyID && message.document.keyID !== ''
+            return message.parsedDoc.keyID && message.parsedDoc.keyID !== ''
         }
         return false
     }, [message])
@@ -142,10 +141,10 @@ export const InspectorProvider = (props: InspectorProps): JSX.Element => {
         }
 
         if (valid === undefined) {
-            if (since && message && since > new Date(message.document.signedAt)) {
+            if (since && message && since > new Date(message.parsedDoc.signedAt)) {
                 valid = false
                 reason = 'keychain is not valid at the time of signing'
-            } else if (until && message && until < new Date(message.document.signedAt)) {
+            } else if (until && message && until < new Date(message.parsedDoc.signedAt)) {
                 valid = false
                 reason = 'keychain is not valid at the time of signing'
             } else {
@@ -201,7 +200,7 @@ export const InspectorProvider = (props: InspectorProps): JSX.Element => {
                                     <br />
                                     With subkey:
                                     <br />
-                                    {message.document.keyID}
+                                    {message.parsedDoc.keyID}
                                 </Alert>
                             ) : (
                                 <Alert severity="success">Signature is valid!</Alert>

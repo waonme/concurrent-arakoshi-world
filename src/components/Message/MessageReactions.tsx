@@ -53,7 +53,7 @@ export const MessageReactions = (props: MessageReactionsProps): JSX.Element => {
             })
             .then((associations) => {
                 for (const association of associations) {
-                    const txhash = association.getDocument().body.txhash
+                    const txhash = association.parsedDoc.body.txhash
                     concord.getRawTx(txhash).then(async (tx) => {
                         if (!tx) return
                         const memo = tx.body.memo
@@ -92,7 +92,7 @@ export const MessageReactions = (props: MessageReactionsProps): JSX.Element => {
     const ownReactions = Object.fromEntries(
         props.message?.ownAssociations
             .filter((association) => association.schema === Schemas.reactionAssociation)
-            .map((association) => [association.getDocument().body.imageUrl, association])
+            .map((association) => [association.parsedDoc.body.imageUrl, association])
     )
 
     const loadReactionMembers = (reaction: string): void => {

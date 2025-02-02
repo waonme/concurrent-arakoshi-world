@@ -92,7 +92,7 @@ export const WatchButton = (props: WatchButtonProps): JSX.Element => {
             >
                 {Object.keys(listedSubscriptions).map((key) => (
                     <MenuItem key={key} onClick={() => {}}>
-                        {listedSubscriptions[key].document.body.name}
+                        {listedSubscriptions[key].parsedDoc.body.name}
                         <Checkbox
                             checked={
                                 listedSubscriptions[key].items.find((e) => e.id === props.timelineID) !== undefined

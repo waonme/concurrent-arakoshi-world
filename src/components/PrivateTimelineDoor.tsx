@@ -3,7 +3,7 @@ import {
     type ReadAccessRequestAssociationSchema,
     Schemas,
     type Timeline
-} from '@concurrent-world/client'
+} from 'client'
 import LockIcon from '@mui/icons-material/Lock'
 import { useEffect, useMemo, useState } from 'react'
 import { useClient } from '../context/ClientContext'

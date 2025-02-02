@@ -13,7 +13,7 @@ import {
 import { ThemeCreator } from '../ThemeCreator'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { type User } from '@concurrent-world/client'
+import { type User } from 'client'
 import { useClient } from '../../context/ClientContext'
 import { usePreference } from '../../context/PreferenceContext'
 import { type ConcurrentTheme } from '../../model'

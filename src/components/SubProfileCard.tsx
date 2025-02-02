@@ -1,4 +1,5 @@
-import { Schemas, type CoreProfile } from '@concurrent-world/client'
+import { Schemas } from 'client'
+import { Profile } from '@concrnt/client'
 import { Box, Chip, IconButton, Menu, Paper, Typography } from '@mui/material'
 import { CCWallpaper } from './ui/CCWallpaper'
 import { CCAvatar } from './ui/CCAvatar'
@@ -13,14 +14,14 @@ import { ProfileProperties } from './ui/ProfileProperties'
 
 export interface SubProfileCardProps {
     showccid?: boolean
-    character: CoreProfile<any>
+    character: Profile<any>
     additionalMenuItems?: JSX.Element | JSX.Element[]
     children?: JSX.Element | JSX.Element[]
     resolveHint?: string
 }
 
 export const SubProfileCard = (props: SubProfileCardProps): JSX.Element => {
-    const isProfile = 'username' in props.character.document.body && 'avatar' in props.character.document.body
+    const isProfile = 'username' in props.character.parsedDoc.body && 'avatar' in props.character.parsedDoc.body
     const { enqueueSnackbar } = useSnackbar()
 
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null)
@@ -39,7 +40,7 @@ export const SubProfileCard = (props: SubProfileCardProps): JSX.Element => {
                     height: '80px',
                     position: 'relative'
                 }}
-                override={props.character.document.body.banner}
+                override={props.character.parsedDoc.body.banner}
             >
                 {props.additionalMenuItems && (
                     <IconButton
@@ -74,9 +75,9 @@ export const SubProfileCard = (props: SubProfileCardProps): JSX.Element => {
                             }}
                         >
                             <CCAvatar
-                                alt={props.character.document.body.username}
-                                avatarURL={props.character.document.body.avatar}
-                                identiconSource={props.character.document.body.username}
+                                alt={props.character.parsedDoc.body.username}
+                                avatarURL={props.character.parsedDoc.body.avatar}
+                                identiconSource={props.character.parsedDoc.body.username}
                                 sx={{
                                     width: '60px',
                                     height: '60px'
@@ -105,7 +106,7 @@ export const SubProfileCard = (props: SubProfileCardProps): JSX.Element => {
                         px={1}
                         mb={1}
                     >
-                        <Typography variant="h2">{props.character.document.body.username}</Typography>
+                        <Typography variant="h2">{props.character.parsedDoc.body.username}</Typography>
                         {props.showccid ? (
                             <Chip
                                 size="small"
@@ -130,7 +131,7 @@ export const SubProfileCard = (props: SubProfileCardProps): JSX.Element => {
                         }}
                     >
                         <MarkdownRendererLite
-                            messagebody={props.character.document.body.description ?? ''}
+                            messagebody={props.character.parsedDoc.body.description ?? ''}
                             emojiDict={{}}
                         />
                     </Box>

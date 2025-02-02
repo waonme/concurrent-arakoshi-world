@@ -1,6 +1,6 @@
 import { Avatar, Paper, useTheme, Checkbox, type SxProps, Typography, Box } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { type CoreDomain } from '@concurrent-world/client'
+import { type Domain } from '@concrnt/client'
 import { useClient } from '../../context/ClientContext'
 
 export interface DomainCardProps {
@@ -14,7 +14,7 @@ export interface DomainCardProps {
 export const DomainCard = (props: DomainCardProps): JSX.Element | null => {
     const { client } = useClient()
     const theme = useTheme()
-    const [domain, setDomain] = useState<CoreDomain | null>(null)
+    const [domain, setDomain] = useState<Domain | null>(null)
 
     useEffect(() => {
         client.api.getDomain(props.domainFQDN).then((e) => {

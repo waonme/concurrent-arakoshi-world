@@ -1,4 +1,4 @@
-import { type ProfileSchema, type User } from '@concurrent-world/client'
+import { type ProfileSchema, type User } from 'client'
 import { Badge, Box, Chip, Typography } from '@mui/material'
 import { CCAvatar } from './ui/CCAvatar'
 import { useClient } from '../context/ClientContext'

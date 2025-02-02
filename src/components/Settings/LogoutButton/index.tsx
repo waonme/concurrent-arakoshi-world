@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Box, Button, Modal, Typography, useTheme } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { type Identity } from '@concurrent-world/client'
+import { type Identity } from '@concrnt/client'
 import { TestMasterkey } from '../../SwitchMasterToSub'
 
 export const LogoutButton = (): JSX.Element => {

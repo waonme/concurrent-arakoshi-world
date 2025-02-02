@@ -2,14 +2,15 @@ import { ListItemButton, type SxProps } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import {
-    type Timeline,
-    type CommunityTimelineSchema,
     IsCSID,
+} from '@concrnt/client'
+import {
     Schemas,
+    Timeline,
+    type CommunityTimelineSchema,
     type ProfileSchema,
-    type CoreTimeline,
     type SubprofileTimelineSchema
-} from '@concurrent-world/client'
+} from 'client'
 import { useClient } from '../../context/ClientContext'
 import TagIcon from '@mui/icons-material/Tag'
 import CloudOffIcon from '@mui/icons-material/CloudOff'
@@ -33,17 +34,17 @@ export const ListItemTimeline = (props: ListItemTimelineProps): JSX.Element | nu
             setTimeline(e)
 
             if (e.schema === Schemas.emptyTimeline) {
-                const timeline: CoreTimeline<CommunityTimelineSchema> = e
+                const timeline: Timeline<CommunityTimelineSchema> = e
                 client.getUser(timeline.author).then((user) => {
                     setProfile(user?.profile)
                 })
             } else if (e.schema === Schemas.subprofileTimeline) {
-                const timeline: CoreTimeline<SubprofileTimelineSchema> = e
+                const timeline: Timeline<SubprofileTimelineSchema> = e
                 client.api
-                    .getProfileByID<ProfileSchema>(timeline.document.body.subprofile, timeline.author)
+                    .getProfile<ProfileSchema>(timeline.document.body.subprofile, timeline.author)
                     .then((profile) => {
                         if (!profile) return
-                        setProfile(profile.document.body)
+                        setProfile(profile.parsedDoc.body)
                     })
             }
         })

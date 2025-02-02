@@ -1,6 +1,6 @@
 import type { Meta } from '@storybook/react'
 import { KeyCard } from './KeyCard'
-import { type Key } from '@concurrent-world/client/dist/types/model/core'
+import { Key } from '@concrnt/client'
 
 interface Props extends Meta {
     id: string
@@ -12,7 +12,7 @@ interface Props extends Meta {
 }
 
 export const Default = (props: Props): JSX.Element => {
-    const key: Key = {
+    const keyBase: Omit<Key, 'parsedEnactDoc' | 'parsedRevokeDoc'> = {
         id: props.id,
         root: props.root,
         parent: props.parent,
@@ -23,6 +23,8 @@ export const Default = (props: Props): JSX.Element => {
         validSince: 'null',
         validUntil: 'null'
     }
+
+    const key = Object.setPrototypeOf(keyBase, Key.prototype)
 
     return <KeyCard item={key} selected={props.selected} subText={props.subText} />
 }

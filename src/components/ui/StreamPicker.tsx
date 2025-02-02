@@ -1,5 +1,5 @@
 import { Autocomplete, Box, InputBase, type SxProps } from '@mui/material'
-import { type CommunityTimelineSchema, type Timeline } from '@concurrent-world/client'
+import { type CommunityTimelineSchema, type Timeline } from 'client'
 import { CCChip } from './CCChip'
 
 import TagIcon from '@mui/icons-material/Tag'

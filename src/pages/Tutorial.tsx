@@ -4,7 +4,7 @@ import { useClient } from '../context/ClientContext'
 import { usePreference } from '../context/PreferenceContext'
 import { Suspense, lazy, useState } from 'react'
 import { MarkdownRenderer } from '../components/ui/MarkdownRenderer'
-import { type Identity } from '@concurrent-world/client'
+import { type Identity } from '@concrnt/client'
 import { useEditorModal } from '../components/EditorModal'
 import { StreamCard } from '../components/Stream/Card'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
@@ -172,7 +172,7 @@ export function Tutorial(): JSX.Element {
                                     </Typography>
                                 </details>
 
-                                {client.api.ckid ? (
+                                {client.ckid ? (
                                     <Button
                                         disabled={progress !== 0}
                                         onClick={() => {

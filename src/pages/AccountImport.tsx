@@ -9,7 +9,7 @@ import PasswordIcon from '@mui/icons-material/Password'
 import { IconButtonWithLabel } from '../components/ui/IconButtonWithLabel'
 import { useTranslation } from 'react-i18next'
 import { Suspense, lazy, useState } from 'react'
-import { Client } from '@concurrent-world/client'
+import { Client } from 'client'
 import { Helmet } from 'react-helmet-async'
 
 const QRCodeReader = lazy(() => import('../components/ui/QRCodeReader'))

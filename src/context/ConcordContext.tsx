@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { CCDrawer } from '../components/ui/CCDrawer'
-import { type BadgeRef, type Message } from '@concurrent-world/client'
+import { type BadgeRef, type Message } from 'client'
 import { type Emoji, type Badge } from '../model'
 import { Alert, AlertTitle, Box, Button, Divider, Paper, TextField, Typography } from '@mui/material'
 import { CCUserChip } from '../components/ui/CCUserChip'

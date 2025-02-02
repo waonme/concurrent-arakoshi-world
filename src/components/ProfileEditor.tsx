@@ -1,7 +1,8 @@
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import { useEffect, useState } from 'react'
-import { type CoreProfile, type ProfileSchema } from '@concurrent-world/client'
+import { type ProfileSchema } from 'client'
+import { Profile } from '@concrnt/client'
 import Button from '@mui/material/Button'
 import { useClient } from '../context/ClientContext'
 import { CCAvatar } from './ui/CCAvatar'
@@ -14,7 +15,7 @@ import { useSnackbar } from 'notistack'
 
 interface ProfileEditorProps {
     initial?: ProfileSchema
-    onSubmit?: (updated: CoreProfile<ProfileSchema> | undefined) => void
+    onSubmit?: (updated: Profile<ProfileSchema> | undefined) => void
     id?: string
 }
 

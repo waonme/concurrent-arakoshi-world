@@ -9,9 +9,9 @@ import type {
     TypeText
 } from '@mui/material/styles/createPalette'
 
-import type { CommunityTimelineSchema, CoreTimelineItem, Timeline } from '@concurrent-world/client'
+import type { TimelineItem } from '@concrnt/client'
 
-export interface StreamItemDated extends CoreTimelineItem {
+export interface StreamItemDated extends TimelineItem {
     LastUpdated: number
 }
 

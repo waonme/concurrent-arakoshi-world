@@ -6,7 +6,7 @@ import {
     type Message,
     type ReplyMessageSchema,
     type MarkdownMessageSchema
-} from '@concurrent-world/client'
+} from 'client'
 import { useClient } from '../../context/ClientContext'
 import { MessageView } from './MessageView'
 import { OneLineMessageView } from './OneLineMessageView'

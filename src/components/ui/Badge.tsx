@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { type Badge } from '../../model'
 import { Box, type SxProps, Tooltip } from '@mui/material'
-import { type BadgeRef } from '@concurrent-world/client'
+import { type BadgeRef } from 'client'
 import { useConcord } from '../../context/ConcordContext'
 
 export interface ConcordBadgeProps {

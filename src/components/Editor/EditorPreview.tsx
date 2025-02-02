@@ -101,7 +101,7 @@ export const EditorPreview = (props: EditorPreviewProps): JSX.Element => {
                             }}
                         >
                             <ListItemIcon>
-                                <Avatar alt={p.document.body.username} src={p.document.body.avatar} variant="square" />
+                                <Avatar alt={p.parsedDoc.body.username} src={p.parsedDoc.body.avatar} variant="square" />
                             </ListItemIcon>
                         </MenuItem>
                     )

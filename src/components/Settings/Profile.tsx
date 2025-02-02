@@ -18,7 +18,6 @@ import { useSnackbar } from 'notistack'
 import { useTranslation } from 'react-i18next'
 import {
     type ProfileSchema,
-    type CoreProfile,
     type Schema,
     type BadgeRef,
     Schemas,
@@ -28,7 +27,10 @@ import {
     type User,
     type Association,
     type ReadAccessRequestAssociationSchema
-} from '@concurrent-world/client'
+} from 'client'
+import {
+    Profile
+} from '@concrnt/client'
 import { useEffect, useState } from 'react'
 import { CCDrawer } from '../ui/CCDrawer'
 import { CCEditor } from '../ui/cceditor'
@@ -60,7 +62,7 @@ export const ProfileSettings = (): JSX.Element => {
     const path = useLocation()
     const hash = path.hash.replace('#', '')
 
-    const [allProfiles, setAllProfiles] = useState<Array<CoreProfile<any>>>([])
+    const [allProfiles, setAllProfiles] = useState<Array<Profile<any>>>([])
     const [openProfileEditor, setOpenProfileEditor] = useState(false)
     const [openReaderEditor, setOpenReaderEditor] = useState<((_: User[]) => void) | null>(null)
 
@@ -90,7 +92,7 @@ export const ProfileSettings = (): JSX.Element => {
         if (!client.user?.profile) return
 
         client.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', client.ccid).then((profile) => {
-            setLatestProfile(profile?.document.body)
+            setLatestProfile(profile?.parsedDoc.body)
             client.api.getProfiles({ author: client.ccid }).then((profiles) => {
                 const subprofiles = (profiles ?? []).filter((p) => p.id !== profile?.id)
                 setAllProfiles(subprofiles)

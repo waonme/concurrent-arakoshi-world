@@ -1,5 +1,5 @@
 import { Autocomplete, Box, InputBase, ListItem, ListItemIcon, ListItemText, type SxProps } from '@mui/material'
-import { type User } from '@concurrent-world/client'
+import { type User } from 'client'
 import { useClient } from '../../context/ClientContext'
 import { CCUserChip } from './CCUserChip'
 import { CCAvatar } from './CCAvatar'

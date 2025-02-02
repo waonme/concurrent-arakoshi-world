@@ -25,7 +25,7 @@ import {
     type ReactionAssociationSchema,
     type ReplyAssociationSchema,
     type RerouteAssociationSchema
-} from '@concurrent-world/client'
+} from 'client'
 import { MessageView } from '../components/Message/MessageView'
 import { RerouteMessageFrame } from '../components/Message/RerouteMessageFrame'
 import { FavoriteAssociation } from '../components/Association/FavoriteAssociation'

@@ -1,4 +1,4 @@
-import { type User } from '@concurrent-world/client'
+import { type User } from 'client'
 import { CCAvatar } from './CCAvatar'
 import { useClient } from '../../context/ClientContext'
 import { useEffect, useState } from 'react'

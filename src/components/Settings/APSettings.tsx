@@ -12,7 +12,7 @@ import { useSnackbar } from 'notistack'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { StreamPicker } from '../ui/StreamPicker'
 import { useGlobalState } from '../../context/GlobalState'
-import { type Timeline } from '@concurrent-world/client'
+import { type Timeline } from 'client'
 
 export const APSettings = (): JSX.Element => {
     const { client } = useClient()
@@ -36,11 +36,10 @@ export const APSettings = (): JSX.Element => {
         }
 
         client.api
-            .fetchWithCredential(client.api.host, `/ap/api/entity/${client.ccid}`, requestOptions)
-            .then(async (res) => await res.json())
+            .fetchWithCredential<ApEntity>(client.host, `/ap/api/entity/${client.ccid}`, requestOptions)
             .then((data) => {
-                setEntity(data.content)
-                setAliases(data.content.aliases ?? [])
+                setEntity(data)
+                if (data) setAliases(data.aliases ?? [])
             })
             .catch((e) => {
                 setEntity(null)
@@ -49,14 +48,13 @@ export const APSettings = (): JSX.Element => {
 
     useEffect(() => {
         client.api
-            .fetchWithCredential(client.api.host, `/ap/api/settings`, {})
-            .then(async (res) => await res.json())
-            .then((data) => {
+            .fetchWithCredential(client.host, `/ap/api/settings`, {})
+            .then((data: any) => {
                 setListenTimelines(
                     allKnownTimelines.filter(
                         (t) =>
-                            (t.cacheKey && data.content.listen_timelines.includes(t.cacheKey)) ||
-                            data.content.listen_timelines.includes(t.id)
+                            (t.cacheKey && data.listen_timelines.includes(t.cacheKey)) ||
+                            data.listen_timelines.includes(t.id)
                     )
                 )
             })
@@ -67,7 +65,7 @@ export const APSettings = (): JSX.Element => {
 
     const updateSettings = (): void => {
         client.api
-            .fetchWithCredential(client.api.host, `/ap/api/settings`, {
+            .fetchWithCredential(client.host, `/ap/api/settings`, {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
@@ -85,15 +83,14 @@ export const APSettings = (): JSX.Element => {
 
     const inquery = (url: string): void => {
         client.api
-            .fetchWithCredential(client.api.host, `/ap/api/import?note=${encodeURIComponent(url)}`, {
+            .fetchWithCredential(client.host, `/ap/api/import?note=${encodeURIComponent(url)}`, {
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json'
                 }
             })
-            .then(async (res) => await res.json())
-            .then((data) => {
-                navigate(`/${data.content.author}/${data.content.id}`)
+            .then((data: any) => {
+                navigate(`/${data.author}/${data.id}`)
             })
     }
 
@@ -223,7 +220,7 @@ export const APSettings = (): JSX.Element => {
                             onClick={() => {
                                 client.api
                                     .fetchWithCredential(
-                                        client.api.host,
+                                        client.host,
                                         `/ap/api/resolve/${encodeURIComponent(newAlias)}`,
                                         {
                                             method: 'GET',
@@ -232,13 +229,12 @@ export const APSettings = (): JSX.Element => {
                                             }
                                         }
                                     )
-                                    .then(async (res) => await res.json())
-                                    .then((data) => {
-                                        if (data.content.id) {
-                                            const newAliases = [...new Set([...aliases, data.content.id])]
+                                    .then((data: any) => {
+                                        if (data.id) {
+                                            const newAliases = [...new Set([...aliases, data.id])]
 
                                             client.api
-                                                .fetchWithCredential(client.api.host, `/ap/api/entities/aliases`, {
+                                                .fetchWithCredential(client.host, `/ap/api/entities/aliases`, {
                                                     method: 'POST',
                                                     headers: {
                                                         'content-type': 'application/json'
@@ -247,8 +243,7 @@ export const APSettings = (): JSX.Element => {
                                                         aliases: newAliases
                                                     })
                                                 })
-                                                .then(async (res) => await res.json())
-                                                .then((data) => {
+                                                .then((_) => {
                                                     enqueueSnackbar('更新しました', {
                                                         variant: 'success'
                                                     })
@@ -277,7 +272,7 @@ export const APSettings = (): JSX.Element => {
                                     remove={(body) => {
                                         const newAliases = aliases.filter((a) => a !== body.URL)
                                         client.api
-                                            .fetchWithCredential(client.api.host, `/ap/api/entities/aliases`, {
+                                            .fetchWithCredential(client.host, `/ap/api/entities/aliases`, {
                                                 method: 'POST',
                                                 headers: {
                                                     'content-type': 'application/json'
@@ -286,8 +281,7 @@ export const APSettings = (): JSX.Element => {
                                                     aliases: newAliases
                                                 })
                                             })
-                                            .then(async (res) => await res.json())
-                                            .then((data) => {
+                                            .then((_) => {
                                                 enqueueSnackbar('更新しました', {
                                                     variant: 'success'
                                                 })

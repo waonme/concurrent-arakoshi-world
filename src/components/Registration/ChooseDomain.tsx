@@ -1,5 +1,6 @@
-import { type Identity, type Client, type CoreDomain } from '@concurrent-world/client'
-import { Alert, AlertTitle, Box, Button, Divider, Link, List, TextField, Typography } from '@mui/material'
+import { type Identity } from '@concrnt/client'
+import { Client } from 'client'
+import { Box, Button, Divider, Link, List, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { jumpToDomainRegistration } from '../../util'
 import { useTranslation } from 'react-i18next'

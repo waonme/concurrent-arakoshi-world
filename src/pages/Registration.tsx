@@ -9,11 +9,13 @@ import { jumpToDomainRegistration } from '../util'
 import {
     Client,
     type ProfileSchema,
+} from 'client'
+import {
+    Profile,
     GenerateIdentity,
     type Identity,
     LoadIdentity,
-    type CoreProfile
-} from '@concurrent-world/client'
+} from '@concrnt/client'
 import { RegistrationWelcome } from '../components/Registration/Welcome'
 import { ChooseDomain } from '../components/Registration/ChooseDomain'
 import { CreateProfile } from '../components/Registration/CreateProfile'
@@ -30,7 +32,7 @@ export default function Registration(): JSX.Element {
     const { t } = useTranslation('', { keyPrefix: 'registration' })
     const [client, initializeClient] = useState<Client>()
     const [identity, setIdentity] = usePersistent<Identity | null>('Identity', GenerateIdentity())
-    const [profile, setProfile] = useState<CoreProfile<ProfileSchema> | null>(null)
+    const [profile, setProfile] = useState<Profile<ProfileSchema> | null>(null)
     const [domain, setDomain] = usePersistent<string>('Domain', 'ariake.concrnt.net')
 
     const activeStep = parseInt(location.hash.replace('#', '')) || 0
@@ -142,7 +144,7 @@ export default function Registration(): JSX.Element {
                         setupAccount()
                     }}
                     domain={domain}
-                    profile={profile?.document.body ?? {}}
+                    profile={profile?.parsedDoc.body ?? {}}
                 />
             )
         }

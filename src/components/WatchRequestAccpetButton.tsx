@@ -1,4 +1,4 @@
-import { type Association, type ReadAccessRequestAssociationSchema, type Timeline } from '@concurrent-world/client'
+import { type Association, type ReadAccessRequestAssociationSchema, type Timeline } from 'client'
 import { CCAvatar } from './ui/CCAvatar'
 import { Box, Button } from '@mui/material'
 import { useClient } from '../context/ClientContext'

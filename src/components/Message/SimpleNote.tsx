@@ -1,4 +1,4 @@
-import { type Message, type ReplyMessageSchema, type MarkdownMessageSchema } from '@concurrent-world/client'
+import { type Message, type ReplyMessageSchema, type MarkdownMessageSchema } from 'client'
 import { MarkdownRenderer } from '../ui/MarkdownRenderer'
 
 interface SimpleNoteProps {

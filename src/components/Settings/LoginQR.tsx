@@ -1,7 +1,7 @@
 import { Alert, Button, Tab, Tabs, Typography } from '@mui/material'
 import SubkeyInfo from '../SubkeyInfo'
 import { useState } from 'react'
-import { ComputeCKID, GenerateIdentity } from '@concurrent-world/client'
+import { ComputeCKID, GenerateIdentity } from '@concrnt/client'
 import { useClient } from '../../context/ClientContext'
 import { useTranslation } from 'react-i18next'
 

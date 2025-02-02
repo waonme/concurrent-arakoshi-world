@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { usePreference } from '../context/PreferenceContext'
 
 import { useState } from 'react'
-import { Schemas, type CoreSubscription } from '@concurrent-world/client'
+import { Schemas } from 'client'
+import { Subscription } from '@concrnt/client'
 
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
@@ -27,10 +28,10 @@ export function ManageSubsPage(): JSX.Element {
     const { reloadList, allKnownSubscriptions } = useGlobalState()
 
     const listedSubs: string[] = Object.keys(lists)
-    const unlistedSubs: Array<CoreSubscription<any>> = allKnownSubscriptions.filter(
+    const unlistedSubs: Array<Subscription<any>> = allKnownSubscriptions.filter(
         (sub) => !Object.keys(lists).includes(sub.id)
     )
-    const [inspectedSub, setInspectedSub] = useState<CoreSubscription<any> | null>(null)
+    const [inspectedSub, setInspectedSub] = useState<Subscription<any> | null>(null)
 
     return (
         <>
