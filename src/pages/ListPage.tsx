@@ -140,7 +140,6 @@ export function ListPage(): JSX.Element {
 
     useEffect(() => {
         client.api.getSubscription<ListSubscriptionSchema>(id).then((sub) => {
-            if (!sub) return
             setSubscription(sub)
         })
     }, [id, client, updater])

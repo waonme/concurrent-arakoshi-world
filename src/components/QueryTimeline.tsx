@@ -7,7 +7,7 @@ import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import SyncIcon from '@mui/icons-material/Sync'
-import { type Query, type QueryTimelineReader as CoreTimelineReader } from '@concurrent-world/client'
+import { type Query, type QueryTimelineReader as CoreTimelineReader } from '@concrnt/client'
 import useSound from 'use-sound'
 import { usePreference } from '../context/PreferenceContext'
 import { VList, type VListHandle } from 'virtua'
@@ -265,7 +265,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                                               resolveHint={e.timelineID.split('@')[1]}
                                               lastUpdated={e.lastUpdate?.getTime() ?? 0}
                                               after={divider}
-                                              timestamp={e.cdate}
+                                              timestamp={e.created}
                                           />
                                       )
                                       break

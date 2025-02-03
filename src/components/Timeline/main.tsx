@@ -7,7 +7,7 @@ import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import SyncIcon from '@mui/icons-material/Sync'
-import { type TimelineReader } from '@concurrent-world/client'
+import { type TimelineReader } from '@concrnt/client'
 import { useRefWithForceUpdate } from '../../hooks/useRefWithForceUpdate'
 import useSound from 'use-sound'
 import { usePreference } from '../../context/PreferenceContext'
@@ -81,7 +81,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                     timelineChanged()
                 }
                 t.onRealtimeEvent = (event) => {
-                    if (event.document?.type === 'message') {
+                    if (event.parsedDoc?.type === 'message') {
                         playBubbleRef.current()
                     }
                 }
@@ -281,7 +281,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                                               resolveHint={e.timelineID.split('@')[1]}
                                               lastUpdated={e.lastUpdate?.getTime() ?? 0}
                                               after={divider}
-                                              timestamp={e.cdate}
+                                              timestamp={e.created}
                                           />
                                       )
                                       break

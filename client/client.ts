@@ -25,6 +25,8 @@ import {
     SocketListener,
     InMemoryKVS,
     GuestAuthProvider,
+    TimelineReader,
+    QueryTimelineReader,
 } from '@concrnt/client'
 
 import { Schemas, Schema } from "./schemas";
@@ -216,7 +218,7 @@ export class Client {
         this.ackings = await this.user.getAcking()
     }
 
-    async getUser(id: CCID, hint?: string): Promise<User | null> {
+    async getUser(id: CCID, hint?: string): Promise<User> {
         return await User.load(this, id, hint)
     }
 
@@ -371,7 +373,6 @@ export class Client {
 
     async createCommunityTimeline(body: CommunityTimelineSchema): Promise<CoreTimeline<CommunityTimelineSchema>> {
         if (!this.server) throw new Error('server is not set')
-        console.log(this.server)
         return await this.api.upsertTimeline<CommunityTimelineSchema>(Schemas.communityTimeline, body, {
             owner: this.server.csid,
         })
@@ -632,7 +633,6 @@ export class Client {
         return new SocketListener(socket)
     }
 
-    /*
     async newTimelineReader(opts?: {withoutSocket: boolean}): Promise<TimelineReader> {
         if (opts?.withoutSocket) {
             return new TimelineReader(this.api, undefined)
@@ -644,7 +644,6 @@ export class Client {
     async newTimelineQuery(): Promise<QueryTimelineReader> {
         return new QueryTimelineReader(this.api)
     }
-    */
 }
 
 export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTombstoneDoc'> {
@@ -715,18 +714,16 @@ export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTo
         this.tombstoneSignature = entity.tombstoneSignature
     }
 
-    static async load(client: Client, id: CCID, hint?: string): Promise<User | null> {
+    static async load(client: Client, id: CCID, hint?: string): Promise<User> {
         const domain = await client.api.resolveDomain(id, hint).catch((_e) => {
-            return null
+            throw new Error('domain not found')
         })
-        if (!domain) return null
         const entity = await client.api.getEntity(id).catch((_e) => {
-            return null
+            throw new Error('entity not found')
         })
-        if (!entity) return null
 
         const profile = await client.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', id).catch((_e) => {
-            return null
+            throw new Error('profile not found')
         })
 
         return new User(client, domain, entity, profile?.parsedDoc.body ?? undefined)
@@ -734,14 +731,18 @@ export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTo
 
     async getAcking(): Promise<User[]> {
         const acks = await this.client.api.getAcking(this.ccid)
-        const users = await Promise.all(acks.map((e) => User.load(this.client, e.to)))
-        return users.filter((e) => e !== null) as User[]
+        const results = await Promise.allSettled(acks.map((e) => User.load(this.client, e.to)))
+
+        const succeeded = results.filter((e) => e.status === 'fulfilled') as PromiseFulfilledResult<User>[]
+        return succeeded.map((e) => e.value)
     }
 
     async getAcker(): Promise<User[]> {
         const acks = await this.client.api.getAcker(this.ccid)
-        const users = await Promise.all(acks.map((e) => User.load(this.client, e.from)))
-        return users.filter((e) => e !== null) as User[]
+        const results = await Promise.allSettled(acks.map((e) => User.load(this.client, e.from)))
+
+        const succeeded = results.filter((e) => e.status === 'fulfilled') as PromiseFulfilledResult<User>[]
+        return succeeded.map((e) => e.value)
     }
 
     async Ack(): Promise<void> {

@@ -18,9 +18,11 @@ export const DomainCard = (props: DomainCardProps): JSX.Element | null => {
 
     useEffect(() => {
         client.api.getDomain(props.domainFQDN).then((e) => {
-            setDomain(e ?? null)
+            setDomain(e)
         })
     }, [props.domainFQDN])
+
+    console.log(domain)
 
     if (!domain) {
         return null

@@ -4,6 +4,7 @@ import BuildInfo from 'vite-plugin-info'
 import { VitePWA } from 'vite-plugin-pwa'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import { visualizer } from 'rollup-plugin-visualizer'
+import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -12,6 +13,11 @@ export default defineConfig({
     },
     server: {
       host: '0.0.0.0',
+    },
+    resolve: {
+        alias: {
+            client: path.resolve(__dirname, 'client'),
+        }
     },
     plugins: [
         react(),
