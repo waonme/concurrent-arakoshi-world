@@ -99,10 +99,9 @@ export class Client {
     static async create(privatekey: string, host: FQDN, opts?: ClientOptions): Promise<Client> {
         const keyPair = LoadKey(privatekey)
         if (!keyPair) throw new Error('invalid private key')
-        const ccid = ComputeCCID(keyPair.publickey)
 
         opts?.progressCallback?.('initializing auth provider')
-        const authProvider = new MasterKeyAuthProvider(privatekey, ccid)
+        const authProvider = new MasterKeyAuthProvider(privatekey, host)
 
         opts?.progressCallback?.('initializing cache engine')
         const cacheEngine = new IndexedDBKVS('concrnt-client', 'kvs')
