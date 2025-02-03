@@ -1,22 +1,22 @@
 import {
     Api,
-    CCID,
-    CSID,
-    AssociationID,
-    CCDocument,
+    type CCID,
+    type CSID,
+    type AssociationID,
+    type CCDocument,
     ComputeCCID,
-    FQDN,
-    KeyPair,
+    type FQDN,
+    type KeyPair,
     LoadKey,
     LoadSubKey,
-    MessageID,
-    TimelineID,
-    Entity as CoreEntity,
-    Domain as CoreDomain,
-    Timeline as CoreTimeline,
-    Profile as CoreProfile,
-    Association as CoreAssociation,
-    Message as CoreMessage,
+    type MessageID,
+    type TimelineID,
+    type Entity as CoreEntity,
+    type Domain as CoreDomain,
+    type Timeline as CoreTimeline,
+    type Profile as CoreProfile,
+    type Association as CoreAssociation,
+    type Message as CoreMessage,
     fetchWithTimeout,
     MasterKeyAuthProvider,
     IndexedDBKVS,
@@ -26,26 +26,30 @@ import {
     InMemoryKVS,
     GuestAuthProvider,
     TimelineReader,
-    QueryTimelineReader,
+    QueryTimelineReader
 } from '@concrnt/client'
 
-import { Schemas, Schema } from "./schemas";
-import { 
-    MarkdownMessageSchema,
-    ReplyMessageSchema,
-    RerouteMessageSchema,
-    LikeAssociationSchema,
-    ReactionAssociationSchema,
-    ReplyAssociationSchema,
-    RerouteAssociationSchema,
-    ProfileSchema,
-    CommunityTimelineSchema,
-    PlaintextMessageSchema,
-    MediaMessageSchema,
-    UpgradeAssociationSchema,
-
-} from "./schemas/";
-import { BadgeRef, CreateCurrentOptions, CreateMediaCrntOptions, CreatePlaintextCrntOptions } from './model';
+import { Schemas, type Schema } from './schemas'
+import {
+    type MarkdownMessageSchema,
+    type ReplyMessageSchema,
+    type RerouteMessageSchema,
+    type LikeAssociationSchema,
+    type ReactionAssociationSchema,
+    type ReplyAssociationSchema,
+    type RerouteAssociationSchema,
+    type ProfileSchema,
+    type CommunityTimelineSchema,
+    type PlaintextMessageSchema,
+    type MediaMessageSchema,
+    type UpgradeAssociationSchema
+} from './schemas/'
+import {
+    type BadgeRef,
+    type CreateCurrentOptions,
+    type CreateMediaCrntOptions,
+    type CreatePlaintextCrntOptions
+} from './model'
 
 const cacheLifetime = 5 * 60 * 1000
 
@@ -68,7 +72,7 @@ export class Client {
     ccid?: CCID
     ckid?: string
     server?: CoreDomain
-    keyPair?: KeyPair;
+    keyPair?: KeyPair
 
     socket?: Socket
     domainServices: Record<string, Service> = {}
@@ -86,8 +90,10 @@ export class Client {
 
     constructor(api: Api) {
         this.api = api
-        this.ccid = api.authProvider.getCCID()
-        this.ckid = api.authProvider.getCKID()
+        try {
+            this.ccid = api.authProvider.getCCID()
+            this.ckid = api.authProvider.getCKID()
+        } catch (_) {}
     }
 
     static async create(privatekey: string, host: FQDN, opts?: ClientOptions): Promise<Client> {
@@ -95,44 +101,47 @@ export class Client {
         if (!keyPair) throw new Error('invalid private key')
         const ccid = ComputeCCID(keyPair.publickey)
 
-        opts?.progressCallback?.("initializing auth provider")
+        opts?.progressCallback?.('initializing auth provider')
         const authProvider = new MasterKeyAuthProvider(privatekey, ccid)
 
-        opts?.progressCallback?.("initializing cache engine")
+        opts?.progressCallback?.('initializing cache engine')
         const cacheEngine = new IndexedDBKVS('concrnt-client', 'kvs')
 
-        opts?.progressCallback?.("creating api client")
+        opts?.progressCallback?.('creating api client')
         const api = new Api(authProvider, cacheEngine)
 
         const c = new Client(api)
         if (!c.ccid) throw new Error('invalid ccid')
 
-        opts?.progressCallback?.("loading user")
+        opts?.progressCallback?.('loading user')
         c.user = await c.getUser(c.ccid).catch((e) => {
             console.error('CLIENT::create::getUser::error', e)
             return null
         })
 
-        const loadAA = async () => {
+        const loadAA = async (): Promise<void> => {
             c.ackings = (await c.user?.getAcking()) ?? []
             c.ackers = (await c.user?.getAcker()) ?? []
         }
         loadAA()
 
-        opts?.progressCallback?.("loading domain services")
-        c.domainServices = await fetchWithTimeout(host, '/services', {}).then((res) => res.json()).catch((e) => {
-            console.error('CLIENT::create::fetch::error', e)
-            return {}
-        })
+        opts?.progressCallback?.('loading domain services')
+        c.domainServices = await fetchWithTimeout(host, '/services', {})
+            .then((res) => res.json())
+            .catch((e) => {
+                console.error('CLIENT::create::fetch::error', e)
+                return {}
+            })
 
-        opts?.progressCallback?.("loading domain")
-        c.server = await c.api.getDomain(host).catch((e) => {
-            console.error('CLIENT::create::getDomain::error', e)
-            return null
-        }) ?? undefined
+        opts?.progressCallback?.('loading domain')
+        c.server =
+            (await c.api.getDomain(host).catch((e) => {
+                console.error('CLIENT::create::getDomain::error', e)
+                return null
+            })) ?? undefined
 
-        opts?.progressCallback?.("validating profile")
-        if (c.user && await c.checkProfileIsOk() === false) {
+        opts?.progressCallback?.('validating profile')
+        if (c.user && !(await c.checkProfileIsOk())) {
             await c.setProfile({})
         }
 
@@ -143,64 +152,68 @@ export class Client {
         const key = LoadSubKey(subkey)
         if (!key) throw new Error('invalid subkey')
 
-        opts?.progressCallback?.("initializing auth provider")
+        opts?.progressCallback?.('initializing auth provider')
         const authProvider = new SubKeyAuthProvider(subkey)
 
-        opts?.progressCallback?.("initializing cache engine")
+        opts?.progressCallback?.('initializing cache engine')
         const cacheEngine = new IndexedDBKVS('concrnt-client', 'kvs')
 
-        opts?.progressCallback?.("creating api client")
+        opts?.progressCallback?.('creating api client')
         const api = new Api(authProvider, cacheEngine)
 
         const host = api.authProvider.getHost()
 
-        opts?.progressCallback?.("creating client")
+        opts?.progressCallback?.('creating client')
         const c = new Client(api)
         if (!c.ccid) throw new Error('invalid ccid')
 
-        opts?.progressCallback?.("loading user")
+        opts?.progressCallback?.('loading user')
         c.user = await c.getUser(c.ccid).catch((e) => {
             console.error('CLIENT::create::getUser::error', e)
             return null
         })
 
-        const loadAA = async () => {
+        const loadAA = async (): Promise<void> => {
             c.ackings = (await c.user?.getAcking()) ?? []
             c.ackers = (await c.user?.getAcker()) ?? []
         }
         loadAA()
 
-        opts?.progressCallback?.("loading domain services")
-        c.domainServices = await fetchWithTimeout(key.domain, '/services', {}).then((res) => res.json()).catch((e) => {
-            console.error('CLIENT::create::fetch::error', e)
-            return {}
-        })
+        opts?.progressCallback?.('loading domain services')
+        c.domainServices = await fetchWithTimeout(key.domain, '/services', {})
+            .then((res) => res.json())
+            .catch((e) => {
+                console.error('CLIENT::create::fetch::error', e)
+                return {}
+            })
 
-        opts?.progressCallback?.("loading domain")
-        c.server = await c.api.getDomain(host).catch((e) => {
-            console.error('CLIENT::create::getDomain::error', e)
-            return null
-        }) ?? undefined
+        opts?.progressCallback?.('loading domain')
+        c.server =
+            (await c.api.getDomain(host).catch((e) => {
+                console.error('CLIENT::create::getDomain::error', e)
+                return null
+            })) ?? undefined
 
-        opts?.progressCallback?.("validating profile")
-        if (c.user && await c.checkProfileIsOk() === false) {
+        opts?.progressCallback?.('validating profile')
+        if (c.user && !(await c.checkProfileIsOk())) {
             await c.setProfile({})
         }
 
-        opts?.progressCallback?.("done")
+        opts?.progressCallback?.('done')
         return c
     }
-    
+
     static async createAsGuest(host: FQDN, _opts?: ClientOptions): Promise<Client> {
         const cacheEngine = new InMemoryKVS()
         const authProvider = new GuestAuthProvider(host)
         const api = new Api(authProvider, cacheEngine)
         const c = new Client(api)
 
-        c.server = await c.api.getDomain(host).catch((e) => {
-            console.error('CLIENT::create::getDomain::error', e)
-            return null
-        }) ?? undefined
+        c.server =
+            (await c.api.getDomain(host).catch((e) => {
+                console.error('CLIENT::create::getDomain::error', e)
+                return null
+            })) ?? undefined
 
         return c
     }
@@ -234,7 +247,7 @@ export class Client {
         const cached = this.messageCache[id]
 
         if (cached && cached.expire > Date.now()) {
-            return cached.data
+            return await cached.data
         }
 
         const message = Message.load(this, id, authorID, hint)
@@ -244,7 +257,7 @@ export class Client {
             expire: Date.now() + cacheLifetime
         }
 
-        return this.messageCache[id].data
+        return await this.messageCache[id].data
     }
 
     invalidateMessage(id: MessageID): void {
@@ -252,10 +265,14 @@ export class Client {
         delete this.messageCache[id]
     }
 
-    async createMarkdownCrnt(body: string, streams: TimelineID[], options?: CreateCurrentOptions): Promise<CoreMessage<MarkdownMessageSchema>> {
-        let policy = undefined
-        let policyParams = undefined
-        let policyDefaults = undefined
+    async createMarkdownCrnt(
+        body: string,
+        streams: TimelineID[],
+        options?: CreateCurrentOptions
+    ): Promise<CoreMessage<MarkdownMessageSchema>> {
+        let policy
+        let policyParams
+        let policyDefaults
 
         if (options?.whisper && options.whisper.length > 0) {
             policy = 'https://policy.concrnt.world/m/whisper.json'
@@ -266,7 +283,7 @@ export class Client {
 
         if (options?.isPrivate) {
             policyDefaults = JSON.stringify({
-                'timeline.message.read': false,
+                'timeline.message.read': false
             })
         }
 
@@ -275,7 +292,7 @@ export class Client {
             {
                 body,
                 emojis: options?.emojis,
-                profileOverride: options?.profileOverride,
+                profileOverride: options?.profileOverride
             },
             streams,
             {
@@ -284,21 +301,30 @@ export class Client {
                 policyDefaults
             }
         )
-        if(options?.mentions && options.mentions.length > 0) {
+        if (options?.mentions && options.mentions.length > 0) {
             const associationStream = []
-            for(const mention of options.mentions) {
+            for (const mention of options.mentions) {
                 associationStream.push('world.concrnt.t-notify@' + mention)
             }
-            await this.api.createAssociation(Schemas.mentionAssociation, {}, created.id, created.author, associationStream)
+            await this.api.createAssociation(
+                Schemas.mentionAssociation,
+                {},
+                created.id,
+                created.author,
+                associationStream
+            )
         }
         return created
     }
 
-    async createPlainTextCrnt(body: string, streams: TimelineID[], options?: CreatePlaintextCrntOptions): Promise<CoreMessage<MarkdownMessageSchema>> {
-
-        let policy = undefined
-        let policyParams = undefined
-        let policyDefaults = undefined
+    async createPlainTextCrnt(
+        body: string,
+        streams: TimelineID[],
+        options?: CreatePlaintextCrntOptions
+    ): Promise<CoreMessage<MarkdownMessageSchema>> {
+        let policy
+        let policyParams
+        let policyDefaults
 
         if (options?.whisper && options.whisper.length > 0) {
             policy = 'https://policy.concrnt.world/m/whisper.json'
@@ -309,14 +335,14 @@ export class Client {
 
         if (options?.isPrivate) {
             policyDefaults = JSON.stringify({
-                'timeline.message.read': false,
+                'timeline.message.read': false
             })
         }
 
         const newMessage = await this.api.createMessage<PlaintextMessageSchema>(
             Schemas.plaintextMessage,
             {
-                body: body,
+                body,
                 profileOverride: options?.profileOverride
             },
             streams,
@@ -329,11 +355,14 @@ export class Client {
         return newMessage
     }
 
-    async createMediaCrnt(body: string, streams: TimelineID[], options?: CreateMediaCrntOptions): Promise<CoreMessage<MarkdownMessageSchema>> {
-
-        let policy = undefined
-        let policyParams = undefined
-        let policyDefaults = undefined
+    async createMediaCrnt(
+        body: string,
+        streams: TimelineID[],
+        options?: CreateMediaCrntOptions
+    ): Promise<CoreMessage<MarkdownMessageSchema>> {
+        let policy
+        let policyParams
+        let policyDefaults
 
         if (options?.whisper && options.whisper.length > 0) {
             policy = 'https://policy.concrnt.world/m/whisper.json'
@@ -344,14 +373,14 @@ export class Client {
 
         if (options?.isPrivate) {
             policyDefaults = JSON.stringify({
-                'timeline.message.read': false,
+                'timeline.message.read': false
             })
         }
 
         const newMessage = await this.api.createMessage<MediaMessageSchema>(
             Schemas.mediaMessage,
             {
-                body: body,
+                body,
                 emojis: options?.emojis,
                 profileOverride: options?.profileOverride,
                 medias: options?.medias
@@ -366,7 +395,7 @@ export class Client {
         return newMessage
     }
 
-    async getTimelinesBySchema<T>(remote: FQDN, schema: string): Promise<Timeline<T>[]> {
+    async getTimelinesBySchema<T>(remote: FQDN, schema: string): Promise<Array<Timeline<T>>> {
         const streams = await this.api.getTimelineListBySchema<T>(schema, remote)
         return streams.map((e) => new Timeline<T>(this, e))
     }
@@ -374,14 +403,14 @@ export class Client {
     async createCommunityTimeline(body: CommunityTimelineSchema): Promise<CoreTimeline<CommunityTimelineSchema>> {
         if (!this.server) throw new Error('server is not set')
         return await this.api.upsertTimeline<CommunityTimelineSchema>(Schemas.communityTimeline, body, {
-            owner: this.server.csid,
+            owner: this.server.csid
         })
     }
 
     async checkProfileIsOk(): Promise<boolean> {
         if (!this.ccid) return false
 
-        let homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid)
+        const homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid)
         if (!homeStream) {
             return false
         }
@@ -395,11 +424,14 @@ export class Client {
             }
         }
 
-        let notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid)
+        const notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid)
         if (!notificationStream) {
             return false
         }
-        if (notificationStream.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' && !notificationStream.policyParams) {
+        if (
+            notificationStream.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' &&
+            !notificationStream.policyParams
+        ) {
             return false
         }
         if (notificationStream.policyParams) {
@@ -409,11 +441,14 @@ export class Client {
             }
         }
 
-        let associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid)
+        const associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid)
         if (!associationStream) {
             return false
         }
-        if (associationStream.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' && !associationStream.policyParams) {
+        if (
+            associationStream.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' &&
+            !associationStream.policyParams
+        ) {
             return false
         }
         if (associationStream.policyParams) {
@@ -431,24 +466,33 @@ export class Client {
         return true
     }
 
-    async setProfile(updates: {username?: string, description?: string, avatar?: string, banner?: string, subprofiles?: string[], badges?: BadgeRef[]}): Promise<CoreProfile<ProfileSchema>> {
+    async setProfile(updates: {
+        username?: string
+        description?: string
+        avatar?: string
+        banner?: string
+        subprofiles?: string[]
+        badges?: BadgeRef[]
+    }): Promise<CoreProfile<ProfileSchema>> {
         if (!this.ccid) throw new Error('ccid is not set')
 
-        let homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid)
+        const homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid)
         if (!homeStream) {
-            await this.api.upsertTimeline(
-                Schemas.emptyTimeline,
-                {},
-                {
-                    semanticID: 'world.concrnt.t-home',
-                    owner: this.ccid,
-                    indexable: false,
-                    policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                    policyParams: `{"isWritePublic": false, "isReadPublic": true, "writer": ["${this.ccid}"], "reader": []}`
-                }
-            ).catch((e) => {
-                console.error('CLIENT::setProfile::upsertTimeline::error', e)
-            })
+            await this.api
+                .upsertTimeline(
+                    Schemas.emptyTimeline,
+                    {},
+                    {
+                        semanticID: 'world.concrnt.t-home',
+                        owner: this.ccid,
+                        indexable: false,
+                        policy: 'https://policy.concrnt.world/t/inline-read-write.json',
+                        policyParams: `{"isWritePublic": false, "isReadPublic": true, "writer": ["${this.ccid}"], "reader": []}`
+                    }
+                )
+                .catch((e) => {
+                    console.error('CLIENT::setProfile::upsertTimeline::error', e)
+                })
         } else {
             const policy = homeStream.policy
             if (policy === 'https://policy.concrnt.world/t/inline-read-write.json') {
@@ -456,7 +500,26 @@ export class Client {
                     const policyParams = JSON.parse(homeStream.policyParams)
                     if (policyParams.writer.indexOf(this.ccid) === -1) {
                         policyParams.writer.push(this.ccid)
-                        await this.api.upsertTimeline(
+                        await this.api
+                            .upsertTimeline(
+                                Schemas.emptyTimeline,
+                                {},
+                                {
+                                    id: homeStream.id + '@' + this.ccid,
+                                    // semanticID: 'world.concrnt.t-home',
+                                    owner: this.ccid,
+                                    indexable: false,
+                                    policy: 'https://policy.concrnt.world/t/inline-read-write.json',
+                                    policyParams: JSON.stringify(policyParams)
+                                }
+                            )
+                            .catch((e) => {
+                                console.error('CLIENT::setProfile::upsertTimeline::error', e)
+                            })
+                    }
+                } else {
+                    await this.api
+                        .upsertTimeline(
                             Schemas.emptyTimeline,
                             {},
                             {
@@ -465,46 +528,33 @@ export class Client {
                                 owner: this.ccid,
                                 indexable: false,
                                 policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                                policyParams: JSON.stringify(policyParams)
+                                policyParams: `{"isWritePublic": false, "isReadPublic": true, "writer": ["${this.ccid}"], "reader": []}`
                             }
-                        ).catch((e) => {
+                        )
+                        .catch((e) => {
                             console.error('CLIENT::setProfile::upsertTimeline::error', e)
                         })
-                    }
-                } else {
-                    await this.api.upsertTimeline(
-                        Schemas.emptyTimeline,
-                        {},
-                        {
-                            id: homeStream.id + '@' + this.ccid,
-                            // semanticID: 'world.concrnt.t-home',
-                            owner: this.ccid,
-                            indexable: false,
-                            policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                            policyParams: `{"isWritePublic": false, "isReadPublic": true, "writer": ["${this.ccid}"], "reader": []}`
-                        }
-                    ).catch((e) => {
-                        console.error('CLIENT::setProfile::upsertTimeline::error', e)
-                    })
                 }
             }
         }
 
-        let notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid)
+        const notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid)
         if (!notificationStream) {
-            await this.api.upsertTimeline(
-                Schemas.emptyTimeline,
-                {},
-                {
-                    semanticID: 'world.concrnt.t-notify',
-                    owner: this.ccid,
-                    indexable: false,
-                    policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                    policyParams: `{"isWritePublic": true, "isReadPublic": false, "writer": [], "reader": ["${this.ccid}"]}`
-                }
-            ).catch((e) => {
-                console.error('CLIENT::setProfile::upsertTimeline::error', e)
-            })
+            await this.api
+                .upsertTimeline(
+                    Schemas.emptyTimeline,
+                    {},
+                    {
+                        semanticID: 'world.concrnt.t-notify',
+                        owner: this.ccid,
+                        indexable: false,
+                        policy: 'https://policy.concrnt.world/t/inline-read-write.json',
+                        policyParams: `{"isWritePublic": true, "isReadPublic": false, "writer": [], "reader": ["${this.ccid}"]}`
+                    }
+                )
+                .catch((e) => {
+                    console.error('CLIENT::setProfile::upsertTimeline::error', e)
+                })
         } else {
             const policy = notificationStream.policy
             if (policy === 'https://policy.concrnt.world/t/inline-read-write.json') {
@@ -512,7 +562,26 @@ export class Client {
                     const policyParams = JSON.parse(notificationStream.policyParams)
                     if (policyParams.reader.indexOf(this.ccid) === -1) {
                         policyParams.reader.push(this.ccid)
-                        await this.api.upsertTimeline(
+                        await this.api
+                            .upsertTimeline(
+                                Schemas.emptyTimeline,
+                                {},
+                                {
+                                    id: notificationStream.id + '@' + this.ccid,
+                                    // semanticID: 'world.concrnt.t-notify',
+                                    owner: this.ccid,
+                                    indexable: false,
+                                    policy: 'https://policy.concrnt.world/t/inline-read-write.json',
+                                    policyParams: JSON.stringify(policyParams)
+                                }
+                            )
+                            .catch((e) => {
+                                console.error('CLIENT::setProfile::upsertTimeline::error', e)
+                            })
+                    }
+                } else {
+                    await this.api
+                        .upsertTimeline(
                             Schemas.emptyTimeline,
                             {},
                             {
@@ -521,46 +590,33 @@ export class Client {
                                 owner: this.ccid,
                                 indexable: false,
                                 policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                                policyParams: JSON.stringify(policyParams)
+                                policyParams: `{"isWritePublic": true, "isReadPublic": false, "writer": [], "reader": ["${this.ccid}"]}`
                             }
-                        ).catch((e) => {
+                        )
+                        .catch((e) => {
                             console.error('CLIENT::setProfile::upsertTimeline::error', e)
                         })
-                    }
-                } else {
-                    await this.api.upsertTimeline(
-                        Schemas.emptyTimeline,
-                        {},
-                        {
-                            id: notificationStream.id + '@' + this.ccid,
-                            // semanticID: 'world.concrnt.t-notify',
-                            owner: this.ccid,
-                            indexable: false,
-                            policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                            policyParams: `{"isWritePublic": true, "isReadPublic": false, "writer": [], "reader": ["${this.ccid}"]}`
-                        }
-                    ).catch((e) => {
-                        console.error('CLIENT::setProfile::upsertTimeline::error', e)
-                    })
                 }
             }
         }
 
-        let associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid)
+        const associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid)
         if (!associationStream) {
-            await this.api.upsertTimeline(
-                Schemas.emptyTimeline,
-                {},
-                {
-                    semanticID: 'world.concrnt.t-assoc',
-                    owner: this.ccid,
-                    indexable: false,
-                    policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                    policyParams: `{"isWritePublic": false, "isReadPublic": true, "writer": ["${this.ccid}"], "reader": []}`
-                }
-            ).catch((e) => {
-                console.error('CLIENT::setProfile::upsertTimeline::error', e)
-            })
+            await this.api
+                .upsertTimeline(
+                    Schemas.emptyTimeline,
+                    {},
+                    {
+                        semanticID: 'world.concrnt.t-assoc',
+                        owner: this.ccid,
+                        indexable: false,
+                        policy: 'https://policy.concrnt.world/t/inline-read-write.json',
+                        policyParams: `{"isWritePublic": false, "isReadPublic": true, "writer": ["${this.ccid}"], "reader": []}`
+                    }
+                )
+                .catch((e) => {
+                    console.error('CLIENT::setProfile::upsertTimeline::error', e)
+                })
         } else {
             const policy = associationStream.policy
             if (policy === 'https://policy.concrnt.world/t/inline-read-write.json') {
@@ -568,50 +624,59 @@ export class Client {
                     const policyParams = JSON.parse(associationStream.policyParams)
                     if (policyParams.writer.indexOf(this.ccid) === -1) {
                         policyParams.writer.push(this.ccid)
-                        await this.api.upsertTimeline(
+                        await this.api
+                            .upsertTimeline(
+                                Schemas.emptyTimeline,
+                                {},
+                                {
+                                    id: associationStream.id + '@' + this.ccid,
+                                    // semanticID: 'world.concrnt.t-assoc',
+                                    owner: this.ccid,
+                                    indexable: false,
+                                    policy: 'https://policy.concrnt.world/t/inline-read-write.json',
+                                    policyParams: JSON.stringify(policyParams)
+                                }
+                            )
+                            .catch((e) => {
+                                console.error('CLIENT::setProfile::upsertTimeline::error', e)
+                            })
+                    }
+                } else {
+                    await this.api
+                        .upsertTimeline(
                             Schemas.emptyTimeline,
                             {},
                             {
                                 id: associationStream.id + '@' + this.ccid,
-                                // semanticID: 'world.concrnt.t-assoc',
+                                semanticID: 'world.concrnt.t-assoc',
                                 owner: this.ccid,
                                 indexable: false,
                                 policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                                policyParams: JSON.stringify(policyParams)
+                                policyParams: `{"isWritePublic": false, "isReadPublic": true, "writer": ["${this.ccid}"], "reader": []}`
                             }
-                        ).catch((e) => {
+                        )
+                        .catch((e) => {
                             console.error('CLIENT::setProfile::upsertTimeline::error', e)
                         })
-                    }
-                } else {
-                    await this.api.upsertTimeline(
-                        Schemas.emptyTimeline,
-                        {},
-                        {
-                            id: associationStream.id + '@' + this.ccid,
-                            semanticID: 'world.concrnt.t-assoc',
-                            owner: this.ccid,
-                            indexable: false,
-                            policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                            policyParams: `{"isWritePublic": false, "isReadPublic": true, "writer": ["${this.ccid}"], "reader": []}`
-                        }
-                    ).catch((e) => {
-                        console.error('CLIENT::setProfile::upsertTimeline::error', e)
-                    })
                 }
             }
         }
 
-        const currentprof = (await this.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid))?.parsedDoc.body
+        const currentprof = (await this.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid))
+            ?.parsedDoc.body
 
-        const updated = await this.api.upsertProfile<ProfileSchema>(Schemas.profile, {
-            username: updates.username ?? currentprof?.username,
-            description: updates.description ?? currentprof?.description,
-            avatar: updates.avatar ?? currentprof?.avatar,
-            banner: updates.banner ?? currentprof?.banner,
-            subprofiles: updates.subprofiles ?? currentprof?.subprofiles,
-            badges: updates.badges ?? currentprof?.badges
-        }, { semanticID: 'world.concrnt.p'})
+        const updated = await this.api.upsertProfile<ProfileSchema>(
+            Schemas.profile,
+            {
+                username: updates.username ?? currentprof?.username,
+                description: updates.description ?? currentprof?.description,
+                avatar: updates.avatar ?? currentprof?.avatar,
+                banner: updates.banner ?? currentprof?.banner,
+                subprofiles: updates.subprofiles ?? currentprof?.subprofiles,
+                badges: updates.badges ?? currentprof?.badges
+            },
+            { semanticID: 'world.concrnt.p' }
+        )
 
         this.api.invalidateProfile(`world.concrnt.p@${this.ccid}`)
 
@@ -625,7 +690,7 @@ export class Client {
             this.socket = new Socket(this.api)
             await this.socket.waitOpen()
         }
-        return this.socket!
+        return this.socket
     }
 
     async newSocketListener(): Promise<SocketListener> {
@@ -633,7 +698,7 @@ export class Client {
         return new SocketListener(socket)
     }
 
-    async newTimelineReader(opts?: {withoutSocket: boolean}): Promise<TimelineReader> {
+    async newTimelineReader(opts?: { withoutSocket: boolean }): Promise<TimelineReader> {
         if (opts?.withoutSocket) {
             return new TimelineReader(this.api, undefined)
         }
@@ -647,21 +712,20 @@ export class Client {
 }
 
 export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTombstoneDoc'> {
-
     client: Client
 
     // ---------- //
 
-    ccid: CCID;
-    alias?: string;
-    tag: string;
-    domain: FQDN;
-    cdate: string;
-    score: number;
-    affiliationDocument: string;
-    affiliationSignature: string;
-    tombstoneDocument?: string;
-    tombstoneSignature?: string;
+    ccid: CCID
+    alias?: string
+    tag: string
+    domain: FQDN
+    cdate: string
+    score: number
+    affiliationDocument: string
+    affiliationSignature: string
+    tombstoneDocument?: string
+    tombstoneSignature?: string
 
     // ---------- //
 
@@ -679,7 +743,7 @@ export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTo
         return 'world.concrnt.t-home@' + this.ccid
     }
 
-    toJSON() {
+    toJSON(): any {
         return {
             ccid: this.ccid,
             alias: this.alias,
@@ -694,11 +758,7 @@ export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTo
         }
     }
 
-    constructor(client: Client,
-                domain: FQDN,
-                entity: CoreEntity,
-                profile?: ProfileSchema
-    ) {
+    constructor(client: Client, domain: FQDN, entity: CoreEntity, profile?: ProfileSchema) {
         this.client = client
         this.domain = domain
         this.profile = profile
@@ -733,7 +793,7 @@ export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTo
         const acks = await this.client.api.getAcking(this.ccid)
         const results = await Promise.allSettled(acks.map((e) => User.load(this.client, e.to)))
 
-        const succeeded = results.filter((e) => e.status === 'fulfilled') as PromiseFulfilledResult<User>[]
+        const succeeded = results.filter((e) => e.status === 'fulfilled') as Array<PromiseFulfilledResult<User>>
         return succeeded.map((e) => e.value)
     }
 
@@ -741,7 +801,7 @@ export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTo
         const acks = await this.client.api.getAcker(this.ccid)
         const results = await Promise.allSettled(acks.map((e) => User.load(this.client, e.from)))
 
-        const succeeded = results.filter((e) => e.status === 'fulfilled') as PromiseFulfilledResult<User>[]
+        const succeeded = results.filter((e) => e.status === 'fulfilled') as Array<PromiseFulfilledResult<User>>
         return succeeded.map((e) => e.value)
     }
 
@@ -754,23 +814,20 @@ export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTo
         await this.client.api.unack(this.ccid)
         await this.client.reloadAckings()
     }
-
-
 }
 
 export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'parsedDoc'> {
-
     client: Client
 
     // ---------- //
 
-    id: AssociationID;
-    author: CCID;
-    owner: CCID | CSID;
-    schema: string;
-    signature: string;
-    target: MessageID;
-    cdate: string;
+    id: AssociationID
+    author: CCID
+    owner: CCID | CSID
+    schema: string
+    signature: string
+    target: MessageID
+    cdate: string
 
     // ---------- //
 
@@ -783,7 +840,6 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'pa
         } else {
             return 'characters'
         }
-
     }
 
     constructor(client: Client, data: CoreAssociation<T>) {
@@ -801,7 +857,7 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'pa
         this._document = data.document
     }
 
-    toJSON(): Omit<CoreAssociation<T>, 'parsedDoc'> {
+    toJSON(): any {
         return {
             id: this.id,
             author: this.author,
@@ -810,7 +866,7 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'pa
             document: this._document,
             signature: this.signature,
             target: this.target,
-            cdate: this.cdate,
+            cdate: this.cdate
         }
     }
 
@@ -822,7 +878,7 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'pa
         if (!coreAss) return null
 
         const association = new Association<T>(client, coreAss)
-        association.authorUser = await client.getUser(association.author) ?? undefined
+        association.authorUser = (await client.getUser(association.author)) ?? undefined
 
         association.owner = owner
 
@@ -831,7 +887,7 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'pa
 
     static async loadByBody<T>(client: Client, body: CoreAssociation<T>): Promise<Association<T> | null> {
         const association = new Association<T>(client, body)
-        association.authorUser = await client.getUser(association.author) ?? undefined
+        association.authorUser = (await client.getUser(association.author)) ?? undefined
 
         return association
     }
@@ -857,22 +913,21 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'pa
 }
 
 export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDoc'> {
-
     client: Client
 
     // ---------- //
 
-    id: TimelineID;
-    indexable: boolean;
-    owner: CCID | CSID;
-    author: CCID;
-    schema: string;
-    policy?: string;
-    policyParams?: any;
-    document: CCDocument.Timeline<T>;
-    signature: string;
-    cdate: string;
-    mdate: string;
+    id: TimelineID
+    indexable: boolean
+    owner: CCID | CSID
+    author: CCID
+    schema: string
+    policy?: string
+    policyParams?: any
+    document: CCDocument.Timeline<T>
+    signature: string
+    cdate: string
+    mdate: string
 
     // ---------- //
 
@@ -902,7 +957,7 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
         }
     }
 
-    toJSON(): Omit<CoreTimeline<T>, 'parsedDoc'> {
+    toJSON(): any {
         return {
             id: this.id,
             indexable: this.indexable,
@@ -929,10 +984,12 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
         return timeline
     }
 
-    async getAssociations(): Promise<Association<any>[]> {
+    async getAssociations(): Promise<Array<Association<any>>> {
         const coreass = await this.client.api.getTimelineAssociations(this.id)
-        const ass: Array<Association<any> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<any>(this.client, e)))
-        return ass.filter(e => e) as Array<Association<any>>
+        const ass: Array<Association<any> | null> = await Promise.all(
+            coreass.map((e) => Association.loadByBody<any>(this.client, e))
+        )
+        return ass.filter((e) => e) as Array<Association<any>>
     }
 
     invalidate(): void {
@@ -941,21 +998,20 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
 }
 
 export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyParams' | 'parsedDoc' | 'parsedPolicy'> {
-
     client: Client
 
     // ---------- //
-    id: MessageID;
-    author: CCID;
-    schema: string;
+    id: MessageID
+    author: CCID
+    schema: string
     document: CCDocument.Message<T>
-    signature: string;
-    timelines: TimelineID[];
-    policy?: string;
-    policyParams: any;
-    associations: CoreAssociation<any>[];
-    ownAssociations: CoreAssociation<any>[];
-    cdate: string;
+    signature: string
+    timelines: TimelineID[]
+    policy?: string
+    policyParams: any
+    associations: Array<CoreAssociation<any>>
+    ownAssociations: Array<CoreAssociation<any>>
+    cdate: string
     // ---------- //
 
     _document: string
@@ -963,7 +1019,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
     authorUser?: User
     associationCounts?: Record<string, number>
     reactionCounts?: Record<string, number>
-    postedStreams?: Timeline<any>[]
+    postedStreams?: Array<Timeline<any>>
     onUpdate?: () => void
 
     constructor(client: Client, data: CoreMessage<T>) {
@@ -989,7 +1045,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         }
     }
 
-    toJSON() {
+    toJSON(): any {
         return {
             associations: this.associations,
             ownAssociations: this.ownAssociations,
@@ -1015,14 +1071,14 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
 
         const message = new Message(client, coreMsg)
 
-        message.authorUser = await client.getUser(authorID) ?? undefined
+        message.authorUser = (await client.getUser(authorID)) ?? undefined
         message.associationCounts = await client.api.getMessageAssociationCountsByTarget(id, authorID)
-        message.reactionCounts = await client.api.getMessageAssociationCountsByTarget(id, authorID, {schema: Schemas.reactionAssociation})
+        message.reactionCounts = await client.api.getMessageAssociationCountsByTarget(id, authorID, {
+            schema: Schemas.reactionAssociation
+        })
 
-        const timelines = await Promise.all(
-            message.timelines.map((e) => client.getTimeline(e))
-        )
-        message.postedStreams = timelines.filter((e) => e) as Timeline<any>[]
+        const timelines = await Promise.all(message.timelines.map((e) => client.getTimeline(e)))
+        message.postedStreams = timelines.filter((e) => e) as Array<Timeline<any>>
 
         return message
     }
@@ -1035,85 +1091,133 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         return author
     }
 
-    async getTimelines<T>() : Promise<Timeline<T>[]> {
+    async getTimelines<T>(): Promise<Array<Timeline<T>>> {
         const timelines = await Promise.all(this.timelines.map((e) => this.client.getTimeline(e)))
-        return timelines.filter((e) => e) as Timeline<T>[]
+        return timelines.filter((e) => e) as Array<Timeline<T>>
     }
 
-    async getReplyAssociations(): Promise<Association<ReplyAssociationSchema>[]> {
-        const coreass = await this.client.api.getMessageAssociationsByTarget<ReplyAssociationSchema>(this.id, this.author, {schema: Schemas.replyAssociation})
-        const ass: Array<Association<ReplyAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<ReplyAssociationSchema>(this.client, e)))
-        return ass.filter(e => e) as Array<Association<ReplyAssociationSchema>>
+    async getReplyAssociations(): Promise<Array<Association<ReplyAssociationSchema>>> {
+        const coreass = await this.client.api.getMessageAssociationsByTarget<ReplyAssociationSchema>(
+            this.id,
+            this.author,
+            { schema: Schemas.replyAssociation }
+        )
+        const ass: Array<Association<ReplyAssociationSchema> | null> = await Promise.all(
+            coreass.map((e) => Association.loadByBody<ReplyAssociationSchema>(this.client, e))
+        )
+        return ass.filter((e) => e) as Array<Association<ReplyAssociationSchema>>
     }
 
-    async getRerouteAssociations(): Promise<Association<RerouteAssociationSchema>[]> {
-        const coreass = await this.client.api.getMessageAssociationsByTarget<RerouteAssociationSchema>(this.id, this.author, {schema: Schemas.rerouteAssociation})
-        const ass: Array<Association<LikeAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<RerouteAssociationSchema>(this.client, e)))
-        return ass.filter(e => e) as Array<Association<RerouteAssociationSchema>>
+    async getRerouteAssociations(): Promise<Array<Association<RerouteAssociationSchema>>> {
+        const coreass = await this.client.api.getMessageAssociationsByTarget<RerouteAssociationSchema>(
+            this.id,
+            this.author,
+            { schema: Schemas.rerouteAssociation }
+        )
+        const ass: Array<Association<LikeAssociationSchema> | null> = await Promise.all(
+            coreass.map((e) => Association.loadByBody<RerouteAssociationSchema>(this.client, e))
+        )
+        return ass.filter((e) => e) as Array<Association<RerouteAssociationSchema>>
     }
 
-    async getReplyMessages(): Promise<{association?: Association<ReplyAssociationSchema>, message?: Message<ReplyMessageSchema>}[]> {
-        const associations = await this.client.api.getMessageAssociationsByTarget<ReplyAssociationSchema>(this.id, this.author, {schema: Schemas.replyAssociation})
+    async getReplyMessages(): Promise<
+        Array<{ association?: Association<ReplyAssociationSchema>; message?: Message<ReplyMessageSchema> }>
+    > {
+        const associations = await this.client.api.getMessageAssociationsByTarget<ReplyAssociationSchema>(
+            this.id,
+            this.author,
+            { schema: Schemas.replyAssociation }
+        )
         const results = await Promise.all(
-            associations.map(
-                async (e) => {
-                    const assDoc = e.parsedDoc
-                    return {
-                        association: await Association.loadByBody<ReplyAssociationSchema>(this.client, e) ?? undefined,
-                        message: await this.client.getMessage<ReplyMessageSchema>(assDoc.body.messageId, assDoc.body.messageAuthor) ?? undefined
-                    }
+            associations.map(async (e) => {
+                const assDoc = e.parsedDoc
+                return {
+                    association: (await Association.loadByBody<ReplyAssociationSchema>(this.client, e)) ?? undefined,
+                    message:
+                        (await this.client.getMessage<ReplyMessageSchema>(
+                            assDoc.body.messageId,
+                            assDoc.body.messageAuthor
+                        )) ?? undefined
                 }
-            )
+            })
         )
         return results
     }
 
-    async getRerouteMessages(): Promise<{association?: Association<RerouteAssociationSchema>, message?: Message<RerouteMessageSchema>}[]> {
-        const associations = await this.client.api.getMessageAssociationsByTarget<RerouteAssociationSchema>(this.id, this.author, {schema: Schemas.rerouteAssociation})
+    async getRerouteMessages(): Promise<
+        Array<{ association?: Association<RerouteAssociationSchema>; message?: Message<RerouteMessageSchema> }>
+    > {
+        const associations = await this.client.api.getMessageAssociationsByTarget<RerouteAssociationSchema>(
+            this.id,
+            this.author,
+            { schema: Schemas.rerouteAssociation }
+        )
         const results = await Promise.all(
-            associations.map(
-                async (e) => {
-                    const assDoc = e.parsedDoc
-                    return {
-                        association: await Association.loadByBody<RerouteAssociationSchema>(this.client, e) ?? undefined,
-                        message: await this.client.getMessage<RerouteMessageSchema>(assDoc.body.messageId, assDoc.body.messageAuthor) ?? undefined
-                    }
+            associations.map(async (e) => {
+                const assDoc = e.parsedDoc
+                return {
+                    association: (await Association.loadByBody<RerouteAssociationSchema>(this.client, e)) ?? undefined,
+                    message:
+                        (await this.client.getMessage<RerouteMessageSchema>(
+                            assDoc.body.messageId,
+                            assDoc.body.messageAuthor
+                        )) ?? undefined
                 }
-            )
+            })
         )
         return results
     }
 
-    async getFavorites(): Promise<Association<LikeAssociationSchema>[]> {
-        const coreass = await this.client.api.getMessageAssociationsByTarget<LikeAssociationSchema>(this.id, this.author, {schema: Schemas.likeAssociation})
-        const ass: Array<Association<LikeAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<LikeAssociationSchema>(this.client, e)))
-        return ass.filter(e => e) as Array<Association<LikeAssociationSchema>>
+    async getFavorites(): Promise<Array<Association<LikeAssociationSchema>>> {
+        const coreass = await this.client.api.getMessageAssociationsByTarget<LikeAssociationSchema>(
+            this.id,
+            this.author,
+            { schema: Schemas.likeAssociation }
+        )
+        const ass: Array<Association<LikeAssociationSchema> | null> = await Promise.all(
+            coreass.map((e) => Association.loadByBody<LikeAssociationSchema>(this.client, e))
+        )
+        return ass.filter((e) => e) as Array<Association<LikeAssociationSchema>>
     }
 
-    async getReactions(imgUrl?: string): Promise<Association<ReactionAssociationSchema>[]> {
-        let query: any = {schema: Schemas.reactionAssociation}
+    async getReactions(imgUrl?: string): Promise<Array<Association<ReactionAssociationSchema>>> {
+        let query: any = { schema: Schemas.reactionAssociation }
         if (imgUrl) {
-            query = {schema: Schemas.reactionAssociation, variant: imgUrl}
+            query = { schema: Schemas.reactionAssociation, variant: imgUrl }
         }
-        const coreass = await this.client.api.getMessageAssociationsByTarget<ReactionAssociationSchema>(this.id, this.author, query)
-        const ass: Array<Association<ReactionAssociationSchema> | null> = await Promise.all(coreass.map((e) => Association.loadByBody<ReactionAssociationSchema>(this.client, e)))
-        return ass.filter(e => e) as Array<Association<ReactionAssociationSchema>>
+        const coreass = await this.client.api.getMessageAssociationsByTarget<ReactionAssociationSchema>(
+            this.id,
+            this.author,
+            query
+        )
+        const ass: Array<Association<ReactionAssociationSchema> | null> = await Promise.all(
+            coreass.map((e) => Association.loadByBody<ReactionAssociationSchema>(this.client, e))
+        )
+        return ass.filter((e) => e) as Array<Association<ReactionAssociationSchema>>
     }
 
     async getReplyTo(): Promise<Message<ReplyMessageSchema> | null> {
-        if (this.schema != Schemas.replyMessage) {
+        if (this.schema !== Schemas.replyMessage) {
             throw new Error('This message is not a reply')
         }
         const replyPayload = this.document.body as ReplyMessageSchema
-        return await Message.load<ReplyMessageSchema>(this.client, replyPayload.replyToMessageId, replyPayload.replyToMessageAuthor)
+        return await Message.load<ReplyMessageSchema>(
+            this.client,
+            replyPayload.replyToMessageId,
+            replyPayload.replyToMessageAuthor
+        )
     }
 
     async GetRerouteTo(): Promise<Message<RerouteMessageSchema> | null> {
-        if (this.schema != Schemas.rerouteMessage) {
+        if (this.schema !== Schemas.rerouteMessage) {
             throw new Error('This message is not a reroute')
         }
         const reroutePayload = this.document.body as RerouteMessageSchema
-        return await Message.load<RerouteMessageSchema>(this.client, reroutePayload.rerouteMessageId, reroutePayload.rerouteMessageAuthor)
+        return await Message.load<RerouteMessageSchema>(
+            this.client,
+            reroutePayload.rerouteMessageId,
+            reroutePayload.rerouteMessageAuthor
+        )
     }
 
     async favorite(): Promise<CoreAssociation<LikeAssociationSchema>> {
@@ -1140,7 +1244,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
                 timelines: targetStream,
                 signedAt: new Date()
             }),
-            signature: 'DUMMY',
+            signature: 'DUMMY'
         }
 
         const dummyAssoc = Object.setPrototypeOf(dummyAssocBase, Association.prototype)
@@ -1153,18 +1257,19 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         this.onUpdate?.()
 
         this.client.invalidateMessage(this.id)
-        const result = this.client.api.createAssociation<LikeAssociationSchema>(Schemas.likeAssociation, {}, this.id, author.ccid, targetStream)
-        .then((resp) => {
-            return resp
-        })
-        .catch((e) => {
-            this.deleteAssociation(dummyAssoc)
-            return Promise.reject(e)
-        })
-        return result
+        const result = this.client.api
+            .createAssociation<LikeAssociationSchema>(Schemas.likeAssociation, {}, this.id, author.ccid, targetStream)
+            .then((resp) => {
+                return resp
+            })
+            .catch((e) => {
+                this.deleteAssociation(dummyAssoc)
+                return Promise.reject(e)
+            })
+        return await result
     }
 
-    async reaction(shortcode: string, imageUrl: string): Promise<CoreAssociation<ReactionAssociationSchema>>{
+    async reaction(shortcode: string, imageUrl: string): Promise<CoreAssociation<ReactionAssociationSchema>> {
         const author = await this.getAuthor()
         const user = this.client.user
         if (!user) throw new Error('user is not set')
@@ -1204,26 +1309,29 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         this.onUpdate?.()
 
         this.client.api.invalidateMessage(this.id)
-        const result = this.client.api.createAssociation<ReactionAssociationSchema>(
-            Schemas.reactionAssociation,
-            {
-                shortcode,
+        const result = this.client.api
+            .createAssociation<ReactionAssociationSchema>(
+                Schemas.reactionAssociation,
+                {
+                    shortcode,
+                    imageUrl
+                },
+                this.id,
+                author.ccid,
+                targetStream,
                 imageUrl
-            },
-            this.id,
-            author.ccid,
-            targetStream,
-            imageUrl
-        ).then((resp) => {
-            return resp
-        }).catch((e) => {
-            this.deleteAssociation(dummyAssoc)
-            return Promise.reject(e)
-        })
-        return result
+            )
+            .then((resp) => {
+                return resp
+            })
+            .catch((e) => {
+                this.deleteAssociation(dummyAssoc)
+                return Promise.reject(e)
+            })
+        return await result
     }
 
-    async upgrade(txhash: string): Promise<CoreAssociation<UpgradeAssociationSchema>>{
+    async upgrade(txhash: string): Promise<CoreAssociation<UpgradeAssociationSchema>> {
         const author = await this.getAuthor()
         const user = this.client.user
         if (!user) throw new Error('user is not set')
@@ -1242,8 +1350,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         return result
     }
 
-    async deleteAssociation(a: CoreAssociation<any>) {
-
+    async deleteAssociation(a: CoreAssociation<any>): Promise<void> {
         if (this.associationCounts) {
             this.associationCounts[a.schema] = (this.associationCounts[a.schema] ?? 0) - 1
             if (this.associationCounts[a.schema] <= 0) {
@@ -1271,13 +1378,12 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         await this.client.api.deleteAssociation(a.id, this.author)
     }
 
-    async reply(streams: string[], body: string, options?: CreateCurrentOptions) {
-
+    async reply(streams: string[], body: string, options?: CreateCurrentOptions): Promise<void> {
         const user = this.client.user
         if (!user) throw new Error('user is not set')
 
-        let policy = undefined
-        let policyParams = undefined
+        let policy
+        let policyParams
 
         if (options?.whisper && options.whisper.length > 0) {
             policy = 'https://policy.concrnt.world/m/whisper.json'
@@ -1287,40 +1393,39 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         }
 
         const created = await this.client.api.createMessage<ReplyMessageSchema>(
-          Schemas.replyMessage,
-          {
-              body,
-              replyToMessageId: this.id,
-              replyToMessageAuthor: this.author,
-              emojis: options?.emojis,
-              profileOverride: options?.profileOverride,
-          },
-          streams,
-          {
-              policy,
-              policyParams
-          }
+            Schemas.replyMessage,
+            {
+                body,
+                replyToMessageId: this.id,
+                replyToMessageAuthor: this.author,
+                emojis: options?.emojis,
+                profileOverride: options?.profileOverride
+            },
+            streams,
+            {
+                policy,
+                policyParams
+            }
         )
 
         const author = await this.getAuthor()
         const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
         await this.client.api.createAssociation<ReplyAssociationSchema>(
-          Schemas.replyAssociation,
-          { messageId: created.id, messageAuthor: created.author },
-          this.id,
-          this.author,
-          targetStream || []
+            Schemas.replyAssociation,
+            { messageId: created.id, messageAuthor: created.author },
+            this.id,
+            this.author,
+            targetStream || []
         )
     }
 
-    async reroute(streams: string[], body?: string, options?: CreateCurrentOptions) {
-
+    async reroute(streams: string[], body?: string, options?: CreateCurrentOptions): Promise<void> {
         const user = this.client.user
         if (!user) throw new Error('user is not set')
 
-        let policy = undefined
-        let policyParams = undefined
+        let policy
+        let policyParams
 
         if (options?.whisper && options.whisper.length > 0) {
             policy = 'https://policy.concrnt.world/m/whisper.json'
@@ -1336,7 +1441,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
                 rerouteMessageId: this.id,
                 rerouteMessageAuthor: this.author,
                 emojis: options?.emojis,
-                profileOverride: options?.profileOverride,
+                profileOverride: options?.profileOverride
             },
             streams,
             {
@@ -1357,7 +1462,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         )
     }
 
-    async delete() {
-        return this.client.api.deleteMessage(this.id)
+    async delete(): Promise<void> {
+        return await this.client.api.deleteMessage(this.id)
     }
 }
