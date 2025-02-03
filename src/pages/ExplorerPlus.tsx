@@ -34,7 +34,7 @@ import ForumIcon from '@mui/icons-material/Forum'
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople'
 import { useClient } from '../context/ClientContext'
 import { useSnackbar } from 'notistack'
-import { type CommunityTimelineSchema, Schemas } from '@concurrent-world/client'
+import { type CommunityTimelineSchema, Schemas } from 'client'
 import { CCEditor } from '../components/ui/cceditor'
 import { CCDrawer } from '../components/ui/CCDrawer'
 
@@ -465,7 +465,7 @@ export function ExplorerPlusPage(): JSX.Element {
                                     </Typography>
                                     <Typography variant="body1" gutterBottom>
                                         {t('createNewCommunity.desc1')}
-                                        {client.api.host}
+                                        {client.host}
                                         {t('createNewCommunity.desc2')}
                                     </Typography>
                                     <Divider />

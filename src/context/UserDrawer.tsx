@@ -1,26 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useClient } from './ClientContext'
 import { CCDrawer } from '../components/ui/CCDrawer'
-import {
-    type CommunityTimelineSchema,
-    type EmptyTimelineSchema,
-    ProfileSchema,
-    Schemas,
-    type Timeline as typeTimeline,
-    type User
-} from '@concurrent-world/client'
+import { Schemas, type User } from 'client'
 import { TimelineHeader } from '../components/TimelineHeader'
 import { type VListHandle } from 'virtua'
 
-import TagIcon from '@mui/icons-material/Tag'
-import LockIcon from '@mui/icons-material/Lock'
-import { Timeline } from '../components/Timeline'
-import { StreamInfo } from '../components/StreamInfo'
-import { PrivateTimelineDoor } from '../components/PrivateTimelineDoor'
 import { Box, Collapse, Divider, Tab, Tabs } from '@mui/material'
 
-import OpenInFullIcon from '@mui/icons-material/OpenInFull'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail'
 import { Profile } from '../components/Profile'
 import { QueryTimelineReader } from '../components/QueryTimeline'
@@ -43,8 +30,6 @@ export const UserDrawerProvider = (props: UserDrawerProps): JSX.Element => {
     const [CCID, setCCID] = useState<string | null>(null)
     const [user, setUser] = useState<User | null>(null)
 
-    const navigate = useNavigate()
-
     useEffect(() => {
         console.log('UserDrawerProvider', CCID)
         if (!CCID) return
@@ -55,9 +40,6 @@ export const UserDrawerProvider = (props: UserDrawerProps): JSX.Element => {
     }, [CCID])
 
     const { t } = useTranslation('', { keyPrefix: 'common' })
-    const [timeline, setTimeline] = useState<typeTimeline<EmptyTimelineSchema> | null>(null)
-    const isPrivate =
-        timeline?.policyParams.isReadPublic === false && !timeline?.policyParams.reader.includes(client.ccid)
 
     const timelineRef = useRef<VListHandle>(null)
 
@@ -65,8 +47,6 @@ export const UserDrawerProvider = (props: UserDrawerProps): JSX.Element => {
 
     const path = useLocation()
     const subProfileID = path.hash.replace('#', '')
-
-    const timelineID = subProfileID ? 'world.concrnt.t-subhome.' + subProfileID + '@' + CCID : user?.homeTimeline
 
     const [filter, setFilter] = useState<string | undefined>(undefined)
 
@@ -139,67 +119,47 @@ export const UserDrawerProvider = (props: UserDrawerProps): JSX.Element => {
                         </Collapse>
                     </Box>
 
-                    {isPrivate && CCID ? (
-                        <>
-                            <Profile
-                                user={user ?? undefined}
-                                id={CCID}
-                                overrideSubProfileID={subProfileID}
-                                onSubProfileClicked={(id) => {
-                                    window.location.hash = id
-                                }}
-                            />
-                            <PrivateTimelineDoor timeline={timeline} />
-                        </>
-                    ) : (
-                        <>
-                            {targetTimeline && CCID && (
-                                <QueryTimelineReader
-                                    ref={timelineRef}
-                                    timeline={targetTimeline}
-                                    query={query}
-                                    perspective={user?.ccid}
-                                    onScroll={(top) => {
-                                        setShowHeader(top > 180)
-                                    }}
-                                    header={
+                    {targetTimeline && CCID && (
+                        <QueryTimelineReader
+                            ref={timelineRef}
+                            timeline={targetTimeline}
+                            query={query}
+                            perspective={user?.ccid}
+                            onScroll={(top) => {
+                                setShowHeader(top > 180)
+                            }}
+                            header={
+                                <>
+                                    <Profile
+                                        user={user ?? undefined}
+                                        id={CCID}
+                                        overrideSubProfileID={subProfileID}
+                                        onSubProfileClicked={(id) => {
+                                            window.location.hash = id
+                                        }}
+                                    />
+                                    <Tabs
+                                        value={tab}
+                                        onChange={(_, value) => {
+                                            setTab(value)
+                                        }}
+                                        textColor="secondary"
+                                        indicatorColor="secondary"
+                                    >
+                                        <Tab label={t('crnt')} value="" />
+                                        <Tab label={t('media')} value="media" />
+                                        <Tab label={t('activity')} value="activity" />
+                                    </Tabs>
+                                    <Divider />
+                                    {tab === 'activity' && (
                                         <>
-                                            <Profile
-                                                user={user ?? undefined}
-                                                id={CCID}
-                                                overrideSubProfileID={subProfileID}
-                                                onSubProfileClicked={(id) => {
-                                                    window.location.hash = id
-                                                }}
-                                            />
-                                            <Tabs
-                                                value={tab}
-                                                onChange={(_, value) => {
-                                                    setTab(value)
-                                                }}
-                                                textColor="secondary"
-                                                indicatorColor="secondary"
-                                            >
-                                                <Tab label={t('crnt')} value="" />
-                                                <Tab label={t('media')} value="media" />
-                                                <Tab label={t('activity')} value="activity" />
-                                            </Tabs>
+                                            <TimelineFilter selected={filter} setSelected={setFilter} sx={{ px: 1 }} />
                                             <Divider />
-                                            {tab === 'activity' && (
-                                                <>
-                                                    <TimelineFilter
-                                                        selected={filter}
-                                                        setSelected={setFilter}
-                                                        sx={{ px: 1 }}
-                                                    />
-                                                    <Divider />
-                                                </>
-                                            )}
                                         </>
-                                    }
-                                />
-                            )}
-                        </>
+                                    )}
+                                </>
+                            }
+                        />
                     )}
                 </Box>
             </CCDrawer>
