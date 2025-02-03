@@ -6,16 +6,8 @@ import { ClientProvider } from '../context/ClientContext'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Fade, Paper, TextField } from '@mui/material'
 import { usePersistent } from '../hooks/usePersistent'
 import { jumpToDomainRegistration } from '../util'
-import {
-    Client,
-    type ProfileSchema,
-} from 'client'
-import {
-    Profile,
-    GenerateIdentity,
-    type Identity,
-    LoadIdentity,
-} from '@concrnt/client'
+import { Client, type ProfileSchema } from 'client'
+import { type Profile, GenerateIdentity, type Identity, LoadIdentity } from '@concrnt/client'
 import { RegistrationWelcome } from '../components/Registration/Welcome'
 import { ChooseDomain } from '../components/Registration/ChooseDomain'
 import { CreateProfile } from '../components/Registration/CreateProfile'
@@ -144,7 +136,7 @@ export default function Registration(): JSX.Element {
                         setupAccount()
                     }}
                     domain={domain}
-                    profile={profile?.parsedDoc.body ?? {}}
+                    profile={profile?.parsedDoc?.body ?? {}}
                 />
             )
         }

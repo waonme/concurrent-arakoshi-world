@@ -27,10 +27,10 @@ export const WatchButton = (props: WatchButtonProps): JSX.Element => {
     const [timeline, setTimeline] = useState<null | Timeline<any>>(null)
 
     useEffect(() => {
-        client.getTimeline<any>(props.timelineID).then((timeline) => {
+        client?.getTimeline<any>(props.timelineID).then((timeline) => {
             setTimeline(timeline)
         })
-    })
+    }, [props.timelineID])
 
     const watching = allKnownTimelines.find((e) => e.fqid === timeline?.fqid) !== undefined
 
