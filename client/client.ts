@@ -4,7 +4,6 @@ import {
     type CSID,
     type AssociationID,
     type CCDocument,
-    ComputeCCID,
     type FQDN,
     type KeyPair,
     LoadKey,
@@ -26,7 +25,8 @@ import {
     InMemoryKVS,
     GuestAuthProvider,
     TimelineReader,
-    QueryTimelineReader
+    QueryTimelineReader,
+    IsCSID
 } from '@concrnt/client'
 
 import { Schemas, type Schema } from './schemas'
@@ -932,6 +932,15 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
 
     cacheKey?: string
     _document: string
+
+    getFQID = async (): Promise<string> => {
+        if (IsCSID(this.owner)) {
+            const host = await this.client.api.resolveDomain(this.owner)
+            return this.id + '@' + host
+        } else {
+            return this.id + '@' + this.owner
+        }
+    }
 
     constructor(client: Client, data: CoreTimeline<T>) {
         this.client = client

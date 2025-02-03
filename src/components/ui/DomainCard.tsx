@@ -22,8 +22,6 @@ export const DomainCard = (props: DomainCardProps): JSX.Element | null => {
         })
     }, [props.domainFQDN])
 
-    console.log(domain)
-
     if (!domain) {
         return null
     }
