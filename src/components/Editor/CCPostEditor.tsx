@@ -205,7 +205,7 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
         )
     }, [destTimelines, participants])
 
-    const post = async (postHome: boolean): Promise<void> => {
+    const post = (postHome: boolean): void => {
         if (!client?.user) return
         if ((draft.length === 0 || draft.trim().length === 0) && !(mode === 'media' || mode === 'reroute')) {
             enqueueSnackbar('Message must not be empty!', { variant: 'error' })
@@ -220,11 +220,7 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
             return
         }
 
-        const destTimelineIDLookups = (await Promise.allSettled(destTimelines.map((dest) => dest.getFQID())).then(
-            (results) => results.filter((r) => r.status === 'fulfilled')
-        )) as Array<PromiseFulfilledResult<string>>
-
-        const destTimelineIDs = destTimelineIDLookups.map((r) => r.value)
+        const destTimelineIDs = destTimelines.map((t) => t.fqid).filter((e) => e)
 
         const homeTimeline = selectedSubprofile
             ? 'world.concrnt.t-subhome.' + selectedSubprofile + '@' + client.user.ccid

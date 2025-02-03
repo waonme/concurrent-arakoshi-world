@@ -5,6 +5,7 @@ import { useGlobalState } from '../context/GlobalState'
 import { usePreference } from '../context/PreferenceContext'
 import { type CommunityTimelineSchema, type Message, type Timeline } from 'client'
 import { MessageContainer } from './Message/MessageContainer'
+import { useClient } from '../context/ClientContext'
 
 export interface EditorModalState {
     open: (opts?: OpenOptions) => void
@@ -40,6 +41,7 @@ export interface EditorModalProps {
 }
 
 export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
+    const { client } = useClient()
     const [viewportHeight, setViewportHeight] = useState<number>(visualViewport?.height ?? 0)
     useEffect(() => {
         function handleResize(): void {
@@ -72,12 +74,30 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
 
     const [lists] = usePreference('lists')
     const home = Object.keys(lists).length > 0 ? lists[Object.keys(lists)[0]] : null
-    const homePostTimelines = useMemo(() => {
-        if (!home) return []
-        return home.defaultPostStreams
-            .map((timelineID) => allKnownTimelines.find((e) => (e.cacheKey ?? e.id) === timelineID))
-            .filter((e) => e) as Array<Timeline<CommunityTimelineSchema>>
-    }, [lists, allKnownTimelines])
+
+    const [homePostTimelines, setHomePostTimelines] = useState<Array<Timeline<CommunityTimelineSchema>>>([])
+
+    useEffect(() => {
+        if (!home) return
+        let isMounted = true
+        const exec = async (): Promise<void> => {
+            const requests = await Promise.allSettled(
+                home.defaultPostStreams.map((timelineID) => {
+                    return client.getTimeline(timelineID)
+                })
+            )
+            const fulfilled = requests.filter((e) => e.status === 'fulfilled') as Array<
+                PromiseFulfilledResult<Timeline<CommunityTimelineSchema>>
+            >
+            const homePostTimelines = fulfilled.map((e) => e.value)
+            if (!isMounted) return
+            setHomePostTimelines(homePostTimelines)
+        }
+        exec()
+        return () => {
+            isMounted = false
+        }
+    }, [lists, allKnownTimelines, home])
 
     const open = useCallback(
         (openOpts?: OpenOptions): void => {

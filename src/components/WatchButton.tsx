@@ -1,11 +1,12 @@
 import { Box, Button, ButtonGroup, Checkbox, IconButton, Menu, MenuItem, Tooltip, useTheme } from '@mui/material'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useClient } from '../context/ClientContext'
 
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import { useGlobalState } from '../context/GlobalState'
+import { type Timeline } from 'client'
 
 export interface WatchButtonProps {
     timelineID: string
@@ -23,7 +24,15 @@ export const WatchButton = (props: WatchButtonProps): JSX.Element => {
 
     const { t } = useTranslation('', { keyPrefix: 'common' })
 
-    const watching = allKnownTimelines.find((e) => (e.cacheKey ?? e.id) === props.timelineID) !== undefined
+    const [timeline, setTimeline] = useState<null | Timeline<any>>(null)
+
+    useEffect(() => {
+        client.getTimeline<any>(props.timelineID).then((timeline) => {
+            setTimeline(timeline)
+        })
+    })
+
+    const watching = allKnownTimelines.find((e) => e.fqid === timeline?.fqid) !== undefined
 
     return (
         <Box>

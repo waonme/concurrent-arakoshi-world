@@ -4,15 +4,8 @@ import { useLocation, useNavigate, Link as RouterLink, useSearchParams } from 'r
 import { usePreference } from '../context/PreferenceContext'
 import { Timeline } from '../components/Timeline'
 import { useClient } from '../context/ClientContext'
-import {
-    type CommunityTimelineSchema,
-    type ListSubscriptionSchema,
-    Timeline as TypeTimeline
-} from 'client'
-import {
-    Subscription as CoreSubscription,
-    SubscriptionItem as CoreSubscriptionItem
-} from '@concrnt/client'
+import { type CommunityTimelineSchema, type ListSubscriptionSchema, type Timeline as TypeTimeline } from 'client'
+import { type Subscription as CoreSubscription, type SubscriptionItem as CoreSubscriptionItem } from '@concrnt/client'
 import TuneIcon from '@mui/icons-material/Tune'
 import ExploreIcon from '@mui/icons-material/Explore'
 import { ListSettings } from '../components/ListSettings'
@@ -64,7 +57,7 @@ export function ListPage(): JSX.Element {
     const postStreams = useMemo(() => {
         if (!list) return []
         return list.defaultPostStreams
-            .map((streamID) => allKnownTimelines.find((e) => (e.cacheKey ?? e.id) === streamID))
+            .map((streamID) => allKnownTimelines.find((e) => e.fqid === streamID))
             .filter((e) => e !== undefined) as Array<TypeTimeline<CommunityTimelineSchema>>
     }, [list, allKnownTimelines])
 

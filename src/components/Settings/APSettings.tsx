@@ -49,14 +49,17 @@ export const APSettings = (): JSX.Element => {
     useEffect(() => {
         client.api
             .fetchWithCredential(client.host, `/ap/api/settings`, {})
-            .then((data: any) => {
-                setListenTimelines(
-                    allKnownTimelines.filter(
-                        (t) =>
-                            (t.cacheKey && data.listen_timelines.includes(t.cacheKey)) ||
-                            data.listen_timelines.includes(t.id)
-                    )
+            .then(async (data: any) => {
+                const requests = await Promise.allSettled(
+                    data.listen_timelines.map((id: string) => {
+                        return client.getTimeline(id)
+                    })
                 )
+
+                const fulfilled = requests.filter((r) => r.status === 'fulfilled') as Array<
+                    PromiseFulfilledResult<Timeline<any>>
+                >
+                setListenTimelines(fulfilled.map((r) => r.value))
             })
             .catch((e) => {
                 console.error(e)

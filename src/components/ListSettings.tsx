@@ -10,18 +10,13 @@ import {
     Tab,
     Tabs,
     TextField,
-    Typography,
+    Typography
 } from '@mui/material'
 import { StreamPicker } from './ui/StreamPicker'
 import { useEffect, useState } from 'react'
 import { usePreference } from '../context/PreferenceContext'
-import {
-    type Timeline,
-    type CommunityTimelineSchema,
-    type ListSubscriptionSchema,
-    Schemas
-} from 'client'
-import { Subscription } from '@concrnt/client'
+import { type Timeline, type CommunityTimelineSchema, type ListSubscriptionSchema, Schemas } from 'client'
+import { type Subscription } from '@concrnt/client'
 import { useClient } from '../context/ClientContext'
 import { ListItemTimeline } from './ui/ListItemTimeline'
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove'
@@ -196,7 +191,7 @@ export function ListSettings(props: ListSettingsProps): JSX.Element {
                             setSelected={(value) => {
                                 updateList(props.subscription.id, {
                                     ...list,
-                                    defaultPostStreams: value.map((e) => e.cacheKey ?? e.id)
+                                    defaultPostStreams: value.map((e) => e.fqid).filter((e) => e !== null)
                                 })
                                 setPostStreams(value)
                             }}

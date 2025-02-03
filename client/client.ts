@@ -930,17 +930,8 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
 
     // ---------- //
 
-    cacheKey?: string
     _document: string
-
-    getFQID = async (): Promise<string> => {
-        if (IsCSID(this.owner)) {
-            const host = await this.client.api.resolveDomain(this.owner)
-            return this.id + '@' + host
-        } else {
-            return this.id + '@' + this.owner
-        }
-    }
+    fqid: string = ''
 
     constructor(client: Client, data: CoreTimeline<T>) {
         this.client = client
@@ -988,7 +979,14 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
         if (!coreTimeline) return null
 
         const timeline = new Timeline<T>(client, coreTimeline)
-        timeline.cacheKey = id
+
+        if (IsCSID(coreTimeline.owner)) {
+            const host = await client.api.resolveDomain(coreTimeline.owner)
+            timeline.fqid = coreTimeline.id + '@' + host
+        } else {
+            timeline.fqid = coreTimeline.id + '@' + coreTimeline.owner
+        }
+
         return timeline
     }
 
@@ -1001,7 +999,7 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
     }
 
     invalidate(): void {
-        if (this.cacheKey) this.client.api.invalidateTimeline(this.cacheKey)
+        this.fqid && this.client.api.invalidateTimeline(this.fqid)
     }
 }
 
