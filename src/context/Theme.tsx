@@ -17,7 +17,6 @@ export const ConcrntThemeProvider = (props: ConcrntThemeProps): JSX.Element => {
     useEffect(() => {
         const newtheme = loadConcurrentTheme(themeName, customThemes, { fontSize: baseFontSize })
         newtheme.typography.fontSize = baseFontSize
-        console.log('fontsize changed:', baseFontSize)
         localStorage.setItem('theme', JSON.stringify(newtheme))
         setTheme(newtheme)
         let themeColorMetaTag: HTMLMetaElement = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement

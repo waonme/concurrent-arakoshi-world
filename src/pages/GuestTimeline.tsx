@@ -3,7 +3,7 @@ import { Box, Button, Paper, Typography } from '@mui/material'
 import { useParams, Link as NavLink } from 'react-router-dom'
 import { Timeline } from '../components/Timeline/main'
 import { Client } from 'client'
-import { Timeline as CoreTimeline } from '@concrnt/client'
+import { type Timeline as CoreTimeline } from '@concrnt/client'
 import { FullScreenLoading } from '../components/ui/FullScreenLoading'
 import { ClientProvider } from '../context/ClientContext'
 import { TimelineHeader } from '../components/TimelineHeader'
@@ -140,7 +140,7 @@ export default function GuestTimelinePage(): JSX.Element {
                                 ) : (
                                     <Timeline
                                         noRealtime
-                                        streams={targetStream}
+                                        timelineFQIDs={targetStream}
                                         header={<StreamInfo id={timeline.id} />}
                                     />
                                 )}

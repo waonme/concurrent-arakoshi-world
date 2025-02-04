@@ -9,7 +9,7 @@ import { useGlobalState } from '../context/GlobalState'
 import { type Timeline } from 'client'
 
 export interface WatchButtonProps {
-    timelineID: string
+    timelineFQID: string
     minimal?: boolean
     small?: boolean
 }
@@ -27,10 +27,10 @@ export const WatchButton = (props: WatchButtonProps): JSX.Element => {
     const [timeline, setTimeline] = useState<null | Timeline<any>>(null)
 
     useEffect(() => {
-        client?.getTimeline<any>(props.timelineID).then((timeline) => {
+        client?.getTimeline<any>(props.timelineFQID).then((timeline) => {
             setTimeline(timeline)
         })
-    }, [props.timelineID])
+    }, [props.timelineFQID])
 
     const watching = allKnownTimelines.find((e) => e.fqid === timeline?.fqid) !== undefined
 
@@ -60,7 +60,7 @@ export const WatchButton = (props: WatchButtonProps): JSX.Element => {
                                 setMenuAnchor(e.currentTarget)
                             } else {
                                 client.api
-                                    .subscribe(props.timelineID, Object.keys(listedSubscriptions)[0])
+                                    .subscribe(props.timelineFQID, Object.keys(listedSubscriptions)[0])
                                     .then((subscription) => {
                                         reloadList()
                                     })
@@ -104,15 +104,15 @@ export const WatchButton = (props: WatchButtonProps): JSX.Element => {
                         {listedSubscriptions[key].parsedDoc.body.name}
                         <Checkbox
                             checked={
-                                listedSubscriptions[key].items.find((e) => e.id === props.timelineID) !== undefined
+                                listedSubscriptions[key].items.find((e) => e.id === props.timelineFQID) !== undefined
                             }
                             onChange={(check) => {
                                 if (check.target.checked) {
-                                    client.api.subscribe(props.timelineID, key).then((_) => {
+                                    client.api.subscribe(props.timelineFQID, key).then((_) => {
                                         reloadList()
                                     })
                                 } else {
-                                    client.api.unsubscribe(props.timelineID, key).then((_) => {
+                                    client.api.unsubscribe(props.timelineFQID, key).then((_) => {
                                         reloadList()
                                     })
                                 }

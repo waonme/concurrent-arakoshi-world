@@ -6,7 +6,7 @@ import { useClient } from '../context/ClientContext'
 export function Associations(): JSX.Element {
     const { client } = useClient()
 
-    const streams = useMemo(() => {
+    const timelines = useMemo(() => {
         const target = client.user?.notificationTimeline
         return target ? [target] : []
     }, [client])
@@ -31,7 +31,7 @@ export function Associations(): JSX.Element {
                 </Typography>
                 <Divider />
             </Box>
-            <Timeline streams={streams} />
+            <Timeline timelineFQIDs={timelines} />
         </Box>
     )
 }

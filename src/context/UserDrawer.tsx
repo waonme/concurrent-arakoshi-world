@@ -31,10 +31,8 @@ export const UserDrawerProvider = (props: UserDrawerProps): JSX.Element => {
     const [user, setUser] = useState<User | null>(null)
 
     useEffect(() => {
-        console.log('UserDrawerProvider', CCID)
         if (!CCID) return
         client.getUser(CCID).then((user) => {
-            console.log('UserDrawerProvider', user)
             setUser(user)
         })
     }, [CCID])

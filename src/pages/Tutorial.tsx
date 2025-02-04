@@ -233,7 +233,7 @@ export function Tutorial(): JSX.Element {
 
                                 <StreamCard
                                     sx={{ minWidth: '300px' }}
-                                    streamID="tar69vv26r5s4wk0r067v20bvyw@ariake.concrnt.net"
+                                    timelineFQID="tar69vv26r5s4wk0r067v20bvyw@ariake.concrnt.net"
                                     name="Arrival Lounge"
                                     description="コンカレントへようこそ！ここは主にビギナーの方が自分のコミュニティを見つける入口のタイムラインです。困ったら、まずはこのタイムラインをリストに追加してみるのがおススメです。"
                                     banner="https://worldfile.cc/CC2d97694D850Df2089F48E639B4795dD95D2DCE2E/f696009d-f1f0-44f8-83fe-6387946f1b86"

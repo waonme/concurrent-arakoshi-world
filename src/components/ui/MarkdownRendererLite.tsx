@@ -117,7 +117,7 @@ export function MarkdownRendererLite(props: MarkdownRendererProps): JSX.Element 
                         return <CCUserChip ccid={ccid} />
                     },
                     streamlink: ({ streamId }) => {
-                        return <TimelineChip timelineID={streamId} />
+                        return <TimelineChip timelineFQID={streamId} />
                     },
                     social: ({ href, icon, service, children }) => {
                         return (

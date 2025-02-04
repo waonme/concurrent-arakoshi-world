@@ -8,7 +8,7 @@ import { MarkdownRenderer } from '../components/ui/MarkdownRenderer'
 import { Link as NavLink } from 'react-router-dom'
 
 import { useEffect, useMemo, useState } from 'react'
-import {  type User } from 'client'
+import { type User } from 'client'
 import { type CCDocument, type Profile as TypeProfile } from '@concrnt/client'
 import { useClient } from '../context/ClientContext'
 import { CCDrawer } from './ui/CCDrawer'
@@ -233,7 +233,7 @@ export function Profile(props: ProfileProps): JSX.Element {
                                 <>
                                     {!isSelf && <AckButton user={props.user} />}
                                     <WatchButton
-                                        timelineID={
+                                        timelineFQID={
                                             props.overrideSubProfileID
                                                 ? 'world.concrnt.t-subhome.' +
                                                   props.overrideSubProfileID +

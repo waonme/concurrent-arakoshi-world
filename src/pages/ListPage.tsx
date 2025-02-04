@@ -284,7 +284,7 @@ export function ListPage(): JSX.Element {
                                         </Box>
                                     </>
                                 }
-                                streams={timelines}
+                                timelineFQIDs={timelines}
                                 ref={timelineRef}
                             />
                         ) : (

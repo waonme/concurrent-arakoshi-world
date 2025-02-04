@@ -35,7 +35,9 @@ export default function GuestProfilePage(): JSX.Element {
             client.getUser(id).then((u) => {
                 if (!u) return
                 setUser(u)
-                const timelineID = subProfileID ? 'world.concrnt.t-subhome.' + subProfileID + '@' + u.ccid : u.homeTimeline
+                const timelineID = subProfileID
+                    ? 'world.concrnt.t-subhome.' + subProfileID + '@' + u.ccid
+                    : u.homeTimeline
                 setTargetStream([timelineID])
 
                 client.api.getTimeline(timelineID).then((t) => {
@@ -167,7 +169,7 @@ export default function GuestProfilePage(): JSX.Element {
                                 ) : (
                                     <Timeline
                                         noRealtime
-                                        streams={targetStream}
+                                        timelineFQIDs={targetStream}
                                         header={
                                             <Box
                                                 sx={{

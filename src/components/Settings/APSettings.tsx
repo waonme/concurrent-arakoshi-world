@@ -135,7 +135,7 @@ export const APSettings = (): JSX.Element => {
                                     }}
                                 />
                             </IconButton>
-                            <WatchButton minimal timelineID={'world.concrnt.t-ap@' + entity.ccid} />
+                            <WatchButton minimal timelineFQID={'world.concrnt.t-ap@' + entity.ccid} />
                             <IconButton>
                                 <SettingsIcon
                                     onClick={() => {

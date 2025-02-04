@@ -5,7 +5,7 @@ import { CCWallpaper } from '../ui/CCWallpaper'
 import { WatchButton } from '../WatchButton'
 
 interface StreamCardProps {
-    streamID: string
+    timelineFQID: string
     name: string
     description: string
     banner: string
@@ -46,7 +46,7 @@ export function StreamCard(props: StreamCardProps): JSX.Element {
                 </CardActionArea>
             ) : (
                 <>
-                    <CardActionArea component={Link} to={'/timeline/' + props.streamID}>
+                    <CardActionArea component={Link} to={'/timeline/' + props.timelineFQID}>
                         <CCWallpaper
                             sx={{
                                 height: '140px'
@@ -67,7 +67,7 @@ export function StreamCard(props: StreamCardProps): JSX.Element {
                         </CardContent>
                     </CardActionArea>
                     <CardActions>
-                        <WatchButton minimal timelineID={props.streamID} />
+                        <WatchButton minimal timelineFQID={props.timelineFQID} />
                     </CardActions>
                 </>
             )}

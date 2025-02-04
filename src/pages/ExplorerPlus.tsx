@@ -435,7 +435,7 @@ export function ExplorerPlusPage(): JSX.Element {
                                                         {getDomainFromFQDN(tl.domainFQDN)?.meta?.nickname}
                                                     </Typography>
                                                     <Box sx={{ display: 'flex', gap: 1, marginLeft: 'auto' }}>
-                                                        <WatchButton minimal small timelineID={tl.id} />
+                                                        <WatchButton minimal small timelineFQID={tl.id} />
                                                         <Tooltip title={t('quicklook')} placement={'top'} arrow>
                                                             <CCIconButton
                                                                 size={'small'}
@@ -581,7 +581,7 @@ export function ExplorerPlusPage(): JSX.Element {
                                                 <WatchButton
                                                     minimal
                                                     small
-                                                    timelineID={'world.concrnt.t-home@' + u.author}
+                                                    timelineFQID={'world.concrnt.t-home@' + u.author}
                                                 />
                                                 <Tooltip title={'みてみる'} placement={'top'} arrow>
                                                     <CCIconButton

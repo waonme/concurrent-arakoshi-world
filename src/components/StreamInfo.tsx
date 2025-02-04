@@ -43,14 +43,14 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
     const { client } = useClient()
     const confirm = useConfirm()
     const { enqueueSnackbar } = useSnackbar()
-    const [stream, setStream] = useState<Timeline<CommunityTimelineSchema>>()
-    const isAuthor = stream?.author === client.ccid
+    const [timeline, setTimeline] = useState<Timeline<CommunityTimelineSchema>>()
+    const isAuthor = timeline?.author === client.ccid
 
     const [visible, setVisible] = useState(false)
     const [schemaDraft, setSchemaDraft] = useState('')
     const [policyDraft, setPolicyDraft] = useState<string | undefined>(undefined)
 
-    const [documentBody, setDocumentBody] = useState<CommunityTimelineSchema | undefined>(stream?.document.body)
+    const [documentBody, setDocumentBody] = useState<CommunityTimelineSchema | undefined>(timeline?.document.body)
     const [policyParams, setPolicyParams] = useState<string | undefined>()
     const [policyErrors, setPolicyErrors] = useState<CCEditorError[] | undefined>()
 
@@ -62,7 +62,7 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
         if (!props.id) return
         client.getTimeline<CommunityTimelineSchema>(props.id).then((e) => {
             if (!e) return
-            setStream(e)
+            setTimeline(e)
             setDocumentBody(e.document.body)
             setPolicyParams(JSON.stringify(e.policyParams))
             setVisible(e.indexable)
@@ -76,7 +76,7 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
     }, [props.id])
 
     const updateStream = useCallback(() => {
-        if (!stream) return
+        if (!timeline) return
         client.api
             .upsertTimeline(schemaDraft, documentBody, {
                 id: props.id,
@@ -90,9 +90,9 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
             .catch((_) => {
                 enqueueSnackbar('更新に失敗しました', { variant: 'error' })
             })
-    }, [client.api, stream, schemaDraft, props.id, visible, enqueueSnackbar, documentBody, policyDraft, policyParams])
+    }, [client.api, timeline, schemaDraft, props.id, visible, enqueueSnackbar, documentBody, policyDraft, policyParams])
 
-    if (!stream) {
+    if (!timeline) {
         return <>stream information not found</>
     }
 
@@ -102,7 +102,7 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
     return (
         <>
             <CCWallpaper
-                override={stream.document.body.banner}
+                override={timeline.document.body.banner}
                 sx={{
                     minHeight: '150px'
                 }}
@@ -123,8 +123,8 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
                             gap: 1
                         }}
                     >
-                        <Typography variant="h1">{stream.document.body.name}</Typography>
-                        <WatchButton minimal timelineID={props.id} />
+                        <Typography variant="h1">{timeline.document.body.name}</Typography>
+                        <WatchButton minimal timelineFQID={timeline.fqid} />
                         <CCIconButton
                             onClick={() => {
                                 navigator.clipboard.writeText(`https://concrnt.world/timeline/${props.id}`)
@@ -154,7 +154,7 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
                         {props.id}
                     </Typography>
                     <Divider />
-                    <Typography>{stream.document.body.description || 'まだ説明はありません'}</Typography>
+                    <Typography>{timeline.document.body.description || 'まだ説明はありません'}</Typography>
                 </Paper>
             </CCWallpaper>
             {props.detailed && (
@@ -187,7 +187,7 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
                                             <WatchRequestAcceptButton
                                                 key={request.id}
                                                 request={request}
-                                                targetTimeline={stream}
+                                                targetTimeline={timeline}
                                                 onAccept={() => {
                                                     setRequests(requests.filter((e) => e.id !== request.id))
                                                 }}
@@ -205,7 +205,7 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
                                     flexWrap: 'wrap'
                                 }}
                             >
-                                <CCUserChip avatar ccid={stream.author} />
+                                <CCUserChip avatar ccid={timeline.author} />
                             </Box>
                             {props.writers && props.writers.length > 0 && (
                                 <>

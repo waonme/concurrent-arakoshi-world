@@ -422,15 +422,15 @@ function WelcomeBody(): JSX.Element {
                 >
                     <StreamCard
                         sx={{ minWidth: '300px' }}
-                        streamID="tar69vv26r5s4wk0r067v20bvyw@ariake.concrnt.net"
+                        timelineFQID="tar69vv26r5s4wk0r067v20bvyw@ariake.concrnt.net"
                         name="Arrival Lounge"
-                        description="hub.concurrent.worldサーバーへようこそ！わからない事があれば、ここで呟いてみましょう。"
+                        description="ariake.concrnt.netサーバーへようこそ！わからない事があれば、ここで呟いてみましょう。"
                         banner="https://worldfile.cc/CC2d97694D850Df2089F48E639B4795dD95D2DCE2E/f696009d-f1f0-44f8-83fe-6387946f1b86"
                         domain="ariake.concrnt.net"
                     />
                     <StreamCard
                         sx={{ minWidth: '300px' }}
-                        streamID="tdvtb8ha1d1pbckx3067v1wv8xr@denken.concrnt.net"
+                        timelineFQID="tdvtb8ha1d1pbckx3067v1wv8xr@denken.concrnt.net"
                         name="Dev Central"
                         description="開発者の憩い場"
                         banner="https://worldfile.cc/CC2d97694D850Df2089F48E639B4795dD95D2DCE2E/16e8e34f-460f-4a01-b0d1-6d0661a18ca4"

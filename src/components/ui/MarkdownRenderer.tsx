@@ -170,7 +170,7 @@ export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRend
                         return <CCUserChip ccid={ccid} />
                     },
                     streamlink: ({ streamId }) => {
-                        return <TimelineChip timelineID={streamId} />
+                        return <TimelineChip timelineFQID={streamId} />
                     },
                     social: ({ href, icon, service, children }) => {
                         return (

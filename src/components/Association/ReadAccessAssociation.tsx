@@ -28,7 +28,7 @@ export const ReadAccessAssociation = (props: ReadAccessAssociationProps): ReactE
                         {props.association.authorUser?.profile?.username}
                     </CCLink>{' '}
                     さんが
-                    <TimelineChip timelineID={props.association.target + '@' + props.association.owner} />
+                    <TimelineChip timelineFQID={props.association.target + '@' + props.association.owner} />
                     への読み取りアクセスを希望しています
                 </Typography>
 

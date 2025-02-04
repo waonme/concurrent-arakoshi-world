@@ -32,62 +32,62 @@ export const StreamPage = memo((): JSX.Element => {
 
     const timelineRef = useRef<VListHandle>(null)
 
-    const targetStreamID = id ?? ''
-    const [targetStream, setTargetStream] = useState<typeTimeline<CommunityTimelineSchema> | null>(null)
+    const targetTimelineID = id ?? ''
+    const [timeline, setTimeline] = useState<typeTimeline<CommunityTimelineSchema> | null>(null)
 
-    const [streamInfoOpen, setStreamInfoOpen] = useState<boolean>(false)
+    const [timelineInfoOpen, setTimelineInfoOpen] = useState<boolean>(false)
 
     const isOwner = useMemo(() => {
-        return targetStream?.author === client.ccid
-    }, [targetStream])
+        return timeline?.author === client.ccid
+    }, [timeline])
 
-    const isRestricted = targetStream?.policy === 'https://policy.concrnt.world/t/inline-read-write.json'
+    const isRestricted = timeline?.policy === 'https://policy.concrnt.world/t/inline-read-write.json'
 
     const writeable = isRestricted
-        ? targetStream?.policyParams?.isWritePublic
+        ? timeline?.policyParams?.isWritePublic
             ? true
-            : targetStream?.policyParams?.writer?.includes(client.ccid ?? '')
+            : timeline?.policyParams?.writer?.includes(client.ccid ?? '')
         : true
 
     const readable = isRestricted
-        ? targetStream?.policyParams?.isReadPublic
+        ? timeline?.policyParams?.isReadPublic
             ? true
-            : targetStream?.policyParams?.reader?.includes(client.ccid ?? '')
+            : timeline?.policyParams?.reader?.includes(client.ccid ?? '')
         : true
 
-    const streams = useMemo(() => {
-        return targetStream ? [targetStream] : []
-    }, [targetStream])
+    const timelines = useMemo(() => {
+        return timeline ? [timeline] : []
+    }, [timeline])
 
-    const streamIDs = useMemo(() => {
-        return targetStream ? [targetStream.id] : []
-    }, [targetStream])
+    const timelineFQIDs = useMemo(() => {
+        return timeline ? [timeline.fqid] : []
+    }, [timeline])
 
     useEffect(() => {
-        client.getTimeline<CommunityTimelineSchema>(targetStreamID).then((stream) => {
+        client.getTimeline<CommunityTimelineSchema>(targetTimelineID).then((stream) => {
             if (stream) {
-                setTargetStream(stream)
+                setTimeline(stream)
             }
         })
     }, [id])
 
     const editorModal = useEditorModal()
     useEffect(() => {
-        if (!targetStream) return
+        if (!timeline) return
         const opts = {
-            streamPickerInitial: [targetStream]
+            streamPickerInitial: [timeline]
         }
         editorModal.registerOptions(opts)
         return () => {
             editorModal.unregisterOptions(opts)
         }
-    }, [targetStream])
+    }, [timeline])
 
     return (
         <>
             <Helmet>
-                <title>{`#${targetStream?.document.body.name ?? 'Not Found'} - Concrnt`}</title>
-                <meta name="description" content={targetStream?.document.body.description ?? ''} />
+                <title>{`#${timeline?.document.body.name ?? 'Not Found'} - Concrnt`}</title>
+                <meta name="description" content={timeline?.document.body.description ?? ''} />
             </Helmet>
             <Box
                 sx={{
@@ -99,20 +99,20 @@ export const StreamPage = memo((): JSX.Element => {
                 }}
             >
                 <TimelineHeader
-                    title={targetStream?.document.body.name ?? 'Not Found'}
+                    title={timeline?.document.body.name ?? 'Not Found'}
                     titleIcon={isRestricted ? <LockIcon /> : <TagIcon />}
                     secondaryAction={isOwner ? <TuneIcon /> : <InfoIcon />}
                     onTitleClick={() => {
                         timelineRef.current?.scrollToIndex(0, { align: 'start', smooth: true })
                     }}
                     onSecondaryActionClick={() => {
-                        setStreamInfoOpen(true)
+                        setTimelineInfoOpen(true)
                     }}
                 />
                 {readable ? (
-                    <WatchingStreamContextProvider watchingStreams={streamIDs}>
+                    <WatchingStreamContextProvider watchingStreams={timelineFQIDs}>
                         <Timeline
-                            streams={streamIDs}
+                            timelineFQIDs={timelineFQIDs}
                             ref={timelineRef}
                             header={
                                 (writeable && (
@@ -133,8 +133,8 @@ export const StreamPage = memo((): JSX.Element => {
                                             <CCPostEditor
                                                 minRows={3}
                                                 maxRows={7}
-                                                streamPickerInitial={streams}
-                                                streamPickerOptions={[...new Set([...allKnownTimelines, ...streams])]}
+                                                streamPickerInitial={timelines}
+                                                streamPickerOptions={[...new Set([...allKnownTimelines, ...timelines])]}
                                                 sx={{
                                                     p: { xs: 0.5, sm: 1 }
                                                 }}
@@ -149,22 +149,22 @@ export const StreamPage = memo((): JSX.Element => {
                     </WatchingStreamContextProvider>
                 ) : (
                     <Box>
-                        <StreamInfo id={targetStreamID} />
-                        {targetStream && <PrivateTimelineDoor timeline={targetStream} />}
+                        <StreamInfo id={targetTimelineID} />
+                        {timeline && <PrivateTimelineDoor timeline={timeline} />}
                     </Box>
                 )}
             </Box>
             <CCDrawer
-                open={streamInfoOpen}
+                open={timelineInfoOpen}
                 onClose={() => {
-                    setStreamInfoOpen(false)
+                    setTimelineInfoOpen(false)
                 }}
             >
                 <StreamInfo
                     detailed
-                    id={targetStreamID}
-                    writers={targetStream?.policyParams?.writer}
-                    readers={targetStream?.policyParams?.reader}
+                    id={targetTimelineID}
+                    writers={timeline?.policyParams?.writer}
+                    readers={timeline?.policyParams?.reader}
                 />
             </CCDrawer>
         </>

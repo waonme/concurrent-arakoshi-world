@@ -36,10 +36,8 @@ export const TimelineDrawerProvider = (props: TimelineDrawerProps): JSX.Element 
     const navigate = useNavigate()
 
     useEffect(() => {
-        console.log('TimelineDrawerProvider', timelineID)
         if (!timelineID) return
         client.getTimeline<CommunityTimelineSchema>(timelineID).then((timeline) => {
-            console.log('TimelineDrawerProvider', timeline)
             setTimeline(timeline)
         })
     }, [timelineID])
@@ -100,7 +98,7 @@ export const TimelineDrawerProvider = (props: TimelineDrawerProps): JSX.Element 
                 >
                     {readable ? (
                         <Timeline
-                            streams={timelineIDs}
+                            timelineFQIDs={timelineIDs}
                             ref={timelineRef}
                             header={timelineID ? <StreamInfo id={timelineID} /> : <></>}
                         />

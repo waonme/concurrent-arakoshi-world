@@ -2,7 +2,7 @@ import { Box, Paper, Modal, Typography, Divider, Button, Drawer, useTheme, Toolt
 import { InspectorProvider } from '../context/Inspector'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useClient } from './ClientContext'
-import { type CommunityTimelineSchema, Schemas, Timeline } from 'client'
+import { type CommunityTimelineSchema, Schemas, type Timeline } from 'client'
 import { usePreference } from './PreferenceContext'
 import { ProfileEditor } from '../components/ProfileEditor'
 import { Menu } from '../components/Menu/Menu'
@@ -226,7 +226,7 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                                         {timelines.map((timeline) => (
                                             <StreamCard
                                                 key={timeline.id}
-                                                streamID={timeline.id}
+                                                timelineFQID={timeline.fqid}
                                                 name={timeline.document.body.name}
                                                 description={timeline.document.body.description ?? 'no description'}
                                                 banner={timeline.document.body.banner ?? ''}

@@ -1,6 +1,6 @@
 import { Box, Button, Divider, Tab, Tabs, TextField, Typography, useTheme } from '@mui/material'
 import { type CommunityTimelineSchema, Schemas, type Timeline } from 'client'
-import { Profile } from '@concrnt/client'
+import { type Profile } from '@concrnt/client'
 import { useClient } from '../context/ClientContext'
 import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
@@ -292,7 +292,7 @@ export function Explorer(): JSX.Element {
                                 return (
                                     <StreamCard
                                         key={value.stream.id}
-                                        streamID={value.stream.id}
+                                        timelineFQID={value.stream.id}
                                         name={value.stream.document.body.name}
                                         description={value.stream.document.body.description ?? 'no description'}
                                         banner={value.stream.document.body.banner ?? ''}

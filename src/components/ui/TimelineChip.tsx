@@ -4,7 +4,7 @@ import {
     type CommunityTimelineSchema,
     type ProfileSchema,
     type SubprofileTimelineSchema,
-    type Timeline,
+    type Timeline
 } from 'client'
 import TagIcon from '@mui/icons-material/Tag'
 import { useClient } from '../../context/ClientContext'
@@ -15,7 +15,7 @@ import { UserProfileCard } from '../UserProfileCard'
 import HomeIcon from '@mui/icons-material/Home'
 
 export interface TimelineChipProps {
-    timelineID?: string
+    timelineFQID?: string
 }
 
 export const TimelineChip = (props: TimelineChipProps): JSX.Element => {
@@ -23,12 +23,12 @@ export const TimelineChip = (props: TimelineChipProps): JSX.Element => {
     const [timeline, setTimeline] = useState<Timeline<any> | null | undefined>(undefined)
     const [profile, setProfile] = useState<ProfileSchema | null | undefined>(null)
 
-    const domain = props.timelineID?.split('@')?.[1]
+    const domain = props.timelineFQID?.split('@')?.[1]
 
     useEffect(() => {
         if (timeline !== undefined) return
-        if (!props.timelineID) return
-        client.getTimeline<any>(props.timelineID).then((t) => {
+        if (!props.timelineFQID) return
+        client.getTimeline<any>(props.timelineFQID).then((t) => {
             setTimeline(t)
 
             if (!t) return
@@ -49,17 +49,17 @@ export const TimelineChip = (props: TimelineChipProps): JSX.Element => {
         })
     }, [])
 
-    if (!props.timelineID) {
+    if (!props.timelineFQID) {
         return <CCChip size={'small'} label={'loading...'} icon={<TagIcon />} />
     }
 
     if (!timeline) {
-        return <CCChip size={'small'} label={props.timelineID} icon={<TagIcon />} />
+        return <CCChip size={'small'} label={props.timelineFQID} icon={<TagIcon />} />
     }
 
-    let link = `/timeline/${props.timelineID}`
+    let link = `/timeline/${props.timelineFQID}`
 
-    const split = props.timelineID.split('@')
+    const split = props.timelineFQID.split('@')
     if (split[0] === 'world.concrnt.t-home') {
         link = `/${split[1]}`
     } else if (timeline.schema === Schemas.subprofileTimeline) {
@@ -100,7 +100,7 @@ export const TimelineChip = (props: TimelineChipProps): JSX.Element => {
                     <>
                         {domain && (
                             <StreamCard
-                                streamID={props.timelineID}
+                                timelineFQID={props.timelineFQID}
                                 name={timeline.document.body.name}
                                 description={timeline.document.body.description}
                                 banner={timeline.document.body.banner ?? ''}
@@ -114,7 +114,7 @@ export const TimelineChip = (props: TimelineChipProps): JSX.Element => {
             <CCChip
                 to={link}
                 size={'small'}
-                label={timeline?.document.body.name ?? profile?.username ?? props.timelineID}
+                label={timeline?.document.body.name ?? profile?.username ?? props.timelineFQID}
                 icon={profile ? <HomeIcon /> : <TagIcon />}
             />
         </Tooltip>

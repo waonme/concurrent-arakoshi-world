@@ -16,7 +16,7 @@ import { useClient } from '../../context/ClientContext'
 import { UseSoundFormats } from '../../constants'
 
 export interface TimelineProps {
-    streams: string[]
+    timelineFQIDs: string[]
     perspective?: string
     header?: JSX.Element
     onScroll?: (top: number) => void
@@ -68,7 +68,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
 
     useEffect(() => {
         let isCancelled = false
-        if (props.streams.length === 0) return
+        if (props.timelineFQIDs.length === 0) return
         setTimelineLoading(true)
         const mt = client
             .newTimelineReader({
@@ -86,7 +86,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                     }
                 }
                 timeline.current
-                    .listen(props.streams)
+                    .listen(props.timelineFQIDs)
                     .then((hasMore) => {
                         setHasMoreData(hasMore)
                     })
@@ -101,7 +101,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                 t?.dispose()
             })
         }
-    }, [props.streams])
+    }, [props.timelineFQIDs])
 
     const positionRef = useRef<number>(0)
     const scrollParentRef = useRef<HTMLDivElement>(null)
@@ -141,7 +141,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                 })
             }, 1000)
         }
-    }, [ptrEnabled, setPtrEnabled, props.streams, client.api, isFetching])
+    }, [ptrEnabled, setPtrEnabled, client.api, isFetching])
 
     useEffect(() => {
         if (!scrollParentRef.current) return
