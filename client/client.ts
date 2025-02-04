@@ -14,7 +14,7 @@ import {
     type Domain as CoreDomain,
     type Timeline as CoreTimeline,
     type Profile as CoreProfile,
-    type Association as CoreAssociation,
+    Association as CoreAssociation,
     type Message as CoreMessage,
     fetchWithTimeout,
     MasterKeyAuthProvider,
@@ -1305,7 +1305,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
             signature: 'DUMMY'
         }
 
-        const dummyAssoc = Object.setPrototypeOf(dummyAssocBase, Association.prototype)
+        const dummyAssoc = Object.setPrototypeOf(dummyAssocBase, CoreAssociation.prototype)
 
         this.associations.push(dummyAssoc)
         this.ownAssociations.push(dummyAssoc)
