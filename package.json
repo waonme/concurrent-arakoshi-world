@@ -4,8 +4,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "build": "pnpm --parallel build",
-        "dev": "pnpm --parallel --filter concrnt-world dev"
+        "build": "pnpm -r build",
+        "dev": "pnpm --filter concrnt-world dev"
     },
     "dependencies": {
         "@concrnt/client": "^0.0.2"
