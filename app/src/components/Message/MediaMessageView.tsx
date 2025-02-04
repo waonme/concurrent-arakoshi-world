@@ -3,12 +3,7 @@ import { SimpleNote } from './SimpleNote'
 import { MessageHeader } from './MessageHeader'
 import { MessageActions } from './MessageActions'
 import { MessageReactions } from './MessageReactions'
-import {
-    type RerouteMessageSchema,
-    type Message,
-    Schemas,
-    type MediaMessageSchema
-} from '@concrnt/worldlib'
+import { type RerouteMessageSchema, type Message, Schemas, type MediaMessageSchema } from '@concrnt/worldlib'
 import { Profile } from '@concrnt/client'
 import { PostedStreams } from './PostedStreams'
 import { ContentWithCCAvatar } from '../ContentWithCCAvatar'

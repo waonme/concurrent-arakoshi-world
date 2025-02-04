@@ -267,7 +267,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                                   </Typography>
                               </Box>
                           )
-                        : (timelineLoading ? [] : timeline.current?.body ?? []).map((e) => {
+                        : (timelineLoading ? [] : (timeline.current?.body ?? [])).map((e) => {
                               let element
                               const type = e.resourceID[0]
                               switch (type) {

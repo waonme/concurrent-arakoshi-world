@@ -82,8 +82,8 @@ export function Node(props: NodeProps): JSX.Element {
                                         props.nodeposition === 'start'
                                             ? 'flex-end'
                                             : props.nodeposition === 'end'
-                                            ? 'flex-start'
-                                            : 'center'
+                                              ? 'flex-start'
+                                              : 'center'
                                 }}
                             >
                                 <div
@@ -154,10 +154,10 @@ export function Node(props: NodeProps): JSX.Element {
                                     Children.count(props.children) === 1
                                         ? 'single'
                                         : i === 0
-                                        ? 'start'
-                                        : i === Children.count(props.children) - 1
-                                        ? 'end'
-                                        : 'middle'
+                                          ? 'start'
+                                          : i === Children.count(props.children) - 1
+                                            ? 'end'
+                                            : 'middle'
                             })
                         )}
                     </div>

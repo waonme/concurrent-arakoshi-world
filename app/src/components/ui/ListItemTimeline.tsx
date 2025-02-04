@@ -1,9 +1,7 @@
 import { ListItemButton, type SxProps } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
-import {
-    IsCSID,
-} from '@concrnt/client'
+import { IsCSID } from '@concrnt/client'
 import {
     Schemas,
     Timeline,

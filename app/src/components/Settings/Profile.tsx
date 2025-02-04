@@ -28,9 +28,7 @@ import {
     type Association,
     type ReadAccessRequestAssociationSchema
 } from '@concrnt/worldlib'
-import {
-    Profile
-} from '@concrnt/client'
+import { Profile } from '@concrnt/client'
 import { useEffect, useState } from 'react'
 import { CCDrawer } from '../ui/CCDrawer'
 import { CCEditor } from '../ui/cceditor'

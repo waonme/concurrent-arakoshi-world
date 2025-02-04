@@ -50,7 +50,7 @@ export const LinkChip = ({ href, service, icon, children }: LinkChipProps): JSX.
         <CCChip
             clickable={href !== undefined && href !== ''}
             size="small"
-            icon={useAvatar ? undefined : iconMap[service] ?? <PublicIcon />}
+            icon={useAvatar ? undefined : (iconMap[service] ?? <PublicIcon />)}
             avatar={useAvatar ? <Avatar src={icon} /> : undefined}
             to={href}
             label={children}

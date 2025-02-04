@@ -290,10 +290,11 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
                 enqueueSnackbar('Invalid mode', { variant: 'error' })
         }
 
-        req?.then(() => {
-            reset()
-            props.onPost?.()
-        })
+        req
+            ?.then(() => {
+                reset()
+                props.onPost?.()
+            })
             .catch((error) => {
                 enqueueSnackbar(`Failed to post message: ${error.message}`, { variant: 'error' })
             })

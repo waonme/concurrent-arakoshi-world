@@ -6,21 +6,21 @@
  */
 
 export interface MediaMessageSchema {
-  body: string;
-  emojis?: {
-    [k: string]: {
-      imageURL?: string;
-      animURL?: string;
-    };
-  };
-  medias?: {
-    mediaURL: string;
-    mediaType: string;
-    thumbnailURL?: string;
-    blurhash?: string;
-    flag?: string;
-  }[];
-  profileOverride?: {
-    profileID?: string;
-  };
+    body: string
+    emojis?: {
+        [k: string]: {
+            imageURL?: string
+            animURL?: string
+        }
+    }
+    medias?: {
+        mediaURL: string
+        mediaType: string
+        thumbnailURL?: string
+        blurhash?: string
+        flag?: string
+    }[]
+    profileOverride?: {
+        profileID?: string
+    }
 }

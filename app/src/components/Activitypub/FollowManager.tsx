@@ -45,11 +45,9 @@ export const ApFollowManager = (): JSX.Element => {
     }
 
     const getStats = (): void => {
-        client.api
-            .fetchWithCredential<Stats>(client.host, `/ap/api/stats`, {})
-            .then((data) => {
-                setStats(data)
-            })
+        client.api.fetchWithCredential<Stats>(client.host, `/ap/api/stats`, {}).then((data) => {
+            setStats(data)
+        })
     }
 
     useEffect(() => {
@@ -103,9 +101,7 @@ export const ApFollowManager = (): JSX.Element => {
                     <Box display="flex" alignItems="center" justifyContent="space-between" height="40px">
                         <Typography variant="h2">{stats?.followers.length}フォロワー</Typography>
                     </Box>
-                    {stats?.followers.map((x) => (
-                        <APUserCard key={x} url={x} />
-                    ))}
+                    {stats?.followers.map((x) => <APUserCard key={x} url={x} />)}
                 </Box>
             </Box>
             <CCDrawer

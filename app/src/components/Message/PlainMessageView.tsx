@@ -2,12 +2,7 @@ import { Box, Button, Typography, alpha, useTheme } from '@mui/material'
 import { MessageHeader } from './MessageHeader'
 import { MessageActions } from './MessageActions'
 import { MessageReactions } from './MessageReactions'
-import {
-    type Message,
-    type PlaintextMessageSchema,
-    Schemas,
-    type RerouteMessageSchema
-} from '@concrnt/worldlib'
+import { type Message, type PlaintextMessageSchema, Schemas, type RerouteMessageSchema } from '@concrnt/worldlib'
 import { Profile } from '@concrnt/client'
 import { PostedStreams } from './PostedStreams'
 import { ContentWithCCAvatar } from '../ContentWithCCAvatar'

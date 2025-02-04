@@ -12,7 +12,7 @@ i18n.use(Backend)
             'zh-CN': ['zh-Hans', 'en'],
             'zh-HK': ['zh-Hant', 'en'],
             'zh-TW': ['zh-Hant', 'en'],
-            'default': ['en']
+            default: ['en']
         },
         interpolation: {
             escapeValue: false // not needed for react as it escapes by default

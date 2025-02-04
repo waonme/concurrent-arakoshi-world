@@ -8,14 +8,14 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
     build: {
-        sourcemap: true,
+        sourcemap: true
     },
     server: {
-      host: '0.0.0.0',
+        host: '0.0.0.0'
     },
     resolve: {
         alias: {
-            client: path.resolve(__dirname, 'client'),
+            client: path.resolve(__dirname, 'client')
         }
     },
     plugins: [
@@ -23,66 +23,62 @@ export default defineConfig({
         VitePWA({
             devOptions: {
                 enabled: true,
-                type: 'module',
+                type: 'module'
             },
             registerType: 'autoUpdate',
-            includeAssets: [
-                'offline.html',
-                'favicon.ico',
-                'robots.txt',
-                'apple-touch-icon.png',
-            ],
+            includeAssets: ['offline.html', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
             manifest: {
-                "theme_color" : "#0476d9",
-                "background_color" : "#0476d9",
-                "display" : "standalone",
-                "scope" : "/",
-                "start_url" : "/",
-                "name" : "Concrnt",
-                "short_name" : "Concrnt",
-                "description" : "Concrnt is a next-gen decentralized social network platform designed to make your world richer.",
-                "icons": [
+                theme_color: '#0476d9',
+                background_color: '#0476d9',
+                display: 'standalone',
+                scope: '/',
+                start_url: '/',
+                name: 'Concrnt',
+                short_name: 'Concrnt',
+                description:
+                    'Concrnt is a next-gen decentralized social network platform designed to make your world richer.',
+                icons: [
                     {
-                        "src": "192.png",
-                        "sizes": "192x192",
-                        "type": "image/png",
-                        "purpose": "maskable"
+                        src: '192.png',
+                        sizes: '192x192',
+                        type: 'image/png',
+                        purpose: 'maskable'
                     },
                     {
-                        "src": "512.png",
-                        "sizes": "512x512",
-                        "type": "image/png",
-                        "purpose": "maskable"
+                        src: '512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                        purpose: 'maskable'
                     },
                     {
-                        "src": "splash.png",
-                        "sizes": "300x300",
-                        "type": "image/png",
-                        "purpose": "any"
+                        src: 'splash.png',
+                        sizes: '300x300',
+                        type: 'image/png',
+                        purpose: 'any'
                     }
                 ],
-                "screenshots": [
+                screenshots: [
                     {
-                        "src": "screenshot_narrow.jpg",
-                        "type": "image/jpeg",
-                        "sizes": "1170x2532",
-                        "form_factor": "narrow"
+                        src: 'screenshot_narrow.jpg',
+                        type: 'image/jpeg',
+                        sizes: '1170x2532',
+                        form_factor: 'narrow'
                     },
                     {
-                        "src": "screenshot_wide.png",
-                        "type": "image/png",
-                        "sizes": "1419x1260",
-                        "form_factor": "wide"
+                        src: 'screenshot_wide.png',
+                        type: 'image/png',
+                        sizes: '1419x1260',
+                        form_factor: 'wide'
                     }
                 ],
-                "share_target": {
-                    "action": "/intent",
-                    "method": "GET",
-                    "enctype": "application/x-www-form-urlencoded",
-                    "params": {
-                        "title": "title",
-                        "text": "text",
-                        "url": "url"
+                share_target: {
+                    action: '/intent',
+                    method: 'GET',
+                    enctype: 'application/x-www-form-urlencoded',
+                    params: {
+                        title: 'title',
+                        text: 'text',
+                        url: 'url'
                     }
                 }
             },
@@ -103,9 +99,9 @@ export default defineConfig({
                             cacheName: 'image-cache',
                             expiration: {
                                 maxEntries: 60,
-                                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-                            },
-                        },
+                                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+                            }
+                        }
                     },
                     {
                         urlPattern: /.*\.(?:js|css)$/,
@@ -114,9 +110,9 @@ export default defineConfig({
                             cacheName: 'static-cache',
                             expiration: {
                                 maxEntries: 60,
-                                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-                            },
-                        },
+                                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+                            }
+                        }
                     },
                     {
                         urlPattern: /.*\.(?:woff|woff2|eot|ttf|otf)$/,
@@ -125,9 +121,9 @@ export default defineConfig({
                             cacheName: 'font-cache',
                             expiration: {
                                 maxEntries: 60,
-                                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-                            },
-                        },
+                                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+                            }
+                        }
                     },
                     {
                         urlPattern: /.*\.(?:mp3)$/,
@@ -136,15 +132,14 @@ export default defineConfig({
                             cacheName: 'audio-cache',
                             expiration: {
                                 maxEntries: 60,
-                                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-                            },
-                        },
-                    },
-                ],
+                                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+                            }
+                        }
+                    }
+                ]
             }
         }),
         Info(),
-        visualizer(),
-    ],
+        visualizer()
+    ]
 })
-

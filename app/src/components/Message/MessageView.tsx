@@ -8,7 +8,7 @@ import {
     type Message,
     type ReplyMessageSchema,
     type MarkdownMessageSchema,
-    Schemas,
+    Schemas
 } from '@concrnt/worldlib'
 import { Profile } from '@concrnt/client'
 import { PostedStreams } from './PostedStreams'

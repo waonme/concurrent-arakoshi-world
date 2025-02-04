@@ -65,7 +65,7 @@ export function RepositoryImportButton(props: { domain?: string; onImport?: (err
                             'Content-Type': 'text/plain'
                         },
                         body: chunk
-                    },
+                    }
                     // 1000 * 60 * 10 // 10 minutes // TODO
                 )
                 .then((data) => {
@@ -182,14 +182,15 @@ export function V0RepositoryImportButton(): JSX.Element {
                         'Content-Type': 'text/plain'
                     },
                     body: log
-                },
+                }
                 // 1000 * 60 * 10 // 10 minutes // TODO
             )
             .then((data) => {
                 console.log('imported')
                 console.log(data)
                 setImportStatus('success')
-            }).catch((e) => {
+            })
+            .catch((e) => {
                 console.error(e)
                 setImportStatus('error')
             })
@@ -238,12 +239,10 @@ export function RepositoryExportButton(): JSX.Element {
     useEffect(() => {
         if (!client.user) return
 
-        client.api
-            .fetchWithCredential(client.host, '/api/v1/repositories/sync', {})
-            .then((data) => {
-                console.log(data)
-                setSyncStatus(data)
-            })
+        client.api.fetchWithCredential(client.host, '/api/v1/repositories/sync', {}).then((data) => {
+            console.log(data)
+            setSyncStatus(data)
+        })
     }, [])
 
     const isDateValid = syncStatus && new Date(syncStatus?.latestOnFile).getTime() > 0
@@ -319,31 +318,29 @@ export function RepositoryExportButton(): JSX.Element {
             <Button
                 disabled={syncStatus?.status === 'syncing' || !isDateValid}
                 onClick={() => {
-                    client.api
-                        .fetchWithCredentialBlob(client.host, '/api/v1/repository', {})
-                        .then((blob) => {
-                            const url = window.URL.createObjectURL(blob)
-                            const a = document.createElement('a')
-                            a.href = url
-                            a.download =
-                                (client.user?.profile?.username ?? 'anonymous') +
-                                '-backup-' +
-                                new Date().toLocaleDateString() +
-                                '.txt'
-                            a.click()
-                            window.URL.revokeObjectURL(url)
-                        })
+                    client.api.fetchWithCredentialBlob(client.host, '/api/v1/repository', {}).then((blob) => {
+                        const url = window.URL.createObjectURL(blob)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download =
+                            (client.user?.profile?.username ?? 'anonymous') +
+                            '-backup-' +
+                            new Date().toLocaleDateString() +
+                            '.txt'
+                        a.click()
+                        window.URL.revokeObjectURL(url)
+                    })
                 }}
             >
                 {!isDateValid
                     ? 'バックアップデータのエクスポート'
                     : syncStatus?.status === 'syncing'
-                    ? '準備中...'
-                    : syncStatus?.status === 'insync'
-                    ? 'バックアップデータのエクスポート'
-                    : `${new Date(syncStatus?.latestOnFile).toLocaleDateString()}-${new Date(
-                          syncStatus?.latestOnFile
-                      ).toLocaleTimeString()}までのレポジトリデータをエクスポート`}
+                      ? '準備中...'
+                      : syncStatus?.status === 'insync'
+                        ? 'バックアップデータのエクスポート'
+                        : `${new Date(syncStatus?.latestOnFile).toLocaleDateString()}-${new Date(
+                              syncStatus?.latestOnFile
+                          ).toLocaleTimeString()}までのレポジトリデータをエクスポート`}
             </Button>
         </Box>
     )

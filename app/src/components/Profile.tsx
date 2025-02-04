@@ -239,7 +239,7 @@ export function Profile(props: ProfileProps): JSX.Element {
                                                   props.overrideSubProfileID +
                                                   '@' +
                                                   props.user.ccid
-                                                : props.user.homeTimeline ?? ''
+                                                : (props.user.homeTimeline ?? '')
                                         }
                                     />
                                 </>
@@ -269,7 +269,7 @@ export function Profile(props: ProfileProps): JSX.Element {
                         }}
                     >
                         {props.user ? (
-                            subProfile?.parsedDoc.body.username ?? props.user.profile?.username ?? 'anonymous'
+                            (subProfile?.parsedDoc.body.username ?? props.user.profile?.username ?? 'anonymous')
                         ) : (
                             <Skeleton variant="text" width={200} />
                         )}

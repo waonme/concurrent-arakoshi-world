@@ -18,15 +18,6 @@ export default [
                 project: ["tsconfig.json"],
             },
 
-            extends: [
-                "eslint:recommended",
-                "eslint:import/errors",
-                "eslint:import/wrarnings",
-                "eslint:import/typescript",
-                "plugin:@typescript-eslint/recommended",
-                "plugin:react/recommended",
-                "plugin:react-hooks/recommended",
-            ],
         },
 
         rules: {
@@ -34,7 +25,6 @@ export default [
             "@typescript-eslint/no-floating-promises": ["off"],
             "@typescript-eslint/no-misused-promises": ["off"],
             "@typescript-eslint/no-non-null-assertion": ["off"],
-            "@typescript-eslint/no-unused-vars": ["warn"],
             "@typescript-eslint/prefer-nullish-coalescing": ["off"],
             "@typescript-eslint/promise-function-async": ["off"],
             "@typescript-eslint/restrict-plus-operands": ["off"],

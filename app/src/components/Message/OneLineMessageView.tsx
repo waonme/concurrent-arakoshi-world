@@ -2,11 +2,7 @@ import { Box, IconButton, Tooltip } from '@mui/material'
 import { Link as routerLink } from 'react-router-dom'
 import { CCAvatar } from '../ui/CCAvatar'
 import { TimeDiff } from '../ui/TimeDiff'
-import {
-    type Message,
-    type ReplyMessageSchema,
-    type MarkdownMessageSchema,
-} from '@concrnt/worldlib'
+import { type Message, type ReplyMessageSchema, type MarkdownMessageSchema } from '@concrnt/worldlib'
 import { MarkdownRendererLite } from '../ui/MarkdownRendererLite'
 import { MarkdownRenderer } from '../ui/MarkdownRenderer'
 import { useEffect, useState } from 'react'

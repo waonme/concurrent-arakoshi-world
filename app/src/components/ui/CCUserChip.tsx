@@ -33,19 +33,19 @@ export const CCUserChip = (props: CCUserChipProps): JSX.Element => {
         }
     }, [props.ccid])
 
-    const icon = props.avatar
-        ? 
-              <CCAvatar
-                  sx={{
-                      width: 20,
-                      height: 20
-                  }}
-                  circle
-                  identiconSource={user?.ccid ?? ''}
-                  avatarURL={user?.profile?.avatar}
-              />
-           
-        : props.iconOverride ?? <AlternateEmailIcon fontSize="small" />
+    const icon = props.avatar ? (
+        <CCAvatar
+            sx={{
+                width: 20,
+                height: 20
+            }}
+            circle
+            identiconSource={user?.ccid ?? ''}
+            avatarURL={user?.profile?.avatar}
+        />
+    ) : (
+        (props.iconOverride ?? <AlternateEmailIcon fontSize="small" />)
+    )
 
     return (
         <Tooltip

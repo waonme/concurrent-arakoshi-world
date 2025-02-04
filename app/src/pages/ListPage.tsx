@@ -4,7 +4,11 @@ import { useLocation, useNavigate, Link as RouterLink, useSearchParams } from 'r
 import { usePreference } from '../context/PreferenceContext'
 import { Timeline } from '../components/Timeline'
 import { useClient } from '../context/ClientContext'
-import { type CommunityTimelineSchema, type ListSubscriptionSchema, type Timeline as TypeTimeline } from '@concrnt/worldlib'
+import {
+    type CommunityTimelineSchema,
+    type ListSubscriptionSchema,
+    type Timeline as TypeTimeline
+} from '@concrnt/worldlib'
 import { type Subscription as CoreSubscription, type SubscriptionItem as CoreSubscriptionItem } from '@concrnt/client'
 import TuneIcon from '@mui/icons-material/Tune'
 import ExploreIcon from '@mui/icons-material/Explore'
@@ -351,9 +355,7 @@ export function ListPage(): JSX.Element {
                     overflowY: 'auto'
                 }}
             >
-                {tabSubscription?.map((sub) => (
-                    <ListItemTimeline key={sub.id} timelineID={sub.id} />
-                ))}
+                {tabSubscription?.map((sub) => <ListItemTimeline key={sub.id} timelineID={sub.id} />)}
             </Menu>
         </>
     )

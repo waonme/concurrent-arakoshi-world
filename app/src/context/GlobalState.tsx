@@ -1,12 +1,5 @@
-import {
-    type Timeline,
-    type CommunityTimelineSchema,
-} from '@concrnt/worldlib'
-import {
-    Entity,
-    Subscription,
-    Profile
-} from '@concrnt/client'
+import { type Timeline, type CommunityTimelineSchema } from '@concrnt/worldlib'
+import { Entity, Subscription, Profile } from '@concrnt/client'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useClient } from './ClientContext'
 import { usePreference } from './PreferenceContext'

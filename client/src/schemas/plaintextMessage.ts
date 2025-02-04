@@ -6,8 +6,8 @@
  */
 
 export interface PlaintextMessageSchema {
-  body: string;
-  profileOverride?: {
-    profileID?: string;
-  };
+    body: string
+    profileOverride?: {
+        profileID?: string
+    }
 }

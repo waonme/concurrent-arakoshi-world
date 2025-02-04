@@ -69,7 +69,7 @@ export const UserProfileCard = (props: UserProfileCardProps): JSX.Element => {
                             avatarURL={
                                 props.profileOverride
                                     ? profile.avatar
-                                    : props.user?.profile?.avatar ?? props.profile?.avatar
+                                    : (props.user?.profile?.avatar ?? props.profile?.avatar)
                             }
                             identiconSource={ccid}
                             sx={{
