@@ -159,7 +159,7 @@ export const MessageContainer = memo<MessageContainerProps>((props: MessageConta
                                     size="small"
                                     variant="outlined"
                                     onClick={() => {
-                                        client.invalidateMessage(props.messageID)
+                                        client.api.invalidateMessage(props.messageID)
                                         setForceUpdateCount((prev) => prev + 1)
                                     }}
                                 >
