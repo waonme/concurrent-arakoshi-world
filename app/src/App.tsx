@@ -17,11 +17,7 @@ import { ThinMenu } from './components/Menu/ThinMenu'
 import { usePreference } from './context/PreferenceContext'
 import TickerProvider from './context/Ticker'
 import { ContactsPage } from './pages/Contacts'
-import {
-    type TimelineEvent,
-    type CCDocument,
-    type SocketListener
-} from '@concrnt/client'
+import { type TimelineEvent, type CCDocument, type SocketListener } from '@concrnt/client'
 import { UrlSummaryProvider } from './context/urlSummaryContext'
 import { StorageProvider } from './context/StorageContext'
 import { MarkdownRendererLite } from './components/ui/MarkdownRendererLite'
@@ -128,9 +124,12 @@ function App(): JSX.Element {
                 })
             })
 
-            setInterval(() => {
-                registration.update()
-            }, 1000 * 60 * 10) // 10 minutes
+            setInterval(
+                () => {
+                    registration.update()
+                },
+                1000 * 60 * 10
+            ) // 10 minutes
         })
     }, [])
 
@@ -138,9 +137,7 @@ function App(): JSX.Element {
         if (!client) return
         client.newSocketListener().then((l) => {
             listener.current = l
-            l.listen([
-                ...(client?.user?.notificationTimeline ? [client?.user?.notificationTimeline] : [])
-            ])
+            l.listen([...(client?.user?.notificationTimeline ? [client?.user?.notificationTimeline] : [])])
             l.on('AssociationCreated', (event: TimelineEvent) => {
                 const a = event.parsedDoc as CCDocument.Association<any>
 
@@ -327,9 +324,9 @@ function App(): JSX.Element {
                     alignItems: 'center',
                     background: `${theme.palette.background.default}, 
                                  linear-gradient(${theme.palette.background.default}, ${darken(
-                        theme.palette.background.default,
-                        0.1
-                    )})`,
+                                     theme.palette.background.default,
+                                     0.1
+                                 )})`,
                     width: '100vw',
                     height: '100dvh',
                     overflow: 'hidden',
