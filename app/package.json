@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "dev": "vite dev",
-        "build": "pnpm prebuild && tsc && vite build",
+        "build": "pnpm prebuild && tsc && vite build && pnpm postbuild",
+        "postbuild": "touch dist/.gitkeep",
         "prebuild": "./prebuild.sh",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
