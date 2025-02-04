@@ -12,8 +12,8 @@ dependencies:
     specifier: ^3.592.0
     version: 3.592.0
   '@concrnt/client':
-    specifier: ^0.0.1
-    version: 0.0.1
+    specifier: ^0.0.2
+    version: 0.0.2
   '@cosmjs/encoding':
     specifier: ^0.32.4
     version: 0.32.4
@@ -2375,8 +2375,8 @@ packages:
     dev: true
     optional: true
 
-  /@concrnt/client@0.0.1:
-    resolution: {integrity: sha512-4mLrKBWEFd/6rLr0StHxq7ju4ju/uJEKlBVP6ybf+3qI2j/Gt6/YLLeaCRkflAMGP99CRbs49iQOmIOsG0Wt7A==}
+  /@concrnt/client@0.0.2:
+    resolution: {integrity: sha512-gFFIghddzLARzJWqEInKT1JYq4Izr+kaF9czam/6v2j6FkX+R5t6WUBtZ78qLbmXDKbbcU4V9s2ECYQxRxtySA==}
     dependencies:
       '@cosmjs/amino': 0.33.0
       '@cosmjs/crypto': 0.33.0

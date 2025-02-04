@@ -51,13 +51,6 @@ import {
     type CreatePlaintextCrntOptions
 } from './model'
 
-const cacheLifetime = 5 * 60 * 1000
-
-interface Cache<T> {
-    data: T
-    expire: number
-}
-
 interface Service {
     path: string
 }
@@ -80,8 +73,6 @@ export class Client {
     ackers: User[] = []
 
     user: User | null = null
-
-    messageCache: Record<string, Cache<Promise<Message<any>>>> = {}
 
     get host(): string {
         if (!this.user) throw new Error('user is not found')
@@ -243,25 +234,7 @@ export class Client {
     }
 
     async getMessage<T>(id: MessageID, authorID: CCID, hint?: string): Promise<Message<T> | null | undefined> {
-        const cached = this.messageCache[id]
-
-        if (cached && cached.expire > Date.now()) {
-            return await cached.data
-        }
-
-        const message = Message.load(this, id, authorID, hint)
-
-        this.messageCache[id] = {
-            data: message as Promise<Message<any>>,
-            expire: Date.now() + cacheLifetime
-        }
-
-        return await this.messageCache[id].data
-    }
-
-    invalidateMessage(id: MessageID): void {
-        this.api.invalidateMessage(id)
-        delete this.messageCache[id]
+        return await Message.load(this, id, authorID, hint)
     }
 
     async createMarkdownCrnt(
@@ -1262,7 +1235,6 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         }
         this.onUpdate?.()
 
-        this.client.invalidateMessage(this.id)
         const result = this.client.api
             .createAssociation<LikeAssociationSchema>(Schemas.likeAssociation, {}, this.id, author.ccid, targetStream)
             .then((resp) => {
@@ -1380,7 +1352,6 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
 
         this.onUpdate?.()
 
-        this.client.invalidateMessage(this.id)
         await this.client.api.deleteAssociation(a.id, this.author)
     }
 
