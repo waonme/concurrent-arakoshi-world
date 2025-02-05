@@ -8,7 +8,7 @@
         "dev": "pnpm --filter concrnt-world dev"
     },
     "dependencies": {
-        "@concrnt/client": "^0.0.3"
+        "@concrnt/client": "^0.0.4"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.2.0",
