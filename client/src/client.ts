@@ -935,6 +935,7 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
 
     _document: string
     fqid: string = ''
+    host: string = ''
 
     constructor(client: Client, data: CoreTimeline<T>) {
         this.client = client
@@ -983,8 +984,9 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
 
         const timeline = new Timeline<T>(client, coreTimeline)
 
+        const host = await client.api.resolveDomain(coreTimeline.owner)
+        timeline.host = host
         if (IsCSID(coreTimeline.owner)) {
-            const host = await client.api.resolveDomain(coreTimeline.owner)
             timeline.fqid = coreTimeline.id + '@' + host
         } else {
             timeline.fqid = coreTimeline.id + '@' + coreTimeline.owner

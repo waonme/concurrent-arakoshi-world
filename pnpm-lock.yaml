@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@concrnt/client':
-        specifier: ^0.0.4
+        specifier: link:../concrnt-client
         version: 0.0.4
     devDependencies:
       '@eslint/eslintrc':

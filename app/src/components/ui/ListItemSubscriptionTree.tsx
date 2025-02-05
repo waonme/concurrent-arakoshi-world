@@ -7,6 +7,8 @@ import { ListItemTimeline } from './ListItemTimeline'
 import { usePreference } from '../../context/PreferenceContext'
 import { type ListSubscriptionSchema } from '@concrnt/worldlib'
 import { type Subscription } from '@concrnt/client'
+import { useClient } from '../../context/ClientContext'
+import { useEffect, useState } from 'react'
 import { useGlobalState } from '../../context/GlobalState'
 
 export interface ListItemSubscriptionTreeProps {
@@ -16,6 +18,8 @@ export interface ListItemSubscriptionTreeProps {
 }
 
 export const ListItemSubscriptionTree = (props: ListItemSubscriptionTreeProps): JSX.Element => {
+    const { client } = useClient()
+    const { allKnownSubscriptions } = useGlobalState() // for event handling
     const [lists, updateLists] = usePreference('lists')
     const open = props.body.expanded
     const setOpen = (newOpen: boolean): void => {
@@ -27,10 +31,20 @@ export const ListItemSubscriptionTree = (props: ListItemSubscriptionTreeProps): 
         updateLists(old)
     }
 
-    const { allKnownSubscriptions } = useGlobalState()
-    const subscription = allKnownSubscriptions.find((sub) => sub.id === props.id) as
-        | Subscription<ListSubscriptionSchema>
-        | undefined
+    const [subscription, setSubscription] = useState<Subscription<ListSubscriptionSchema> | undefined>(undefined)
+
+    useEffect(() => {
+        client.api
+            .getSubscription<ListSubscriptionSchema>(props.id, {
+                cache: 'swr',
+                expressGetter: (sub) => {
+                    setSubscription(sub)
+                }
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+    }, [props.id, allKnownSubscriptions])
 
     const iconURL = subscription?.parsedDoc.body.iconURL
 

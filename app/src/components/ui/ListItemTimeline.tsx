@@ -14,6 +14,7 @@ import TagIcon from '@mui/icons-material/Tag'
 import CloudOffIcon from '@mui/icons-material/CloudOff'
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail'
 import { FaTheaterMasks } from 'react-icons/fa'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 
 export interface ListItemTimelineProps {
     timelineID: string
@@ -26,10 +27,16 @@ export const ListItemTimeline = (props: ListItemTimelineProps): JSX.Element | nu
     const [timeline, setTimeline] = useState<Timeline<any> | null | undefined>(null)
     const [profile, setProfile] = useState<ProfileSchema | null | undefined>(null)
 
+    const [isOnline, setIsOnline] = useState<boolean>(false)
+
     useEffect(() => {
         client.getTimeline<any>(props.timelineID).then((e) => {
             if (!e) return
             setTimeline(e)
+            client.api.getDomainOnlineStatus(e.host).then((online) => {
+                console.log(e.host, online)
+                setIsOnline(online)
+            })
 
             if (e.schema === Schemas.emptyTimeline) {
                 const timeline: Timeline<CommunityTimelineSchema> = e
@@ -51,8 +58,17 @@ export const ListItemTimeline = (props: ListItemTimelineProps): JSX.Element | nu
     if (!timeline) {
         return (
             <ListItemButton dense disabled sx={props.sx}>
+                <HelpOutlineIcon />
+                Not found
+            </ListItemButton>
+        )
+    }
+
+    if (!isOnline) {
+        return (
+            <ListItemButton dense disabled sx={props.sx}>
                 <CloudOffIcon />
-                offline
+                {timeline?.document.body.name || profile?.username || 'Unknown'}
             </ListItemButton>
         )
     }
