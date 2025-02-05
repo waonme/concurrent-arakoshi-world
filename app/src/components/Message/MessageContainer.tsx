@@ -22,6 +22,7 @@ import TerminalIcon from '@mui/icons-material/Terminal'
 import { CopyChip } from '../ui/CopyChip'
 import { PlainMessageView } from './PlainMessageView'
 import { MediaMessageView } from './MediaMessageView'
+import { NotFoundError } from '@concrnt/client'
 
 interface MessageContainerProps {
     messageID: string
@@ -46,7 +47,7 @@ export const MessageContainer = memo<MessageContainerProps>((props: MessageConta
     const [devMode] = usePreference('devMode')
     const [forceUpdateCount, setForceUpdateCount] = useState<number>(0)
     const [_, setStaticUpdateCount] = useState<number>(0)
-    const [error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<Error | null>(null)
 
     if (message) {
         message.onUpdate = () => {
@@ -61,7 +62,7 @@ export const MessageContainer = memo<MessageContainerProps>((props: MessageConta
                 setMessage(msg)
             })
             .catch((e) => {
-                setError(e.toString())
+                setError(e)
             })
             .finally(() => {
                 setIsFetching(false)
@@ -90,8 +91,8 @@ export const MessageContainer = memo<MessageContainerProps>((props: MessageConta
         )
     }
 
-    if (!message && devMode) {
-        if (!error) {
+    if (!message && devMode && error) {
+        if (error instanceof NotFoundError) {
             // 404
             return (
                 <Box
@@ -139,7 +140,7 @@ export const MessageContainer = memo<MessageContainerProps>((props: MessageConta
                         <Box display="flex" flexDirection="row" justifyContent="space-between" gap={1} width="100%">
                             <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
                                 <SearchOffIcon />
-                                <Typography variant="caption">{error}</Typography>
+                                <Typography variant="caption">{error.message}</Typography>
                             </Box>
                             <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
                                 <TerminalIcon />
