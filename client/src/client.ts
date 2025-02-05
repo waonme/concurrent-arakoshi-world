@@ -116,7 +116,7 @@ export class Client {
         loadAA()
 
         opts?.progressCallback?.('loading domain services')
-        c.domainServices = await fetchWithTimeout(host, '/services', {})
+        c.domainServices = await fetchWithTimeout(`https://${host}/services`, {})
             .then((res) => res.json())
             .catch((e) => {
                 console.error('CLIENT::create::fetch::error', e)
@@ -132,8 +132,11 @@ export class Client {
 
         opts?.progressCallback?.('validating profile')
         if (c.user && !(await c.checkProfileIsOk())) {
+            console.warn('profile is not ok! fixing...')
             await c.setProfile({})
         }
+
+        console.log('!!! done !!!')
 
         return c
     }
@@ -170,7 +173,7 @@ export class Client {
         loadAA()
 
         opts?.progressCallback?.('loading domain services')
-        c.domainServices = await fetchWithTimeout(key.domain, '/services', {})
+        c.domainServices = await fetchWithTimeout(`https://${key.domain}/services`, {})
             .then((res) => res.json())
             .catch((e) => {
                 console.error('CLIENT::create::fetch::error', e)
@@ -380,9 +383,14 @@ export class Client {
     }
 
     async checkProfileIsOk(): Promise<boolean> {
+        console.log('checking profile...')
         if (!this.ccid) return false
 
-        const homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid)
+        console.log('checking home...')
+        const homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid).catch((e) => {
+            console.log('CLIENT::checkProfileIsOk::getTimeline::error', e)
+            return null
+        })
         if (!homeStream) {
             return false
         }
@@ -396,7 +404,11 @@ export class Client {
             }
         }
 
-        const notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid)
+        console.log('checking notification...')
+        const notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid).catch((e) => {
+            console.log('CLIENT::checkProfileIsOk::getTimeline::error', e)
+            return null
+        })
         if (!notificationStream) {
             return false
         }
@@ -413,7 +425,11 @@ export class Client {
             }
         }
 
-        const associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid)
+        console.log('checking association...')
+        const associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid).catch((e) => {
+            console.log('CLIENT::checkProfileIsOk::getTimeline::error', e)
+            return null
+        })
         if (!associationStream) {
             return false
         }
@@ -430,7 +446,13 @@ export class Client {
             }
         }
 
-        const currentprof = await this.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid)
+        console.log('checking profile...')
+        const currentprof = await this.api
+            .getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid)
+            .catch((e) => {
+                console.log('CLIENT::checkProfileIsOk::getProfileBySemanticID::error', e)
+                return null
+            })
         if (!currentprof) {
             return false
         }
@@ -448,7 +470,10 @@ export class Client {
     }): Promise<CoreProfile<ProfileSchema>> {
         if (!this.ccid) throw new Error('ccid is not set')
 
-        const homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid)
+        const homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid).catch((e) => {
+            console.log('CLIENT::setProfile::getTimeline::error', e)
+            return null
+        })
         if (!homeStream) {
             await this.api
                 .upsertTimeline(
@@ -477,8 +502,7 @@ export class Client {
                                 Schemas.emptyTimeline,
                                 {},
                                 {
-                                    id: homeStream.id + '@' + this.ccid,
-                                    // semanticID: 'world.concrnt.t-home',
+                                    semanticID: 'world.concrnt.t-home',
                                     owner: this.ccid,
                                     indexable: false,
                                     policy: 'https://policy.concrnt.world/t/inline-read-write.json',
@@ -495,8 +519,7 @@ export class Client {
                             Schemas.emptyTimeline,
                             {},
                             {
-                                id: homeStream.id + '@' + this.ccid,
-                                // semanticID: 'world.concrnt.t-home',
+                                semanticID: 'world.concrnt.t-home',
                                 owner: this.ccid,
                                 indexable: false,
                                 policy: 'https://policy.concrnt.world/t/inline-read-write.json',
@@ -510,7 +533,10 @@ export class Client {
             }
         }
 
-        const notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid)
+        const notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid).catch((e) => {
+            console.error('CLIENT::setProfile::getTimeline::error', e)
+            return null
+        })
         if (!notificationStream) {
             await this.api
                 .upsertTimeline(
@@ -539,8 +565,7 @@ export class Client {
                                 Schemas.emptyTimeline,
                                 {},
                                 {
-                                    id: notificationStream.id + '@' + this.ccid,
-                                    // semanticID: 'world.concrnt.t-notify',
+                                    semanticID: 'world.concrnt.t-notify',
                                     owner: this.ccid,
                                     indexable: false,
                                     policy: 'https://policy.concrnt.world/t/inline-read-write.json',
@@ -557,8 +582,7 @@ export class Client {
                             Schemas.emptyTimeline,
                             {},
                             {
-                                id: notificationStream.id + '@' + this.ccid,
-                                // semanticID: 'world.concrnt.t-notify',
+                                semanticID: 'world.concrnt.t-notify',
                                 owner: this.ccid,
                                 indexable: false,
                                 policy: 'https://policy.concrnt.world/t/inline-read-write.json',
@@ -572,7 +596,10 @@ export class Client {
             }
         }
 
-        const associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid)
+        const associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid).catch((e) => {
+            console.error('CLIENT::setProfile::getTimeline::error', e)
+            return null
+        })
         if (!associationStream) {
             await this.api
                 .upsertTimeline(
@@ -601,8 +628,7 @@ export class Client {
                                 Schemas.emptyTimeline,
                                 {},
                                 {
-                                    id: associationStream.id + '@' + this.ccid,
-                                    // semanticID: 'world.concrnt.t-assoc',
+                                    semanticID: 'world.concrnt.t-assoc',
                                     owner: this.ccid,
                                     indexable: false,
                                     policy: 'https://policy.concrnt.world/t/inline-read-write.json',
@@ -619,7 +645,6 @@ export class Client {
                             Schemas.emptyTimeline,
                             {},
                             {
-                                id: associationStream.id + '@' + this.ccid,
                                 semanticID: 'world.concrnt.t-assoc',
                                 owner: this.ccid,
                                 indexable: false,
@@ -634,8 +659,11 @@ export class Client {
             }
         }
 
-        const currentprof = (await this.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid))
-            ?.parsedDoc.body
+        const prof = await this.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid).catch((e) => {
+            console.error('CLIENT::setProfile::getProfileBySemanticID::error', e)
+            return null
+        })
+        const currentprof = prof?.parsedDoc.body
 
         const updated = await this.api.upsertProfile<ProfileSchema>(
             Schemas.profile,
@@ -750,13 +778,15 @@ export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTo
         const domain = await client.api.resolveDomain(id, hint).catch((_e) => {
             throw new Error('domain not found')
         })
-        const entity = await client.api.getEntity(id).catch((_e) => {
+        const entity = await client.api.getEntity(id, undefined, { cache: 'best-effort' }).catch((_e) => {
             throw new Error('entity not found')
         })
 
-        const profile = await client.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', id).catch((_e) => {
-            throw new Error('profile not found')
-        })
+        const profile = await client.api
+            .getProfileBySemanticID<ProfileSchema>('world.concrnt.p', id, { cache: 'best-effort' })
+            .catch((_e) => {
+                console.warn('profile not found')
+            })
 
         return new User(client, domain, entity, profile?.parsedDoc.body ?? undefined)
     }

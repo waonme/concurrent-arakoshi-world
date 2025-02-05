@@ -69,6 +69,8 @@ export function ChooseDomain(props: ChooseDomainProps): JSX.Element {
                             onClick={() => {
                                 setJumped(true)
                                 props.setDomain(domain)
+                                if (props.client && props.client.ccid)
+                                    props.client.api.invalidateEntity(props.client.ccid)
                                 jumpToDomainRegistration(props.identity.CCID, props.identity.privateKey, domain, next)
                             }}
                         />
@@ -102,6 +104,7 @@ export function ChooseDomain(props: ChooseDomainProps): JSX.Element {
                         onClick={() => {
                             setJumped(true)
                             props.setDomain(fqdnDraft)
+                            if (props.client && props.client.ccid) props.client.api.invalidateEntity(props.client.ccid)
                             jumpToDomainRegistration(props.identity.CCID, props.identity.privateKey, fqdnDraft, next)
                         }}
                     >
@@ -112,9 +115,8 @@ export function ChooseDomain(props: ChooseDomainProps): JSX.Element {
             <Button
                 disabled={!jumped}
                 onClick={(): void => {
-                    props.client?.api.invalidateEntity(props.identity.CCID)
                     props.client?.api
-                        .getEntity(props.identity.CCID)
+                        .getEntity(props.identity.CCID, undefined, { cache: 'best-effort' })
                         .then((e) => {
                             if (e?.ccid != null) {
                                 props.next()
