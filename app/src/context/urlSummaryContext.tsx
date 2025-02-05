@@ -27,7 +27,7 @@ export const UrlSummaryProvider = (props: UrlSummaryProviderProps): JSX.Element 
     const getSummary = useCallback(
         async (url: string): Promise<Summary | undefined> => {
             if (url in cache.current) return await cache.current[url]
-            const response = await fetchWithTimeout(props.host, `/summary?url=${url}`, {}).catch(() => {
+            const response = await fetchWithTimeout(`https://${props.host}/summary?url=${url}`, {}).catch(() => {
                 cache.current[url] = Promise.resolve(undefined)
             })
             if (!response) return undefined
