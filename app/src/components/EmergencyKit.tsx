@@ -117,24 +117,24 @@ buildTime: ${buildTime.toLocaleString()}`
                         maxWidth: 'unset',
                         padding: '20px'
                     }}
-                    onClick={(): void => {
+                    onClick={async (): Promise<void> => {
                         // delete all caches
                         if (window.caches) {
-                            window.caches
-                                .keys()
-                                .then((keys) => {
-                                    return Promise.all(
-                                        keys.map((key) => {
-                                            return caches.delete(key)
-                                        })
-                                    )
+                            const keys = await window.caches.keys()
+                            await Promise.all(
+                                keys.map((key) => {
+                                    return window.caches.delete(key)
                                 })
-                                .then(() => {
-                                    window.location.replace('/')
-                                })
-                        } else {
-                            window.location.replace('/')
+                            )
                         }
+                        if (window.indexedDB) {
+                            await new Promise((resolve) => {
+                                const req = window.indexedDB.deleteDatabase('concrnt-client')
+                                req.onsuccess = resolve
+                                req.onerror = resolve
+                            })
+                        }
+                        window.location.replace('/')
                     }}
                 >
                     リロード

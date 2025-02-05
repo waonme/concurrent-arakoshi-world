@@ -42,6 +42,19 @@ export function SettingsIndex(): JSX.Element {
                     caches.delete(name)
                 })
             })
+            if (window.indexedDB) {
+                const req = window.indexedDB.deleteDatabase('concrnt-client')
+                console.log(req)
+                req.onsuccess = () => {
+                    // reload
+                    console.log('deleted')
+                    window.location.reload()
+                }
+                req.onerror = () => {
+                    console.log('failed to delete')
+                }
+            }
+
             enqueueSnackbar('Cache deleted', { variant: 'success' })
         } else {
             enqueueSnackbar('No cache to delete', { variant: 'info' })
