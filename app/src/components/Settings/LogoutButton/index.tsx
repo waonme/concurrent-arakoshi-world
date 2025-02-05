@@ -19,6 +19,9 @@ export const LogoutButton = (): JSX.Element => {
         for (const key in localStorage) {
             localStorage.removeItem(key)
         }
+        if (window.indexedDB) {
+            window.indexedDB.deleteDatabase('concrnt-client')
+        }
         setOpenLogoutModal(false)
         navigate('/welcome')
     }
