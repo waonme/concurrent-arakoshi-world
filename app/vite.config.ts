@@ -83,6 +83,9 @@ export default defineConfig({
                 }
             },
             strategies: 'injectManifest',
+            injectManifest: {
+                maximumFileSizeToCacheInBytes: 10 * 1024 ** 2
+            },
             workbox: {
                 cleanupOutdatedCaches: true,
                 skipWaiting: true,

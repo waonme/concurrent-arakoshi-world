@@ -20,7 +20,7 @@ import { useMemo } from 'react'
 // @ts-expect-error vite dynamic import
 import buildTime from '~build/time'
 // @ts-expect-error vite dynamic import
-import { branch, sha } from '~build/info'
+import { branch, sha } from '~build/git'
 import { useGlobalState } from '../../context/GlobalState'
 import { type Identity } from '@concrnt/client'
 

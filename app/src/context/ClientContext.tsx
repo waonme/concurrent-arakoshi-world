@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { usePersistent } from '../hooks/usePersistent'
 
 // @ts-expect-error vite dynamic import
-import { branch, sha } from '~build/info'
+import { branch, sha } from '~build/git'
 import { FullScreenLoading } from '../components/ui/FullScreenLoading'
 import { type Client } from '@concrnt/worldlib'
 

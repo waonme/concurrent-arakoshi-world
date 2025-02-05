@@ -93,7 +93,6 @@ export const StreamPicker = (props: StreamPickerProps): JSX.Element => {
                 }
                 renderOption={(props, option, _state, _ownerState) => (
                     <Box
-                        key={option.id}
                         component="li"
                         sx={{
                             display: 'flex',

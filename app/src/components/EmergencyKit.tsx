@@ -4,7 +4,7 @@ import { type Preference, defaultPreference } from '../context/PreferenceContext
 // @ts-expect-error vite dynamic import
 import buildTime from '~build/time'
 // @ts-expect-error vite dynamic import
-import { branch, sha } from '~build/info'
+import { branch, sha } from '~build/git'
 
 const buttonStyle = {
     backgroundColor: '#0476d9',
