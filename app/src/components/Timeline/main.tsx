@@ -79,6 +79,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                 const leaderTimeline = await client.getTimeline(props.timelineFQIDs[0])
                 if (leaderTimeline) {
                     hostOverride = leaderTimeline.host
+                    console.warn('timeline host override:', hostOverride)
                 }
             }
 
