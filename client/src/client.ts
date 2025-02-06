@@ -67,12 +67,13 @@ export class Client {
     server?: CoreDomain
     keyPair?: KeyPair
 
-    socket?: Socket
+    sockets: Record<string, Socket> = {}
     domainServices: Record<string, Service> = {}
     ackings: User[] = []
     ackers: User[] = []
 
     user: User | null = null
+    isOnline: boolean = true
 
     get host(): string {
         if (!this.user) throw new Error('user is not found')
@@ -125,18 +126,21 @@ export class Client {
 
         opts?.progressCallback?.('loading domain')
         c.server =
-            (await c.api.getDomain(host).catch((e) => {
+            (await c.api.getDomain(host, { cache: 'no-cache', timeoutms: 3000 }).catch((e) => {
                 console.error('CLIENT::create::getDomain::error', e)
                 return null
             })) ?? undefined
 
-        opts?.progressCallback?.('validating profile')
-        if (c.user && !(await c.checkProfileIsOk())) {
-            console.warn('profile is not ok! fixing...')
-            await c.setProfile({})
+        if (c.server) {
+            c.isOnline = true
+            opts?.progressCallback?.('validating profile')
+            if (c.user && !(await c.checkProfileIsOk())) {
+                console.warn('profile is not ok! fixing...')
+                await c.setProfile({})
+            }
+        } else {
+            c.isOnline = false
         }
-
-        console.log('!!! done !!!')
 
         return c
     }
@@ -182,14 +186,21 @@ export class Client {
 
         opts?.progressCallback?.('loading domain')
         c.server =
-            (await c.api.getDomain(host).catch((e) => {
+            (await c.api.getDomain(host, { cache: 'no-cache', timeoutms: 3000 }).catch((e) => {
                 console.error('CLIENT::create::getDomain::error', e)
                 return null
             })) ?? undefined
 
         opts?.progressCallback?.('validating profile')
-        if (c.user && !(await c.checkProfileIsOk())) {
-            await c.setProfile({})
+        if (c.server) {
+            c.isOnline = true
+            opts?.progressCallback?.('validating profile')
+            if (c.user && !(await c.checkProfileIsOk())) {
+                console.warn('profile is not ok! fixing...')
+                await c.setProfile({})
+            }
+        } else {
+            c.isOnline = false
         }
 
         opts?.progressCallback?.('done')
@@ -383,10 +394,8 @@ export class Client {
     }
 
     async checkProfileIsOk(): Promise<boolean> {
-        console.log('checking profile...')
         if (!this.ccid) return false
 
-        console.log('checking home...')
         const homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid).catch((e) => {
             console.log('CLIENT::checkProfileIsOk::getTimeline::error', e)
             return null
@@ -404,7 +413,6 @@ export class Client {
             }
         }
 
-        console.log('checking notification...')
         const notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid).catch((e) => {
             console.log('CLIENT::checkProfileIsOk::getTimeline::error', e)
             return null
@@ -425,7 +433,6 @@ export class Client {
             }
         }
 
-        console.log('checking association...')
         const associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid).catch((e) => {
             console.log('CLIENT::checkProfileIsOk::getTimeline::error', e)
             return null
@@ -446,7 +453,6 @@ export class Client {
             }
         }
 
-        console.log('checking profile...')
         const currentprof = await this.api
             .getProfileBySemanticID<ProfileSchema>('world.concrnt.p', this.ccid)
             .catch((e) => {
@@ -685,25 +691,26 @@ export class Client {
         return updated
     }
 
-    async newSocket(): Promise<Socket> {
-        if (!this.socket) {
-            this.socket = new Socket(this.api)
-            await this.socket.waitOpen()
+    async newSocket(host?: string): Promise<Socket> {
+        const targetHost = host ?? this.host
+        if (!this.sockets[targetHost]) {
+            this.sockets[targetHost] = new Socket(this.api, host)
+            await this.sockets[targetHost].waitOpen()
         }
-        return this.socket
+        return this.sockets[targetHost]
     }
 
-    async newSocketListener(): Promise<SocketListener> {
-        const socket = await this.newSocket()
+    async newSocketListener(host?: string): Promise<SocketListener> {
+        const socket = await this.newSocket(host)
         return new SocketListener(socket)
     }
 
-    async newTimelineReader(opts?: { withoutSocket: boolean }): Promise<TimelineReader> {
+    async newTimelineReader(opts?: { withoutSocket: boolean; hostOverride?: string }): Promise<TimelineReader> {
         if (opts?.withoutSocket) {
             return new TimelineReader(this.api, undefined)
         }
-        const socket = await this.newSocket()
-        return new TimelineReader(this.api, socket)
+        const socket = await this.newSocket(opts?.hostOverride)
+        return new TimelineReader(this.api, socket, opts?.hostOverride)
     }
 
     async newTimelineQuery(): Promise<QueryTimelineReader> {

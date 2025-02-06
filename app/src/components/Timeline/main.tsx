@@ -14,6 +14,7 @@ import { usePreference } from '../../context/PreferenceContext'
 import { VList, type VListHandle } from 'virtua'
 import { useClient } from '../../context/ClientContext'
 import { UseSoundFormats } from '../../constants'
+import { useGlobalState } from '../../context/GlobalState'
 
 export interface TimelineProps {
     timelineFQIDs: string[]
@@ -40,6 +41,7 @@ const timelineElemSx: SxProps = {
 
 const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle>): JSX.Element => {
     const { client } = useClient()
+    const { isDomainOffline } = useGlobalState()
     const theme = useTheme()
     const [sound] = usePreference('sound')
 
@@ -68,40 +70,53 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
 
     useEffect(() => {
         let isCancelled = false
-        if (props.timelineFQIDs.length === 0) return
-        setTimelineLoading(true)
-        const mt = client
-            .newTimelineReader({
-                withoutSocket: props.noRealtime ?? false
-            })
-            .then((t) => {
-                if (isCancelled) return
-                timeline.current = t
-                t.onUpdate = () => {
-                    timelineChanged()
+        const request = async () => {
+            if (props.timelineFQIDs.length === 0) return
+            setTimelineLoading(true)
+
+            let hostOverride = undefined
+            if (isDomainOffline && props.timelineFQIDs.length === 1) {
+                const leaderTimeline = await client.getTimeline(props.timelineFQIDs[0])
+                if (leaderTimeline) {
+                    hostOverride = leaderTimeline.host
                 }
-                t.onRealtimeEvent = (event) => {
-                    if (event.parsedDoc?.type === 'message') {
-                        playBubbleRef.current()
+            }
+
+            return client
+                .newTimelineReader({
+                    withoutSocket: props.noRealtime ?? false,
+                    hostOverride: hostOverride
+                })
+                .then((t) => {
+                    if (isCancelled) return
+                    timeline.current = t
+                    t.onUpdate = () => {
+                        timelineChanged()
                     }
-                }
-                timeline.current
-                    .listen(props.timelineFQIDs)
-                    .then((hasMore) => {
-                        setHasMoreData(hasMore)
-                    })
-                    .finally(() => {
-                        setTimelineLoading(false)
-                    })
-                return t
-            })
+                    t.onRealtimeEvent = (event) => {
+                        if (event.parsedDoc?.type === 'message') {
+                            playBubbleRef.current()
+                        }
+                    }
+                    timeline.current
+                        .listen(props.timelineFQIDs)
+                        .then((hasMore) => {
+                            setHasMoreData(hasMore)
+                        })
+                        .finally(() => {
+                            setTimelineLoading(false)
+                        })
+                    return t
+                })
+        }
+        const mt = request()
         return () => {
             isCancelled = true
             mt.then((t) => {
                 t?.dispose()
             })
         }
-    }, [props.timelineFQIDs])
+    }, [props.timelineFQIDs, isDomainOffline])
 
     const positionRef = useRef<number>(0)
     const scrollParentRef = useRef<HTMLDivElement>(null)
