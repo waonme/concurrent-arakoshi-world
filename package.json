@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "build": "pnpm -r build",
-        "dev": "pnpm --filter concrnt-world dev"
+        "dev": "pnpm --filter concrnt-world dev",
+        "build-storybook": "pnpm --filter @concrnt/worldlib build && pnpm --filter concrnt-world build-storybook"
     },
     "dependencies": {
         "@concrnt/client": "^0.0.9"
