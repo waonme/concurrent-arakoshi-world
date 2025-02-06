@@ -51,6 +51,8 @@ import {
     type CreatePlaintextCrntOptions
 } from './model'
 
+const cacheLifetime = 5 * 60 * 1000
+
 interface Service {
     path: string
 }
@@ -58,6 +60,11 @@ interface Service {
 interface ClientOptions {
     appName?: string
     progressCallback?: (status: string) => void
+}
+
+interface Cache<T> {
+    data: T
+    expire: number
 }
 
 export class Client {
@@ -87,6 +94,8 @@ export class Client {
             this.ckid = api.authProvider.getCKID()
         } catch (_) {}
     }
+
+    messageCache: Record<string, Cache<Promise<Message<any>>>> = {}
 
     static async create(privatekey: string, host: FQDN, opts?: ClientOptions): Promise<Client> {
         const keyPair = LoadKey(privatekey)
@@ -248,7 +257,25 @@ export class Client {
     }
 
     async getMessage<T>(id: MessageID, authorID: CCID, hint?: string): Promise<Message<T> | null | undefined> {
-        return await Message.load(this, id, authorID, hint)
+        const cached = this.messageCache[id]
+
+        if (cached && cached.expire > Date.now()) {
+            return cached.data
+        }
+
+        const message = Message.load(this, id, authorID, hint)
+
+        this.messageCache[id] = {
+            data: message as Promise<Message<any>>,
+            expire: Date.now() + cacheLifetime
+        }
+
+        return this.messageCache[id].data
+    }
+
+    invalidateMessage(id: MessageID): void {
+        this.api.invalidateMessage(id)
+        delete this.messageCache[id]
     }
 
     async createMarkdownCrnt(
@@ -917,7 +944,7 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'pa
 
     async delete(): Promise<void> {
         const { content } = await this.client.api.deleteAssociation(this.id, this.owner ?? this.author)
-        this.client.api.invalidateMessage(content.target)
+        this.client.invalidateMessage(content.target)
     }
 }
 
@@ -1325,7 +1352,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         }
         this.onUpdate?.()
 
-        this.client.api.invalidateMessage(this.id)
+        this.client.invalidateMessage(this.id)
         const result = this.client.api
             .createAssociation<ReactionAssociationSchema>(
                 Schemas.reactionAssociation,
@@ -1363,7 +1390,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
             targetStream,
             txhash
         )
-        this.client.api.invalidateMessage(this.id)
+        this.client.invalidateMessage(this.id)
         return result
     }
 
@@ -1479,6 +1506,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
     }
 
     async delete(): Promise<void> {
+        this.client.invalidateMessage(this.id)
         return await this.client.api.deleteMessage(this.id)
     }
 }
