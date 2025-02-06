@@ -1127,8 +1127,11 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
             schema: Schemas.reactionAssociation
         })
 
-        const timelines = await Promise.all(message.timelines.map((e) => client.getTimeline(e)))
-        message.postedStreams = timelines.filter((e) => e) as Array<Timeline<any>>
+        const timelines_request = await Promise.allSettled(message.timelines.map((e) => client.getTimeline(e)))
+        const timelines_fulfilled = timelines_request.filter((e) => e.status === 'fulfilled') as Array<
+            PromiseFulfilledResult<Timeline<any>>
+        >
+        message.postedStreams = timelines_fulfilled.map((e) => e.value)
 
         return message
     }

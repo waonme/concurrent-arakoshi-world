@@ -34,7 +34,6 @@ export const ListItemTimeline = (props: ListItemTimelineProps): JSX.Element | nu
             if (!e) return
             setTimeline(e)
             client.api.getDomainOnlineStatus(e.host).then((online) => {
-                console.log(e.host, online)
                 setIsOnline(online)
             })
 
