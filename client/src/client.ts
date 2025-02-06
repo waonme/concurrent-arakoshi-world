@@ -281,7 +281,7 @@ export class Client {
 
     async createMarkdownCrnt(
         body: string,
-        streams: TimelineID[],
+        timelines: TimelineID[],
         options?: CreateCurrentOptions
     ): Promise<CoreMessage<MarkdownMessageSchema>> {
         let policy
@@ -308,7 +308,7 @@ export class Client {
                 emojis: options?.emojis,
                 profileOverride: options?.profileOverride
             },
-            streams,
+            timelines,
             {
                 policy,
                 policyParams,
@@ -316,16 +316,16 @@ export class Client {
             }
         )
         if (options?.mentions && options.mentions.length > 0) {
-            const associationStream = []
+            const associationTimeline = []
             for (const mention of options.mentions) {
-                associationStream.push('world.concrnt.t-notify@' + mention)
+                associationTimeline.push('world.concrnt.t-notify@' + mention)
             }
             await this.api.createAssociation(
                 Schemas.mentionAssociation,
                 {},
                 created.id,
                 created.author,
-                associationStream
+                associationTimeline
             )
         }
         return created
@@ -333,7 +333,7 @@ export class Client {
 
     async createPlainTextCrnt(
         body: string,
-        streams: TimelineID[],
+        timelines: TimelineID[],
         options?: CreatePlaintextCrntOptions
     ): Promise<CoreMessage<MarkdownMessageSchema>> {
         let policy
@@ -359,7 +359,7 @@ export class Client {
                 body,
                 profileOverride: options?.profileOverride
             },
-            streams,
+            timelines,
             {
                 policy,
                 policyParams,
@@ -371,7 +371,7 @@ export class Client {
 
     async createMediaCrnt(
         body: string,
-        streams: TimelineID[],
+        timelines: TimelineID[],
         options?: CreateMediaCrntOptions
     ): Promise<CoreMessage<MarkdownMessageSchema>> {
         let policy
@@ -399,7 +399,7 @@ export class Client {
                 profileOverride: options?.profileOverride,
                 medias: options?.medias
             },
-            streams,
+            timelines,
             {
                 policy,
                 policyParams,
@@ -410,8 +410,8 @@ export class Client {
     }
 
     async getTimelinesBySchema<T>(remote: FQDN, schema: string): Promise<Array<Timeline<T>>> {
-        const streams = await this.api.getTimelineListBySchema<T>(schema, remote)
-        return streams.map((e) => new Timeline<T>(this, e))
+        const timelines = await this.api.getTimelineListBySchema<T>(schema, remote)
+        return timelines.map((e) => new Timeline<T>(this, e))
     }
 
     async createCommunityTimeline(body: CommunityTimelineSchema): Promise<CoreTimeline<CommunityTimelineSchema>> {
@@ -424,58 +424,61 @@ export class Client {
     async checkProfileIsOk(): Promise<boolean> {
         if (!this.ccid) return false
 
-        const homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid).catch((e) => {
+        const homeTimeline = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid).catch((e) => {
             console.log('CLIENT::checkProfileIsOk::getTimeline::error', e)
             return null
         })
-        if (!homeStream) {
+        if (!homeTimeline) {
             return false
         }
-        if (homeStream.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' && !homeStream.policyParams) {
+        if (
+            homeTimeline.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' &&
+            !homeTimeline.policyParams
+        ) {
             return false
         }
-        if (homeStream.policyParams) {
-            const policyParams = JSON.parse(homeStream.policyParams)
+        if (homeTimeline.policyParams) {
+            const policyParams = JSON.parse(homeTimeline.policyParams)
             if (policyParams.writer.indexOf(this.ccid) === -1) {
                 return false
             }
         }
 
-        const notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid).catch((e) => {
+        const notificationTimeline = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid).catch((e) => {
             console.log('CLIENT::checkProfileIsOk::getTimeline::error', e)
             return null
         })
-        if (!notificationStream) {
+        if (!notificationTimeline) {
             return false
         }
         if (
-            notificationStream.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' &&
-            !notificationStream.policyParams
+            notificationTimeline.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' &&
+            !notificationTimeline.policyParams
         ) {
             return false
         }
-        if (notificationStream.policyParams) {
-            const policyParams = JSON.parse(notificationStream.policyParams)
+        if (notificationTimeline.policyParams) {
+            const policyParams = JSON.parse(notificationTimeline.policyParams)
             if (policyParams.reader.indexOf(this.ccid) === -1) {
                 return false
             }
         }
 
-        const associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid).catch((e) => {
+        const associationTimeline = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid).catch((e) => {
             console.log('CLIENT::checkProfileIsOk::getTimeline::error', e)
             return null
         })
-        if (!associationStream) {
+        if (!associationTimeline) {
             return false
         }
         if (
-            associationStream.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' &&
-            !associationStream.policyParams
+            associationTimeline.policy !== 'https://policy.concrnt.world/t/inline-read-write.json' &&
+            !associationTimeline.policyParams
         ) {
             return false
         }
-        if (associationStream.policyParams) {
-            const policyParams = JSON.parse(associationStream.policyParams)
+        if (associationTimeline.policyParams) {
+            const policyParams = JSON.parse(associationTimeline.policyParams)
             if (policyParams.writer.indexOf(this.ccid) === -1) {
                 return false
             }
@@ -504,11 +507,11 @@ export class Client {
     }): Promise<CoreProfile<ProfileSchema>> {
         if (!this.ccid) throw new Error('ccid is not set')
 
-        const homeStream = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid).catch((e) => {
+        const homeTimeline = await this.api.getTimeline('world.concrnt.t-home@' + this.ccid).catch((e) => {
             console.log('CLIENT::setProfile::getTimeline::error', e)
             return null
         })
-        if (!homeStream) {
+        if (!homeTimeline) {
             await this.api
                 .upsertTimeline(
                     Schemas.emptyTimeline,
@@ -525,10 +528,10 @@ export class Client {
                     console.error('CLIENT::setProfile::upsertTimeline::error', e)
                 })
         } else {
-            const policy = homeStream.policy
+            const policy = homeTimeline.policy
             if (policy === 'https://policy.concrnt.world/t/inline-read-write.json') {
-                if (homeStream.policyParams) {
-                    const policyParams = JSON.parse(homeStream.policyParams)
+                if (homeTimeline.policyParams) {
+                    const policyParams = JSON.parse(homeTimeline.policyParams)
                     if (policyParams.writer.indexOf(this.ccid) === -1) {
                         policyParams.writer.push(this.ccid)
                         await this.api
@@ -567,11 +570,11 @@ export class Client {
             }
         }
 
-        const notificationStream = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid).catch((e) => {
+        const notificationTimeline = await this.api.getTimeline('world.concrnt.t-notify@' + this.ccid).catch((e) => {
             console.error('CLIENT::setProfile::getTimeline::error', e)
             return null
         })
-        if (!notificationStream) {
+        if (!notificationTimeline) {
             await this.api
                 .upsertTimeline(
                     Schemas.emptyTimeline,
@@ -588,10 +591,10 @@ export class Client {
                     console.error('CLIENT::setProfile::upsertTimeline::error', e)
                 })
         } else {
-            const policy = notificationStream.policy
+            const policy = notificationTimeline.policy
             if (policy === 'https://policy.concrnt.world/t/inline-read-write.json') {
-                if (notificationStream.policyParams) {
-                    const policyParams = JSON.parse(notificationStream.policyParams)
+                if (notificationTimeline.policyParams) {
+                    const policyParams = JSON.parse(notificationTimeline.policyParams)
                     if (policyParams.reader.indexOf(this.ccid) === -1) {
                         policyParams.reader.push(this.ccid)
                         await this.api
@@ -630,11 +633,11 @@ export class Client {
             }
         }
 
-        const associationStream = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid).catch((e) => {
+        const associationTimeline = await this.api.getTimeline('world.concrnt.t-assoc@' + this.ccid).catch((e) => {
             console.error('CLIENT::setProfile::getTimeline::error', e)
             return null
         })
-        if (!associationStream) {
+        if (!associationTimeline) {
             await this.api
                 .upsertTimeline(
                     Schemas.emptyTimeline,
@@ -651,10 +654,10 @@ export class Client {
                     console.error('CLIENT::setProfile::upsertTimeline::error', e)
                 })
         } else {
-            const policy = associationStream.policy
+            const policy = associationTimeline.policy
             if (policy === 'https://policy.concrnt.world/t/inline-read-write.json') {
-                if (associationStream.policyParams) {
-                    const policyParams = JSON.parse(associationStream.policyParams)
+                if (associationTimeline.policyParams) {
+                    const policyParams = JSON.parse(associationTimeline.policyParams)
                     if (policyParams.writer.indexOf(this.ccid) === -1) {
                         policyParams.writer.push(this.ccid)
                         await this.api
@@ -1069,7 +1072,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
     authorUser?: User
     associationCounts?: Record<string, number>
     reactionCounts?: Record<string, number>
-    postedStreams?: Array<Timeline<any>>
+    postedTimelines?: Array<Timeline<any>>
     onUpdate?: () => void
 
     constructor(client: Client, data: CoreMessage<T>) {
@@ -1110,7 +1113,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
             policyParams: this.policyParams,
             associationCounts: this.associationCounts,
             reactionCounts: this.reactionCounts,
-            postedStreams: this.postedStreams,
+            postedTimelines: this.postedTimelines,
             authorUser: this.authorUser
         }
     }
@@ -1131,7 +1134,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         const timelines_fulfilled = timelines_request.filter((e) => e.status === 'fulfilled') as Array<
             PromiseFulfilledResult<Timeline<any>>
         >
-        message.postedStreams = timelines_fulfilled.map((e) => e.value)
+        message.postedTimelines = timelines_fulfilled.map((e) => e.value)
 
         return message
     }
@@ -1277,7 +1280,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         const author = await this.getAuthor()
         const user = this.client.user
         if (!user) throw new Error('user is not set')
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
+        const targetTimeline = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
         const dummyAssocBase: Omit<CoreAssociation<LikeAssociationSchema>, 'parsedDoc'> = {
             id: new Date().getTime().toString(),
@@ -1294,7 +1297,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
                 target: this.id,
                 owner: this.author,
                 variant: '',
-                timelines: targetStream,
+                timelines: targetTimeline,
                 signedAt: new Date()
             }),
             signature: 'DUMMY'
@@ -1310,7 +1313,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         this.onUpdate?.()
 
         const result = this.client.api
-            .createAssociation<LikeAssociationSchema>(Schemas.likeAssociation, {}, this.id, author.ccid, targetStream)
+            .createAssociation<LikeAssociationSchema>(Schemas.likeAssociation, {}, this.id, author.ccid, targetTimeline)
             .then((resp) => {
                 return resp
             })
@@ -1325,7 +1328,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         const author = await this.getAuthor()
         const user = this.client.user
         if (!user) throw new Error('user is not set')
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
+        const targetTimeline = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
         const dummyAssocBase: Omit<CoreAssociation<ReactionAssociationSchema>, 'parsedDoc'> = {
             id: new Date().getTime().toString(),
@@ -1345,7 +1348,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
                 target: this.id,
                 owner: this.author,
                 variant: '',
-                timelines: targetStream,
+                timelines: targetTimeline,
                 signedAt: new Date()
             }),
             signature: 'DUMMY'
@@ -1370,7 +1373,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
                 },
                 this.id,
                 author.ccid,
-                targetStream,
+                targetTimeline,
                 imageUrl
             )
             .then((resp) => {
@@ -1387,7 +1390,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         const author = await this.getAuthor()
         const user = this.client.user
         if (!user) throw new Error('user is not set')
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
+        const targetTimeline = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
         const result = await this.client.api.createAssociation<UpgradeAssociationSchema>(
             Schemas.upgradeAssociation,
             {
@@ -1395,7 +1398,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
             },
             this.id,
             author.ccid,
-            targetStream,
+            targetTimeline,
             txhash
         )
         this.client.invalidateMessage(this.id)
@@ -1429,7 +1432,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         await this.client.api.deleteAssociation(a.id, this.author)
     }
 
-    async reply(streams: string[], body: string, options?: CreateCurrentOptions): Promise<void> {
+    async reply(timelines: string[], body: string, options?: CreateCurrentOptions): Promise<void> {
         const user = this.client.user
         if (!user) throw new Error('user is not set')
 
@@ -1452,7 +1455,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
                 emojis: options?.emojis,
                 profileOverride: options?.profileOverride
             },
-            streams,
+            timelines,
             {
                 policy,
                 policyParams
@@ -1460,18 +1463,18 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         )
 
         const author = await this.getAuthor()
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
+        const targetTimeline = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
         await this.client.api.createAssociation<ReplyAssociationSchema>(
             Schemas.replyAssociation,
             { messageId: created.id, messageAuthor: created.author },
             this.id,
             this.author,
-            targetStream || []
+            targetTimeline || []
         )
     }
 
-    async reroute(streams: string[], body?: string, options?: CreateCurrentOptions): Promise<void> {
+    async reroute(timelines: string[], body?: string, options?: CreateCurrentOptions): Promise<void> {
         const user = this.client.user
         if (!user) throw new Error('user is not set')
 
@@ -1494,7 +1497,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
                 emojis: options?.emojis,
                 profileOverride: options?.profileOverride
             },
-            streams,
+            timelines,
             {
                 policy,
                 policyParams
@@ -1502,14 +1505,14 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         )
 
         const author = await this.getAuthor()
-        const targetStream = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
+        const targetTimeline = ['world.concrnt.t-notify@' + author.ccid, 'world.concrnt.t-assoc@' + user.ccid]
 
         await this.client.api.createAssociation<RerouteAssociationSchema>(
             Schemas.rerouteAssociation,
             { messageId: created.id, messageAuthor: created.author },
             this.id,
             this.author,
-            targetStream
+            targetTimeline
         )
     }
 

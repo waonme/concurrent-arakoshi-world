@@ -32,17 +32,17 @@ export const PostedStreams = (props: PostedStreamsProps): JSX.Element => {
 
     const timelineDrawer = useTimelineDrawer()
 
-    const postedStreams = useMemo(() => {
-        const streams =
-            props.message.postedStreams?.filter(
-                (stream) =>
-                    (stream.schema === Schemas.communityTimeline &&
-                        (stream.author === client.ccid || stream.indexable)) ||
-                    stream.schema === Schemas.emptyTimeline ||
-                    stream.schema === Schemas.subprofileTimeline ||
-                    allKnownTimelines.map((t) => t.id).includes(stream.id)
+    const postedTimelines = useMemo(() => {
+        const timelines =
+            props.message.postedTimelines?.filter(
+                (timeline) =>
+                    (timeline.schema === Schemas.communityTimeline &&
+                        (timeline.author === client.ccid || timeline.indexable)) ||
+                    timeline.schema === Schemas.emptyTimeline ||
+                    timeline.schema === Schemas.subprofileTimeline ||
+                    allKnownTimelines.map((t) => t.id).includes(timeline.id)
             ) ?? []
-        const uniq = [...new Set(streams)]
+        const uniq = [...new Set(timelines)]
         return uniq
     }, [props.message])
 
@@ -77,7 +77,7 @@ export const PostedStreams = (props: PostedStreamsProps): JSX.Element => {
                 ml: 'auto'
             }}
         >
-            {postedStreams.length === 0 && (
+            {postedTimelines.length === 0 && (
                 <HelpOutlineIcon
                     sx={{
                         height: '1rem',
@@ -86,7 +86,7 @@ export const PostedStreams = (props: PostedStreamsProps): JSX.Element => {
                     }}
                 />
             )}
-            {postedStreams.map((e) => {
+            {postedTimelines.map((e) => {
                 const isPrivate = isPrivateTimeline(e)
 
                 switch (e.schema) {

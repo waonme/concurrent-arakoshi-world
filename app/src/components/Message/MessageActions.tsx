@@ -94,7 +94,7 @@ export const MessageActions = (props: MessageActionsProps): JSX.Element => {
                         editorModal.open({
                             mode: 'reply',
                             target: props.message,
-                            streamPickerInitial: props.message.postedStreams?.filter(
+                            streamPickerInitial: props.message.postedTimelines?.filter(
                                 (t) => t.schema === Schemas.communityTimeline
                             )
                         })

@@ -47,12 +47,12 @@ export const PlainMessageView = (props: PlainMessageViewProps): JSX.Element => {
     const reroutedsame = useMemo(() => {
         if (!props.rerouted) return false
         const A =
-            props.rerouted.postedStreams?.filter(
-                (stream) => stream.schema === Schemas.communityTimeline || stream.schema === Schemas.emptyTimeline
+            props.rerouted.postedTimelines?.filter(
+                (timeline) => timeline.schema === Schemas.communityTimeline || timeline.schema === Schemas.emptyTimeline
             ) ?? []
         const B =
-            props.message.postedStreams?.filter(
-                (stream) => stream.schema === Schemas.communityTimeline || stream.schema === Schemas.emptyTimeline
+            props.message.postedTimelines?.filter(
+                (timeline) => timeline.schema === Schemas.communityTimeline || timeline.schema === Schemas.emptyTimeline
             ) ?? []
         if (A.length !== B.length) return false
         const Aids = A.map((e) => e.id).sort()

@@ -304,7 +304,7 @@ export function MessagePage(): JSX.Element {
                                         minRows={3}
                                         maxRows={7}
                                         streamPickerInitial={
-                                            message.postedStreams?.filter(
+                                            message.postedTimelines?.filter(
                                                 (t) => t.schema === Schemas.communityTimeline
                                             ) ?? []
                                         }
