@@ -31,6 +31,7 @@ import { CCIconButton } from './ui/CCIconButton'
 import { CCComboBox } from './ui/CCComboBox'
 import { useConfirm } from '../context/Confirm'
 import { WatchRequestAcceptButton } from './WatchRequestAccpetButton'
+import { IsCCID, IsCSID } from '@concrnt/client'
 
 export interface StreamInfoProps {
     id: string
@@ -58,6 +59,8 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
 
     const [tab, setTab] = useState<'info' | 'edit'>('info')
 
+    const [update, setUpdate] = useState(0)
+
     useEffect(() => {
         if (!props.id) return
         client.getTimeline<CommunityTimelineSchema>(props.id, { cache: 'no-cache' }).then((e) => {
@@ -73,18 +76,28 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
                 setRequests(assocs.filter((e) => e.schema === Schemas.readAccessRequestAssociation))
             })
         })
-    }, [props.id])
+    }, [props.id, update])
 
     const updateStream = useCallback(() => {
         if (!timeline) return
+
+        const opts: any = {
+            indexable: visible,
+            policy: policyDraft,
+            policyParams
+        }
+
+        const split = props.id.split('@')
+        if (split.length === 2 && (IsCCID(split[1]) || IsCSID(split[1]))) {
+            opts.semanticID = split[0]
+        } else {
+            opts.id = timeline.id
+        }
+
         client.api
-            .upsertTimeline(schemaDraft, documentBody, {
-                id: props.id,
-                indexable: visible,
-                policy: policyDraft,
-                policyParams
-            })
+            .upsertTimeline(schemaDraft, documentBody, opts)
             .then((_) => {
+                setUpdate((e) => e + 1)
                 enqueueSnackbar('更新しました', { variant: 'success' })
             })
             .catch((_) => {
