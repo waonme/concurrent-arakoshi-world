@@ -13,7 +13,6 @@ import { ReplyMessageFrame } from './ReplyMessageFrame'
 import { RerouteMessageFrame } from './RerouteMessageFrame'
 import { MessageSkeleton } from '../MessageSkeleton'
 import { Box, type SxProps, Typography, Button, useTheme, alpha } from '@mui/material'
-import { MessageView } from './MessageView'
 import { usePreference } from '../../context/PreferenceContext'
 import { ContentWithUserFetch } from '../ContentWithUserFetch'
 
@@ -23,6 +22,7 @@ import { CopyChip } from '../ui/CopyChip'
 import { PlainMessageView } from './PlainMessageView'
 import { MediaMessageView } from './MediaMessageView'
 import { NotFoundError } from '@concrnt/client'
+import { MarkdownMessageView } from './MarkdownMessageView'
 
 interface MessageContainerProps {
     messageID: string
@@ -185,7 +185,7 @@ export const MessageContainer = memo<MessageContainerProps>((props: MessageConta
                     <meta itemProp="identifier" content={message.id} />
                     <meta itemProp="url" content={`https://concrnt.world/${message.author}/${message.id}`} />
                     <meta itemProp="datePublished" content={new Date(message.cdate).toISOString()} />
-                    <MessageView
+                    <MarkdownMessageView
                         simple={props.simple}
                         message={message as Message<MarkdownMessageSchema>}
                         lastUpdated={props.lastUpdated}

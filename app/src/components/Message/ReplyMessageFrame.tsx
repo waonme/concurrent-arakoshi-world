@@ -8,10 +8,10 @@ import {
     type MarkdownMessageSchema
 } from '@concrnt/worldlib'
 import { useClient } from '../../context/ClientContext'
-import { MessageView } from './MessageView'
 import { OneLineMessageView } from './OneLineMessageView'
 import { useEffect, useState } from 'react'
 import { CCUserChip } from '../ui/CCUserChip'
+import { MarkdownMessageView } from './MarkdownMessageView'
 
 export interface ReplyMessageFrameProp {
     message: Message<ReplyMessageSchema>
@@ -38,7 +38,7 @@ export const ReplyMessageFrame = (props: ReplyMessageFrameProp): JSX.Element => 
         <>
             {replyTo && <OneLineMessageView message={replyTo} />}
             <Box>
-                <MessageView
+                <MarkdownMessageView
                     simple={props.simple}
                     userCCID={client.ccid}
                     message={props.message}

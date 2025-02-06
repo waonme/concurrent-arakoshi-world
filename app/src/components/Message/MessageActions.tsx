@@ -33,10 +33,10 @@ import { usePreference } from '../../context/PreferenceContext'
 import { useConcord } from '../../context/ConcordContext'
 import { useEditorModal } from '../EditorModal'
 import { useConfirm } from '../../context/Confirm'
-import { MessageView } from './MessageView'
 import { useTranslation } from 'react-i18next'
 import { convertToGoogleTranslateCode } from '../../util'
 import { useGlobalState } from '../../context/GlobalState'
+import { MarkdownMessageView } from './MarkdownMessageView'
 
 export interface MessageActionsProps {
     message: Message<MarkdownMessageSchema | ReplyMessageSchema>
@@ -339,7 +339,7 @@ export const MessageActions = (props: MessageActionsProps): JSX.Element => {
                                 },
                                 {
                                     confirmText: t('confirmDelete'),
-                                    description: <MessageView message={props.message} simple />
+                                    description: <MarkdownMessageView message={props.message} simple />
                                 }
                             )
                         }}

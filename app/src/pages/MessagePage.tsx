@@ -26,7 +26,6 @@ import {
     type ReplyAssociationSchema,
     type RerouteAssociationSchema
 } from '@concrnt/worldlib'
-import { MessageView } from '../components/Message/MessageView'
 import { RerouteMessageFrame } from '../components/Message/RerouteMessageFrame'
 import { FavoriteAssociation } from '../components/Association/FavoriteAssociation'
 import { ReactionAssociation } from '../components/Association/ReactionAssociation'
@@ -38,6 +37,7 @@ import { PlainMessageView } from '../components/Message/PlainMessageView'
 import { MediaMessageView } from '../components/Message/MediaMessageView'
 import { Helmet } from 'react-helmet-async'
 import { MessageSkeleton } from '../components/MessageSkeleton'
+import { MarkdownMessageView } from '../components/Message/MarkdownMessageView'
 
 export function MessagePage(): JSX.Element {
     const { authorID, messageID } = useParams()
@@ -193,7 +193,11 @@ export function MessagePage(): JSX.Element {
                         {replyTo && (
                             <>
                                 <Box>
-                                    <MessageView message={replyTo} lastUpdated={lastUpdated} userCCID={client.ccid} />
+                                    <MarkdownMessageView
+                                        message={replyTo}
+                                        lastUpdated={lastUpdated}
+                                        userCCID={client.ccid}
+                                    />
                                 </Box>
                                 <Divider />
                             </>
@@ -202,7 +206,7 @@ export function MessagePage(): JSX.Element {
                         {(message.schema === Schemas.markdownMessage || message.schema === Schemas.replyMessage) && (
                             <>
                                 <Box>
-                                    <MessageView
+                                    <MarkdownMessageView
                                         forceExpanded
                                         message={message as Message<MarkdownMessageSchema | ReplyMessageSchema>}
                                         lastUpdated={lastUpdated}
@@ -332,7 +336,7 @@ export function MessagePage(): JSX.Element {
                                                             padding: '20px'
                                                         }}
                                                     >
-                                                        <MessageView
+                                                        <MarkdownMessageView
                                                             message={reply.message}
                                                             lastUpdated={lastUpdated}
                                                             userCCID={client.ccid}

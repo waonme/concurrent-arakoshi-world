@@ -17,11 +17,11 @@ import TickerProvider from '../context/Ticker'
 
 import { GuestBase } from '../components/GuestBase'
 import { MediaViewerProvider } from '../context/MediaViewer'
-import { MessageView } from '../components/Message/MessageView'
 import { MediaMessageView } from '../components/Message/MediaMessageView'
 import { PlainMessageView } from '../components/Message/PlainMessageView'
 import { Helmet } from 'react-helmet-async'
 import { MessageSkeleton } from '../components/MessageSkeleton'
+import { MarkdownMessageView } from '../components/Message/MarkdownMessageView'
 
 export default function GuestMessagePage(): JSX.Element {
     const { authorID, messageID } = useParams()
@@ -192,7 +192,7 @@ export default function GuestMessagePage(): JSX.Element {
                                                     itemProp="datePublished"
                                                     content={new Date(message.cdate).toISOString()}
                                                 />
-                                                <MessageView
+                                                <MarkdownMessageView
                                                     message={replyTo}
                                                     lastUpdated={lastUpdated}
                                                     userCCID={client.ccid}
@@ -219,7 +219,7 @@ export default function GuestMessagePage(): JSX.Element {
                                                     itemProp="datePublished"
                                                     content={new Date(message.cdate).toISOString()}
                                                 />
-                                                <MessageView
+                                                <MarkdownMessageView
                                                     forceExpanded
                                                     message={
                                                         message as Message<MarkdownMessageSchema | ReplyMessageSchema>
@@ -319,7 +319,7 @@ export default function GuestMessagePage(): JSX.Element {
                                                                             reply.message.cdate
                                                                         ).toISOString()}
                                                                     />
-                                                                    <MessageView
+                                                                    <MarkdownMessageView
                                                                         message={reply.message}
                                                                         lastUpdated={lastUpdated}
                                                                         userCCID={client.ccid}

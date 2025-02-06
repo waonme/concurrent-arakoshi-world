@@ -1,15 +1,8 @@
 import { Box, Button, alpha, useTheme } from '@mui/material'
-import { SimpleNote } from './SimpleNote'
 import { MessageHeader } from './MessageHeader'
 import { MessageActions } from './MessageActions'
 import { MessageReactions } from './MessageReactions'
-import {
-    type RerouteMessageSchema,
-    type Message,
-    type ReplyMessageSchema,
-    type MarkdownMessageSchema,
-    Schemas
-} from '@concrnt/worldlib'
+import { type RerouteMessageSchema, type Message, Schemas } from '@concrnt/worldlib'
 import { Profile } from '@concrnt/client'
 import { PostedStreams } from './PostedStreams'
 import { ContentWithCCAvatar } from '../ContentWithCCAvatar'
@@ -20,7 +13,7 @@ import { useClient } from '../../context/ClientContext'
 import { AutoSummaryProvider } from '../../context/AutoSummaryContext'
 
 export interface MessageViewProps {
-    message: Message<MarkdownMessageSchema | ReplyMessageSchema>
+    message: Message<any>
     rerouted?: Message<RerouteMessageSchema>
     userCCID?: string
     beforeMessage?: JSX.Element
@@ -29,11 +22,13 @@ export interface MessageViewProps {
     clipHeight?: number
     simple?: boolean
     additionalMenuItems?: JSX.Element | JSX.Element[]
+    children?: JSX.Element
+    afterMessage?: JSX.Element
 }
 
 const gradationHeight = 80
 
-export const MessageView = (props: MessageViewProps): JSX.Element => {
+export const MessageViewBase = (props: MessageViewProps): JSX.Element => {
     const theme = useTheme()
     const clipHeight = props.clipHeight ?? 450
     const [expanded, setExpanded] = useState(props.forceExpanded ?? false)
@@ -117,10 +112,9 @@ export const MessageView = (props: MessageViewProps): JSX.Element => {
                             Show more
                         </Button>
                     </Box>
-                    <Box itemProp="articleBody">
-                        <SimpleNote message={props.message} />
-                    </Box>
+                    <Box itemProp="articleBody">{props.children}</Box>
                 </Box>
+                {props.afterMessage}
             </AutoSummaryProvider>
             {(!props.simple && (
                 <>
