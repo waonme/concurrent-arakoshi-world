@@ -60,7 +60,7 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
 
     useEffect(() => {
         if (!props.id) return
-        client.getTimeline<CommunityTimelineSchema>(props.id).then((e) => {
+        client.getTimeline<CommunityTimelineSchema>(props.id, { cache: 'no-cache' }).then((e) => {
             if (!e) return
             setTimeline(e)
             setDocumentBody(e.document.body)

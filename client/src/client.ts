@@ -26,7 +26,8 @@ import {
     GuestAuthProvider,
     TimelineReader,
     QueryTimelineReader,
-    IsCSID
+    IsCSID,
+    FetchOptions
 } from '@concrnt/client'
 
 import { Schemas, type Schema } from './schemas'
@@ -248,8 +249,8 @@ export class Client {
         return await User.load(this, id, hint)
     }
 
-    async getTimeline<T>(id: TimelineID): Promise<Timeline<T> | null> {
-        return await Timeline.load(this, id)
+    async getTimeline<T>(id: TimelineID, opts?: FetchOptions<CoreTimeline<T>>): Promise<Timeline<T> | null> {
+        return await Timeline.load(this, id, opts)
     }
 
     async getAssociation<T>(id: AssociationID, owner: CCID): Promise<Association<T> | null | undefined> {
@@ -1010,8 +1011,12 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
         }
     }
 
-    static async load<T>(client: Client, id: TimelineID): Promise<Timeline<T> | null> {
-        const coreTimeline = await client.api.getTimeline<T>(id).catch((_e) => {
+    static async load<T>(
+        client: Client,
+        id: TimelineID,
+        opts?: FetchOptions<CoreTimeline<T>>
+    ): Promise<Timeline<T> | null> {
+        const coreTimeline = await client.api.getTimeline<T>(id, opts).catch((_e) => {
             return null
         })
         if (!coreTimeline) return null

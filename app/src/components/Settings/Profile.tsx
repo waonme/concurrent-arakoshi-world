@@ -67,7 +67,7 @@ export const ProfileSettings = (): JSX.Element => {
     const [schemaURLDraft, setSchemaURLDraft] = useState<string>('https://schema.concrnt.world/p/basic.json')
     const [schemaURL, setSchemaURL] = useState<any>(null)
 
-    const [latestProfile, setLatestProfile] = useState<ProfileSchema | null | undefined>(client.user?.profile)
+    const [latestProfile, setLatestProfile] = useState<ProfileSchema | undefined>(client.user?.profile)
 
     const [subprofileDraft, setSubprofileDraft] = useState<any>(null)
     const [badges, setBadges] = useState<Badge[]>([])
@@ -89,15 +89,17 @@ export const ProfileSettings = (): JSX.Element => {
         if (!client?.ccid) return
         if (!client.user?.profile) return
 
-        client.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', client.ccid).then((profile) => {
-            setLatestProfile(profile?.parsedDoc.body)
-            client.api.getProfiles({ author: client.ccid }).then((profiles) => {
-                const subprofiles = (profiles ?? []).filter((p) => p.id !== profile?.id)
-                setAllProfiles(subprofiles)
+        client.api
+            .getProfileBySemanticID<ProfileSchema>('world.concrnt.p', client.ccid, { cache: 'no-cache' })
+            .then((profile) => {
+                setLatestProfile(profile?.parsedDoc.body)
+                client.api.getProfiles({ author: client.ccid }).then((profiles) => {
+                    const subprofiles = (profiles ?? []).filter((p) => p.id !== profile?.id)
+                    setAllProfiles(subprofiles)
+                })
             })
-        })
 
-        client.getTimeline<EmptyTimelineSchema>(client.user.homeTimeline).then((timeline) => {
+        client.getTimeline<EmptyTimelineSchema>(client.user.homeTimeline, { cache: 'no-cache' }).then((timeline) => {
             setHomeTimeline(timeline)
             if (!timeline) return
             timeline.getAssociations().then((assocs) => {
@@ -153,7 +155,7 @@ export const ProfileSettings = (): JSX.Element => {
             >
                 <ProfileEditor
                     id={''}
-                    initial={client?.user?.profile}
+                    initial={latestProfile}
                     onSubmit={() => {
                         enqueueSnackbar(t('updated'), { variant: 'success' })
                     }}

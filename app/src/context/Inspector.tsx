@@ -34,17 +34,19 @@ export const InspectorProvider = (props: InspectorProps): JSX.Element => {
         if (!inspectingItem) return
         let isMounted = true
 
-        client.api.getMessageWithAuthor(inspectingItem.messageId, inspectingItem.author).then((msg) => {
-            if (!msg) return
-            if (!isMounted) return
-            setMessage(msg)
-            if (msg.parsedDoc.keyID && msg.parsedDoc.keyID !== '') {
-                client.api.getKeyResolution(msg.parsedDoc.keyID, inspectingItem.author).then((keys) => {
-                    if (!isMounted) return
-                    setKeyResolution(keys)
-                })
-            }
-        })
+        client.api
+            .getMessageWithAuthor(inspectingItem.messageId, inspectingItem.author, undefined, { cache: 'no-cache' })
+            .then((msg) => {
+                if (!msg) return
+                if (!isMounted) return
+                setMessage(msg)
+                if (msg.parsedDoc.keyID && msg.parsedDoc.keyID !== '') {
+                    client.api.getKeyResolution(msg.parsedDoc.keyID, inspectingItem.author).then((keys) => {
+                        if (!isMounted) return
+                        setKeyResolution(keys)
+                    })
+                }
+            })
 
         client.api.getMessageAssociationsByTarget(inspectingItem.messageId, inspectingItem.author).then((assocs) => {
             if (!isMounted) return

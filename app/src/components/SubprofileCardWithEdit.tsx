@@ -68,13 +68,15 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
 
     useEffect(() => {
         client.api.invalidateTimeline('world.concrnt.t-subhome.' + props.subProfile.id + '@' + client.ccid!)
-        client.getTimeline('world.concrnt.t-subhome.' + props.subProfile.id + '@' + client.ccid!).then((timeline) => {
-            if (!timeline) return
-            setTimeline(timeline)
-            timeline.getAssociations().then((assocs) => {
-                setRequests(assocs.filter((e) => e.schema === Schemas.readAccessRequestAssociation))
+        client
+            .getTimeline('world.concrnt.t-subhome.' + props.subProfile.id + '@' + client.ccid!, { cache: 'no-cache' })
+            .then((timeline) => {
+                if (!timeline) return
+                setTimeline(timeline)
+                timeline.getAssociations().then((assocs) => {
+                    setRequests(assocs.filter((e) => e.schema === Schemas.readAccessRequestAssociation))
+                })
             })
-        })
     }, [props.subProfile.id, update])
 
     const menuItems = [
