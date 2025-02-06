@@ -37,7 +37,7 @@ import { type ConcurrentTheme } from './model'
 import { TimelineDrawerProvider } from './context/TimelineDrawer'
 import { UserDrawerProvider } from './context/UserDrawer'
 import { Schemas } from '@concrnt/worldlib'
-import type { ProfileSchema, ReplyAssociationSchema } from '@concrnt/worldlib'
+import type { MarkdownMessageSchema, ProfileSchema, ReplyAssociationSchema } from '@concrnt/worldlib'
 
 const SwitchMasterToSub = lazy(() => import('./components/SwitchMasterToSub'))
 
@@ -145,7 +145,7 @@ function App(): JSX.Element {
                 if (a.schema === Schemas.replyAssociation) {
                     const replyassociation = a as CCDocument.Association<ReplyAssociationSchema>
                     client?.api
-                        .getMessageWithAuthor(replyassociation.body.messageId, replyassociation.body.messageAuthor)
+                        .getMessageWithAuthor<any>(replyassociation.body.messageId, replyassociation.body.messageAuthor)
                         .then((m) => {
                             m &&
                                 client?.api
@@ -172,7 +172,7 @@ function App(): JSX.Element {
 
                 if (a.schema === Schemas.rerouteAssociation) {
                     if (!event.item) return
-                    client?.api.getMessageWithAuthor(a.target, event.item.owner).then((m) => {
+                    client?.api.getMessageWithAuthor<any>(a.target, event.item.owner).then((m) => {
                         m &&
                             client?.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', a.signer).then((c) => {
                                 playNotificationRef.current()
@@ -196,7 +196,7 @@ function App(): JSX.Element {
 
                 if (a.schema === Schemas.likeAssociation) {
                     if (!event.item) return
-                    client?.api.getMessageWithAuthor(a.target, event.item.owner).then(async (m) => {
+                    client?.api.getMessageWithAuthor<any>(a.target, event.item.owner).then(async (m) => {
                         if (!m) return
                         let username = a.body.profileOverride?.username
                         if (!username) {
@@ -224,7 +224,7 @@ function App(): JSX.Element {
 
                 if (a.schema === Schemas.reactionAssociation) {
                     if (!event.item) return
-                    client.api.getMessageWithAuthor(a.target, event.item.owner).then(async (m) => {
+                    client.api.getMessageWithAuthor<any>(a.target, event.item.owner).then(async (m) => {
                         if (!m) return
                         let username = a.body.profileOverride?.username
                         if (!username) {
@@ -254,7 +254,7 @@ function App(): JSX.Element {
 
                 if (a.schema === Schemas.mentionAssociation) {
                     if (!event.item) return
-                    client?.api.getMessageWithAuthor(a.target, event.item.owner).then((m) => {
+                    client?.api.getMessageWithAuthor<any>(a.target, event.item.owner).then((m) => {
                         m &&
                             client.api.getProfileBySemanticID<ProfileSchema>('world.concrnt.p', a.signer).then((c) => {
                                 playNotificationRef.current()

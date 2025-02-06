@@ -1116,7 +1116,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
     }
 
     static async load<T>(client: Client, id: MessageID, authorID: CCID, hint?: string): Promise<Message<T> | null> {
-        const coreMsg = await client.api.getMessageWithAuthor(id, authorID, hint)
+        const coreMsg = await client.api.getMessageWithAuthor<T>(id, authorID, hint)
         if (!coreMsg) return null
 
         const message = new Message(client, coreMsg)

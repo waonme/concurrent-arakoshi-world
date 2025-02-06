@@ -88,6 +88,7 @@ export function Jobs(): JSX.Element {
                 method: 'GET'
             })
             .then(async (data) => {
+                console.log(data)
                 setJobs(data ?? [])
             })
     }
