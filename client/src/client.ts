@@ -245,8 +245,8 @@ export class Client {
         this.ackings = await this.user.getAcking()
     }
 
-    async getUser(id: CCID, hint?: string): Promise<User> {
-        return await User.load(this, id, hint)
+    async getUser(id: CCID, hint?: string, opts?: Omit<FetchOptions<never>, 'expressGetter'>): Promise<User> {
+        return await User.load(this, id, hint, opts)
     }
 
     async getTimeline<T>(id: TimelineID, opts?: FetchOptions<CoreTimeline<T>>): Promise<Timeline<T> | null> {
@@ -812,16 +812,21 @@ export class User implements Omit<CoreEntity, 'parsedAffiliationDoc' | 'parsedTo
         this.tombstoneSignature = entity.tombstoneSignature
     }
 
-    static async load(client: Client, id: CCID, hint?: string): Promise<User> {
+    static async load(
+        client: Client,
+        id: CCID,
+        hint?: string,
+        opts?: Omit<FetchOptions<never>, 'expressGetter'>
+    ): Promise<User> {
         const domain = await client.api.resolveDomain(id, hint).catch((_e) => {
             throw new Error('domain not found')
         })
-        const entity = await client.api.getEntity(id, undefined, { cache: 'best-effort' }).catch((_e) => {
+        const entity = await client.api.getEntity(id, undefined, { cache: 'best-effort', ...opts }).catch((_e) => {
             throw new Error('entity not found')
         })
 
         const profile = await client.api
-            .getProfileBySemanticID<ProfileSchema>('world.concrnt.p', id, { cache: 'best-effort' })
+            .getProfileBySemanticID<ProfileSchema>('world.concrnt.p', id, { cache: 'best-effort', ...opts })
             .catch((_e) => {
                 console.warn('profile not found')
             })

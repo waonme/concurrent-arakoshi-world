@@ -46,7 +46,7 @@ export function EntityPage(): JSX.Element {
 
     useEffect(() => {
         if (!id) return
-        client.getUser(id, hint).then((user) => {
+        client.getUser(id, hint, { TTL: 0 }).then((user) => {
             setUser(user)
         })
     }, [id])

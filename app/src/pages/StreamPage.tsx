@@ -64,7 +64,7 @@ export const StreamPage = memo((): JSX.Element => {
     }, [timeline])
 
     useEffect(() => {
-        client.getTimeline<CommunityTimelineSchema>(targetTimelineID).then((t) => {
+        client.getTimeline<CommunityTimelineSchema>(targetTimelineID, { TTL: 0 }).then((t) => {
             if (t) {
                 console.log('resolved stream:', t)
                 setTimeline(t)
