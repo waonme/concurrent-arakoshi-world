@@ -64,7 +64,17 @@ export const AssociationFrame = memo<AssociationFrameProp>((props: AssociationFr
         }
     }, [props.sx])
 
-    if (fetching) return <MessageSkeleton />
+    if (fetching) {
+        return (
+            <>
+                <Box sx={props.sx}>
+                    <MessageSkeleton />
+                </Box>
+                {props.after}
+            </>
+        )
+    }
+
     if (!association) {
         if (isDevMode) {
             return (
