@@ -36,7 +36,6 @@ export const ListItemSubscriptionTree = (props: ListItemSubscriptionTreeProps): 
     useEffect(() => {
         client.api
             .getSubscription<ListSubscriptionSchema>(props.id, {
-                cache: 'swr',
                 expressGetter: (sub) => {
                     setSubscription(sub)
                 }
