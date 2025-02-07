@@ -58,12 +58,21 @@ export function ListPage(): JSX.Element {
     const [tabSubscription, setTabSubscription] = useState<CoreSubscriptionItem[] | undefined>()
 
     const list: StreamList | undefined = lists[id]
-    const postStreams = useMemo(() => {
-        if (!list) return []
-        return list.defaultPostStreams
-            .map((streamID) => allKnownTimelines.find((e) => e.fqid === streamID))
-            .filter((e) => e !== undefined) as Array<TypeTimeline<CommunityTimelineSchema>>
-    }, [list, allKnownTimelines])
+    const [postTimelines, setPostTimelines] = useState<Array<TypeTimeline<CommunityTimelineSchema>>>([])
+
+    useEffect(() => {
+        if (!list) return
+        Promise.allSettled(
+            list.defaultPostStreams.map((streamID) => {
+                return client.getTimeline<CommunityTimelineSchema>(streamID)
+            })
+        ).then((results) => {
+            const fulfilled = results.filter((e) => e.status === 'fulfilled') as Array<
+                PromiseFulfilledResult<TypeTimeline<CommunityTimelineSchema>>
+            >
+            setPostTimelines(fulfilled.map((e) => e.value))
+        })
+    }, [list, client])
 
     const defaultPostHome = useMemo(() => {
         if (!list) return true
@@ -97,18 +106,18 @@ export function ListPage(): JSX.Element {
             if (url) draft += `${url}`
             if (draft.trim() !== '') setIntentDraft(draft)
         }
-    }, [title, text, url, postStreams])
+    }, [title, text, url, postTimelines])
 
     useEffect(() => {
-        if (list?.defaultPostStreams.length !== postStreams.length) return
+        if (list?.defaultPostStreams.length !== postTimelines.length) return
         const opts = {
-            streamPickerInitial: postStreams,
+            streamPickerInitial: postTimelines,
             defaultPostHome,
             profile: list?.defaultProfile
         }
         editorModal.registerOptions(opts)
 
-        if (intentDraft && postStreams.length > 0) {
+        if (intentDraft && postTimelines.length > 0) {
             editorModal.open({
                 draft: intentDraft
             })
@@ -118,7 +127,7 @@ export function ListPage(): JSX.Element {
         return () => {
             editorModal.unregisterOptions(opts)
         }
-    }, [postStreams, defaultPostHome, list?.defaultProfile])
+    }, [postTimelines, defaultPostHome, list?.defaultProfile])
 
     const pinnedSubscriptions = useMemo(() => {
         return Object.keys(lists)
@@ -278,7 +287,7 @@ export function ListPage(): JSX.Element {
                                                 maxRows={7}
                                                 subprofile={list.defaultProfile}
                                                 streamPickerOptions={allKnownTimelines}
-                                                streamPickerInitial={postStreams}
+                                                streamPickerInitial={postTimelines}
                                                 defaultPostHome={defaultPostHome}
                                                 sx={{
                                                     p: { xs: 0.5, sm: 1 }
