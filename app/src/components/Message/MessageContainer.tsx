@@ -23,6 +23,9 @@ import { PlainMessageView } from './PlainMessageView'
 import { MediaMessageView } from './MediaMessageView'
 import { NotFoundError } from '@concrnt/client'
 import { MarkdownMessageView } from './MarkdownMessageView'
+import { Link as routerLink } from 'react-router-dom'
+import { CCAvatarWithResolver } from '../ui/CCAvatarWithResolver'
+import InfoIcon from '@mui/icons-material/Info'
 
 interface MessageContainerProps {
     messageID: string
@@ -91,89 +94,99 @@ export const MessageContainer = memo<MessageContainerProps>((props: MessageConta
         )
     }
 
-    if (!message && devMode && error) {
+    if (error) {
         if (error instanceof NotFoundError) {
             // 404
             return (
-                <Box
-                    sx={{
-                        ...props.sx,
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                    }}
-                >
-                    <Box display="flex" justifyContent="space-between" mb={1}>
-                        <Box display="flex" flexDirection="row" gap={1} width="100%" flexWrap="wrap" flex={1}>
-                            <Typography>404</Typography>
-                            <CopyChip label={'ID'} content={props.messageID} limit={20} />
-                            <CopyChip label={'Owner'} content={props.messageOwner} limit={20} />
-                            {props.resolveHint && (
-                                <CopyChip label={'ResolveHint'} content={props.resolveHint} limit={20} />
-                            )}
+                <>
+                    <Box display="flex" flexDirection="row" alignItems="center" gap={1} sx={props.sx}>
+                        <Box
+                            sx={{
+                                width: '48px',
+                                height: '1.2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between'
+                            }}
+                            component={routerLink}
+                            to={'/' + props.messageOwner}
+                        >
+                            <InfoIcon sx={{ fontSize: '1rem', color: 'text.disabled' }} />
+                            <CCAvatarWithResolver
+                                ccid={props.messageOwner}
+                                sx={{
+                                    width: '1.2rem',
+                                    height: '1.2rem'
+                                }}
+                            />
                         </Box>
-                        <Box display="flex" justifyContent="center" alignItems="flex-start" gap={1} flexShrink={0}>
-                            <TerminalIcon />
-                            <Typography variant="caption">開発者ビュー</Typography>
-                        </Box>
+                        <Typography variant="caption" color="textDisabled">
+                            このカレントは削除されました
+                        </Typography>
                     </Box>
                     {props.after}
-                </Box>
+                </>
             )
         } else {
-            return (
-                <Box
-                    sx={{
-                        ...props.sx,
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                    }}
-                >
-                    <ContentWithUserFetch
-                        ccid={props.messageOwner}
+            if (devMode) {
+                return (
+                    <Box
                         sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flex: 1,
-                            mb: 1
+                            ...props.sx,
+                            backgroundColor: 'rgba(255, 255, 255, 0.1)'
                         }}
                     >
-                        <Box display="flex" flexDirection="row" justifyContent="space-between" gap={1} width="100%">
-                            <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
-                                <SearchOffIcon />
-                                <Typography variant="caption">{error.message}</Typography>
+                        <ContentWithUserFetch
+                            ccid={props.messageOwner}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flex: 1,
+                                mb: 1
+                            }}
+                        >
+                            <Box display="flex" flexDirection="row" justifyContent="space-between" gap={1} width="100%">
+                                <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
+                                    <SearchOffIcon />
+                                    <Typography variant="caption">{error.message}</Typography>
+                                </Box>
+                                <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
+                                    <TerminalIcon />
+                                    <Typography variant="caption">開発者ビュー</Typography>
+                                </Box>
                             </Box>
-                            <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
-                                <TerminalIcon />
-                                <Typography variant="caption">開発者ビュー</Typography>
+                            <Box display="flex" flexDirection="row" justifyContent="center" gap={1} width="100%">
+                                <Box display="flex" flexWrap="wrap" gap={1} flex={1}>
+                                    <CopyChip label={'ID'} content={props.messageID} limit={20} />
+                                    <CopyChip label={'Owner'} content={props.messageOwner} limit={20} />
+                                    {props.resolveHint && (
+                                        <CopyChip label={'ResolveHint'} content={props.resolveHint} limit={20} />
+                                    )}
+                                </Box>
+                                <Box display="flex" flexDirection="row" alignItems="flex-end" gap={1}>
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        onClick={() => {
+                                            client.invalidateMessage(props.messageID)
+                                            setForceUpdateCount((prev) => prev + 1)
+                                        }}
+                                    >
+                                        Reload
+                                    </Button>
+                                </Box>
                             </Box>
-                        </Box>
-                        <Box display="flex" flexDirection="row" justifyContent="center" gap={1} width="100%">
-                            <Box display="flex" flexWrap="wrap" gap={1} flex={1}>
-                                <CopyChip label={'ID'} content={props.messageID} limit={20} />
-                                <CopyChip label={'Owner'} content={props.messageOwner} limit={20} />
-                                {props.resolveHint && (
-                                    <CopyChip label={'ResolveHint'} content={props.resolveHint} limit={20} />
-                                )}
-                            </Box>
-                            <Box display="flex" flexDirection="row" alignItems="flex-end" gap={1}>
-                                <Button
-                                    size="small"
-                                    variant="outlined"
-                                    onClick={() => {
-                                        client.invalidateMessage(props.messageID)
-                                        setForceUpdateCount((prev) => prev + 1)
-                                    }}
-                                >
-                                    Reload
-                                </Button>
-                            </Box>
-                        </Box>
-                    </ContentWithUserFetch>
-                    {props.after}
-                </Box>
-            )
+                        </ContentWithUserFetch>
+                        {props.after}
+                    </Box>
+                )
+            }
         }
-    } else if (!message && !devMode) {
+    }
+
+    if (!message) {
         return null
     }
 

@@ -66,10 +66,10 @@ export const GeneralSettings = (): JSX.Element => {
             })
         })
         client.api
-            .fetchWithCredential(client.host, `/api/v1/notification/${client.ccid}/concrnt.world`, {})
-            .then((data: any) => {
-                setNotification(data)
-                setSchemas(data.schemas)
+            .fetchWithCredential<any>(client.host, `/api/v1/notification/${client.ccid}/concrnt.world`, {})
+            .then((data) => {
+                setNotification(data.content)
+                setSchemas(data.content.schemas ?? [])
             })
     }, [reload])
 
