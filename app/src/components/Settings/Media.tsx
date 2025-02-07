@@ -42,8 +42,8 @@ interface File {
 
 interface FileResponse {
     content: File[]
-    next: string | undefined
-    prev: string | undefined
+    next?: string
+    prev?: string
 }
 
 export const MediaSettings = (): JSX.Element => {
@@ -79,8 +79,8 @@ export const MediaSettings = (): JSX.Element => {
     useEffect(() => {
         if (storageProvider !== 'domain') return
         const url = itr.cursor ? `/storage/files?limit=9&${itr.mode}=${itr.cursor}` : '/storage/files?limit=9'
-        client.api.fetchWithCredential<FileResponse>(client.host, url, {}).then((data) => {
-            setFileResponse(data)
+        client.api.fetchWithCredential<File[]>(client.host, url, {}).then((data) => {
+            if (data) setFileResponse(data)
         })
     }, [storageProvider, itr])
 

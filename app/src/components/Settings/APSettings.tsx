@@ -38,8 +38,8 @@ export const APSettings = (): JSX.Element => {
         client.api
             .fetchWithCredential<ApEntity>(client.host, `/ap/api/entity/${client.ccid}`, requestOptions)
             .then((data) => {
-                setEntity(data)
-                if (data) setAliases(data.aliases ?? [])
+                setEntity(data.content)
+                if (data) setAliases(data.content.aliases ?? [])
             })
             .catch((e) => {
                 setEntity(null)

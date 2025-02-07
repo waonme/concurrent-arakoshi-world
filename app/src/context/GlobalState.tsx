@@ -152,7 +152,7 @@ export const GlobalStateProvider = ({ children }: GlobalStateProps): JSX.Element
                 method: 'GET'
             })
             .then((data) => {
-                setEntity(data)
+                setEntity(data.content)
             })
             .catch((e) => {
                 if (e instanceof PermissionError) {

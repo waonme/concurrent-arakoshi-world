@@ -46,7 +46,7 @@ export const ApFollowManager = (): JSX.Element => {
 
     const getStats = (): void => {
         client.api.fetchWithCredential<Stats>(client.host, `/ap/api/stats`, {}).then((data) => {
-            setStats(data)
+            setStats(data.content)
         })
     }
 
