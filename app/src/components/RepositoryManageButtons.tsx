@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useClient } from '../context/ClientContext'
-import { Alert, Box, Button, TextField } from '@mui/material'
+import { Accordion, AccordionSummary, Alert, Box, Button, TextField } from '@mui/material'
 import { useSnackbar } from 'notistack'
+import { Codeblock } from './ui/Codeblock'
 
 const status = {
     idle: 'レポジトリデータのインポート',
@@ -10,13 +11,19 @@ const status = {
     error: 'インポートに失敗しました(consoleログを確認してください)'
 }
 
-export function RepositoryImportButton(props: { domain?: string; onImport?: (err: string) => void }): JSX.Element {
+export function RepositoryImportButton(props: {
+    source?: string
+    domain?: string
+    onImport?: (err: string) => void
+}): JSX.Element {
     const { client } = useClient()
 
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [importStatus, setImportStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-    const [sourceDomain, setSourceDomain] = useState<string>('')
+    const [sourceDomain, setSourceDomain] = useState<string>(props.source ?? '')
     const [progress, setProgress] = useState<string>('')
+
+    const [importLog, setImportLog] = useState<string>('')
 
     const target = props.domain ?? client.host
 
@@ -57,7 +64,7 @@ export function RepositoryImportButton(props: { domain?: string; onImport?: (err
                 )
                 .then((data) => {
                     setProgress(`imported ${i}/${chunks.length}`)
-                    console.log('imported', i, data)
+                    setImportLog((prev) => prev + '\n' + JSON.stringify(data, null, 2))
                 })
                 .catch((e) => {
                     console.error(e)
@@ -109,6 +116,12 @@ export function RepositoryImportButton(props: { domain?: string; onImport?: (err
             >
                 {status[importStatus] + (importStatus === 'loading' ? `(${progress})` : '')}
             </Button>
+            {importLog && (
+                <Accordion>
+                    <AccordionSummary>インポートログ</AccordionSummary>
+                    <Codeblock language="json">{importLog}</Codeblock>
+                </Accordion>
+            )}
         </>
     )
 }
@@ -122,8 +135,7 @@ export function RepositoryExportButton(): JSX.Element {
         if (!client.user) return
 
         client.api.fetchWithCredential(client.host, '/api/v1/repositories/sync', {}).then((data) => {
-            console.log(data)
-            setSyncStatus(data)
+            setSyncStatus(data.content)
         })
     }, [])
 
@@ -147,7 +159,7 @@ export function RepositoryExportButton(): JSX.Element {
                                 client.api
                                     .fetchWithCredential(client.host, '/api/v1/repositories/sync', {})
                                     .then((data) => {
-                                        setSyncStatus(data)
+                                        setSyncStatus(data.content)
                                     })
                             }
                         >

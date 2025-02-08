@@ -89,6 +89,7 @@ export function Migrator(): JSX.Element {
                         fullWidth
                         color="primary"
                         onClick={() => {
+                            console.log(client.ccid, client.keyPair)
                             jumpToDomainRegistration(
                                 client.ccid!,
                                 client.keyPair!.privatekey,
@@ -153,6 +154,7 @@ export function Migrator(): JSX.Element {
                 <>
                     <Typography>実際にすべてのデータが読み込まれるまで時間がかかる場合があります。</Typography>
                     <RepositoryImportButton
+                        source={client.host}
                         domain={destFqdn}
                         onImport={(err: string) => {
                             setImported(err === '')
@@ -242,6 +244,7 @@ export function Migrator(): JSX.Element {
                 <Button
                     onClick={() => {
                         if (!destinationDomain) return
+                        client.api.invalidateEntity(client.ccid!)
                         localStorage.setItem('Domain', JSON.stringify(destinationDomain.fqdn))
                         window.location.href = '/'
                     }}

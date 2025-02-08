@@ -116,6 +116,7 @@ export class Client {
 
         const c = new Client(api)
         if (!c.ccid) throw new Error('invalid ccid')
+        c.keyPair = keyPair
 
         opts?.progressCallback?.('loading user')
         c.user = await c.getUser(c.ccid).catch((e) => {
