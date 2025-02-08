@@ -5,6 +5,7 @@ import { type Preference, defaultPreference } from '../context/PreferenceContext
 import buildTime from '~build/time'
 // @ts-expect-error vite dynamic import
 import { branch, sha } from '~build/git'
+import { useEffect } from 'react'
 
 const buttonStyle = {
     backgroundColor: '#0476d9',
@@ -29,6 +30,25 @@ const messages = [
 ]
 
 export function EmergencyKit({ error }: FallbackProps): JSX.Element {
+    useEffect(() => {
+        // do not refresh in 5 minutes
+        const lastQuickFix = localStorage.getItem('lastQuickFix')
+        if (lastQuickFix) {
+            const diff = new Date().getTime() - new Date(lastQuickFix).getTime()
+            if (diff < 5 * 60 * 1000) {
+                return
+            }
+        }
+
+        if (
+            error?.message.includes('Failed to fetch dynamically imported module') ||
+            error?.message.includes("'text/html' is not a valid JavaScript MIME type")
+        ) {
+            localStorage.setItem('lastQuickFix', new Date().toISOString())
+            window.location.reload()
+        }
+    }, [])
+
     const gracefulResetLocalStorage = (): void => {
         for (const key in localStorage) {
             if (['Domain', 'PrivateKey', 'SubKey'].includes(key)) continue
@@ -118,6 +138,8 @@ buildTime: ${buildTime.toLocaleString()}`
                         padding: '20px'
                     }}
                     onClick={async (): Promise<void> => {
+                        localStorage.removeItem('lastQuickFix')
+
                         // delete all caches
                         if (window.caches) {
                             const keys = await window.caches.keys()
