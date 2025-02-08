@@ -36,6 +36,7 @@ import { Node, type NodeProps } from '../ui/TreeGraph'
 import { type ConcurrentTheme } from '../../model'
 import { CCIconButton } from '../ui/CCIconButton'
 import ContentPasteIcon from '@mui/icons-material/ContentPaste'
+import { EntityMetaEditor } from '../EntityMetaEditor'
 
 interface CertChain {
     id: string
@@ -300,16 +301,8 @@ export const IdentitySettings = (): JSX.Element => {
                     </Tilt>
                 </Box>
 
-                <Accordion>
-                    <AccordionSummary
-                        expandIcon={
-                            <ExpandMoreIcon
-                                sx={{
-                                    color: 'text.primary'
-                                }}
-                            />
-                        }
-                    >
+                <Accordion disableGutters>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         {client.user?.alias ? (
                             <Typography variant="body1">
                                 アカウントにはエイリアス{client.user.alias}が設定されています。
@@ -431,20 +424,14 @@ _concrnt.${aliasDraft} TXT "hint=${client.host}"`}</Codeblock>
 
                 {!subkey && !identity && <Alert severity="error">{t('loginType.secret')}</Alert>}
 
-                <Box
-                    sx={{
-                        padding: { sm: '10px 10px' }
-                    }}
-                >
-                    <FormGroup>
-                        <FormControlLabel
-                            control={
-                                <Switch size="small" checked={hideDisabledSubKey} onChange={toggleHideDisabledSubKey} />
-                            }
-                            label={t('hideSubKey')}
-                        />
-                    </FormGroup>
-                </Box>
+                <Accordion disableGutters slotProps={{ transition: { unmountOnExit: true } }}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography variant="body1">ドメイン{client.host}に届けて出ている情報</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <EntityMetaEditor />
+                    </AccordionDetails>
+                </Accordion>
 
                 <Box
                     sx={{
@@ -455,6 +442,24 @@ _concrnt.${aliasDraft} TXT "hint=${client.host}"`}</Codeblock>
                     }}
                 >
                     <Typography variant="h3">セッション情報</Typography>
+                    <Box
+                        sx={{
+                            px: 1
+                        }}
+                    >
+                        <FormGroup>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        size="small"
+                                        checked={hideDisabledSubKey}
+                                        onChange={toggleHideDisabledSubKey}
+                                    />
+                                }
+                                label={t('hideSubKey')}
+                            />
+                        </FormGroup>
+                    </Box>
                     {certChain && <KeyTree certChain={certChain} forceUpdateCallback={forceUpdateCallback} />}
                 </Box>
             </Box>
