@@ -21,11 +21,11 @@ import { useSnackbar } from 'notistack'
 import { IssueJWT } from '@concrnt/client'
 import { Schemas } from '@concrnt/worldlib'
 import { useTranslation } from 'react-i18next'
-import { type JobRequest, type NotificationSubscription } from '../../model'
+import { type NotificationSubscription } from '../../model'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 import TextIncreaseIcon from '@mui/icons-material/TextIncrease'
 import TextDecreaseIcon from '@mui/icons-material/TextDecrease'
-import { useConfirm } from '../../context/Confirm'
 
 export const GeneralSettings = (): JSX.Element => {
     const { client } = useClient()
@@ -53,8 +53,6 @@ export const GeneralSettings = (): JSX.Element => {
     const [schemas, setSchemas] = useState<string[]>([])
 
     const [reload, setReload] = useState<number>(0)
-
-    const confirm = useConfirm()
 
     useEffect(() => {
         setCurrentLanguage(i18n.resolvedLanguage || 'en')
@@ -490,8 +488,8 @@ export const GeneralSettings = (): JSX.Element => {
                 )}
             </Box>
             {!enableConcord && (
-                <Accordion>
-                    <AccordionSummary>
+                <Accordion disableGutters>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography variant="h4">Concord Network(プレビュー)</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
@@ -568,53 +566,6 @@ export const GeneralSettings = (): JSX.Element => {
                     )}
                 </>
             )}
-            <Box>
-                <Accordion>
-                    <AccordionSummary>
-                        <Typography variant="h4" color="error">
-                            Danger Zone
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Button
-                            color="error"
-                            onClick={() => {
-                                confirm.open(
-                                    'アカウントを削除しますか？',
-                                    () => {
-                                        const job: JobRequest = {
-                                            type: 'clean',
-                                            payload: '{}',
-                                            scheduled: new Date(Date.now()).toISOString()
-                                        }
-
-                                        client?.api
-                                            .fetchWithCredential(client.host, '/api/v1/jobs', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json'
-                                                },
-                                                body: JSON.stringify(job)
-                                            })
-                                            .then(async (res) => {
-                                                enqueueSnackbar('アカウント削除リクエストを受け付けました。', {
-                                                    variant: 'success'
-                                                })
-                                            })
-                                    },
-                                    {
-                                        confirmText: '削除',
-                                        description:
-                                            '即座にアカウント削除がリクエストされます。削除前にデータ管理よりデータをダウンロードすることをオススメします。'
-                                    }
-                                )
-                            }}
-                        >
-                            アカウントを削除
-                        </Button>
-                    </AccordionDetails>
-                </Accordion>
-            </Box>
         </Box>
     )
 }

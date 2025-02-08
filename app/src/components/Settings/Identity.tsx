@@ -33,10 +33,11 @@ import { enqueueSnackbar } from 'notistack'
 import { useGlobalState } from '../../context/GlobalState'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Node, type NodeProps } from '../ui/TreeGraph'
-import { type ConcurrentTheme } from '../../model'
+import { JobRequest, type ConcurrentTheme } from '../../model'
 import { CCIconButton } from '../ui/CCIconButton'
 import ContentPasteIcon from '@mui/icons-material/ContentPaste'
 import { EntityMetaEditor } from '../EntityMetaEditor'
+import { useConfirm } from '../../context/Confirm'
 
 interface CertChain {
     id: string
@@ -219,6 +220,8 @@ export const IdentitySettings = (): JSX.Element => {
     const forceUpdateCallback = (): void => {
         setForceUpdate(forceUpdate + 1)
     }
+
+    const confirm = useConfirm()
 
     const { t } = useTranslation('', { keyPrefix: 'settings.identity' })
 
@@ -430,6 +433,52 @@ _concrnt.${aliasDraft} TXT "hint=${client.host}"`}</Codeblock>
                     </AccordionSummary>
                     <AccordionDetails>
                         <EntityMetaEditor />
+                    </AccordionDetails>
+                </Accordion>
+
+                <Accordion disableGutters>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon color="error" />}>
+                        <Typography variant="h4" color="error">
+                            Danger Zone
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Button
+                            color="error"
+                            onClick={() => {
+                                confirm.open(
+                                    'アカウントを削除しますか？',
+                                    () => {
+                                        const job: JobRequest = {
+                                            type: 'clean',
+                                            payload: '{}',
+                                            scheduled: new Date(Date.now()).toISOString()
+                                        }
+
+                                        client?.api
+                                            .fetchWithCredential(client.host, '/api/v1/jobs', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify(job)
+                                            })
+                                            .then(async (res) => {
+                                                enqueueSnackbar('アカウント削除リクエストを受け付けました。', {
+                                                    variant: 'success'
+                                                })
+                                            })
+                                    },
+                                    {
+                                        confirmText: '削除',
+                                        description:
+                                            '即座にアカウント削除がリクエストされます。削除前にデータ管理よりデータをダウンロードすることをオススメします。'
+                                    }
+                                )
+                            }}
+                        >
+                            アカウントを削除
+                        </Button>
                     </AccordionDetails>
                 </Accordion>
 
