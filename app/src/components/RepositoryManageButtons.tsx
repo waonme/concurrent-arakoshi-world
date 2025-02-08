@@ -1,23 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useClient } from '../context/ClientContext'
 import { Alert, Box, Button, TextField } from '@mui/material'
-import { Schemas } from '@concrnt/worldlib'
-import { type CCDocument, Sign } from '@concrnt/client'
 import { useSnackbar } from 'notistack'
-
-interface v0data {
-    content: any[]
-}
 
 const status = {
     idle: 'レポジトリデータのインポート',
-    loading: 'インポート中(時間がかかります)',
-    success: 'インポート完了！',
-    error: 'インポートに失敗しました(consoleログを確認してください)'
-}
-
-const v0status = {
-    idle: 'バージョン0からのインポート',
     loading: 'インポート中(時間がかかります)',
     success: 'インポート完了！',
     error: 'インポートに失敗しました(consoleログを確認してください)'
@@ -121,111 +108,6 @@ export function RepositoryImportButton(props: { domain?: string; onImport?: (err
                 }}
             >
                 {status[importStatus] + (importStatus === 'loading' ? `(${progress})` : '')}
-            </Button>
-        </>
-    )
-}
-
-export function V0RepositoryImportButton(): JSX.Element {
-    const { client } = useClient()
-
-    const fileInputRef = useRef<HTMLInputElement>(null)
-    const [importStatus, setImportStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-
-    const importFromVersion0 = (backup: v0data): void => {
-        if (importStatus !== 'idle') return
-        if (backup.content.length === 0) return
-        if (!client.keyPair) return
-        if (!client.ccid) return
-        if (!client.user?.homeTimeline) return
-
-        setImportStatus('loading')
-
-        const logs = []
-        for (const message of backup.content) {
-            const payload = JSON.parse(message.payload)
-
-            if (
-                payload.schema !==
-                'https://raw.githubusercontent.com/totegamma/concurrent-schemas/master/messages/note/0.0.1.json'
-            ) {
-                console.error('unsupported schema', payload.schema)
-                continue
-            }
-
-            const doc: CCDocument.Message<any> = {
-                signer: client.ccid,
-                type: 'message',
-                schema: Schemas.markdownMessage,
-                body: payload.body,
-                meta: payload.meta,
-                timelines: [client.user.homeTimeline],
-                signedAt: payload.signedAt
-            }
-
-            const document = JSON.stringify(doc)
-            const signature = Sign(client.keyPair.privatekey, document)
-
-            const entries = [message.id, client.ccid, signature, document]
-            const entry = entries.join(' ')
-            logs.push(entry)
-        }
-
-        const log = logs.join('\n')
-        client.api
-            .fetchWithCredential(
-                client.host,
-                '/api/v1/repository',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    },
-                    body: log
-                }
-                // 1000 * 60 * 10 // 10 minutes // TODO
-            )
-            .then((data) => {
-                console.log('imported')
-                console.log(data)
-                setImportStatus('success')
-            })
-            .catch((e) => {
-                console.error(e)
-                setImportStatus('error')
-            })
-    }
-
-    return (
-        <>
-            <input
-                hidden
-                type="file"
-                accept=".json"
-                ref={fileInputRef}
-                onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                        const reader = new FileReader()
-                        reader.onload = (e) => {
-                            const contents = e.target?.result
-                            if (contents) {
-                                const data = JSON.parse(contents as string) as v0data
-                                importFromVersion0(data)
-                            }
-                        }
-                        reader.readAsText(file)
-                    }
-                }}
-            />
-            <Button
-                disabled={importStatus === 'loading'}
-                color={importStatus === 'error' ? 'error' : importStatus === 'success' ? 'success' : 'primary'}
-                onClick={() => {
-                    fileInputRef.current?.click()
-                }}
-            >
-                {v0status[importStatus]}
             </Button>
         </>
     )
