@@ -382,73 +382,104 @@ export function ExplorerPlusPage(): JSX.Element {
                             >
                                 {timelines.map((tl) => {
                                     return (
-                                        <Card key={tl.id} sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-                                            <CardMedia sx={{ height: '100px', width: '100px' }}>
-                                                <CCWallpaper
-                                                    sx={{
-                                                        height: '100px',
-                                                        width: '100px'
-                                                    }}
-                                                    override={tl._parsedDocument.body.banner}
-                                                />
-                                            </CardMedia>
-                                            <Box
+                                        <Card
+                                            key={tl.id}
+                                            sx={{
+                                                height: '100px'
+                                            }}
+                                        >
+                                            <CardActionArea
+                                                disableRipple
                                                 sx={{
                                                     display: 'flex',
-                                                    flexDirection: 'column',
-                                                    paddingY: 0.3,
-                                                    paddingX: 0.5,
-                                                    height: '100%',
-                                                    flex: 1,
-                                                    minWidth: 0
+                                                    flexDirection: 'row',
+                                                    alignItems: 'flex-start',
+                                                    gap: 1
                                                 }}
+                                                component={NavLink}
+                                                to={'/timeline/' + tl.id}
                                             >
-                                                <Box flexGrow={1}>
-                                                    <Typography variant={'h4'}>
-                                                        {tl._parsedDocument.body.name}
-                                                    </Typography>
-                                                    <Typography
-                                                        variant={'caption'}
+                                                <CardMedia sx={{ height: '100px', width: '100px' }}>
+                                                    <CCWallpaper
                                                         sx={{
-                                                            textOverflow: 'ellipsis',
-                                                            overflow: 'hidden',
-                                                            display: 'block',
-                                                            whiteSpace: 'nowrap'
+                                                            height: '100px',
+                                                            width: '100px'
                                                         }}
-                                                    >
-                                                        {tl._parsedDocument.body.description}
-                                                    </Typography>
-                                                </Box>
+                                                        override={tl._parsedDocument.body.banner}
+                                                    />
+                                                </CardMedia>
                                                 <Box
                                                     sx={{
                                                         display: 'flex',
-                                                        gap: 1,
-                                                        alignItems: 'center',
-                                                        marginTop: 'auto'
+                                                        flexDirection: 'column',
+                                                        paddingY: 0.3,
+                                                        paddingX: 0.5,
+                                                        height: '100%',
+                                                        flex: 1,
+                                                        minWidth: 0
                                                     }}
                                                 >
-                                                    <Avatar
-                                                        src={getDomainFromFQDN(tl.domainFQDN)?.meta?.logo}
-                                                        sx={{ height: 18, width: 18 }}
-                                                    />
-                                                    <Typography variant="caption">
-                                                        {getDomainFromFQDN(tl.domainFQDN)?.meta?.nickname}
-                                                    </Typography>
-                                                    <Box sx={{ display: 'flex', gap: 1, marginLeft: 'auto' }}>
-                                                        <WatchButton minimal small timelineFQID={tl.id} />
-                                                        <Tooltip title={t('quicklook')} placement={'top'} arrow>
-                                                            <CCIconButton
-                                                                size={'small'}
-                                                                onClick={() => {
-                                                                    open(tl.id)
-                                                                }}
-                                                            >
-                                                                <FindInPageIcon />
-                                                            </CCIconButton>
-                                                        </Tooltip>
+                                                    <Box flexGrow={1}>
+                                                        <Typography
+                                                            variant={'h4'}
+                                                            sx={{
+                                                                textOverflow: 'ellipsis',
+                                                                overflow: 'hidden',
+                                                                display: 'block',
+                                                                whiteSpace: 'nowrap'
+                                                            }}
+                                                        >
+                                                            {tl._parsedDocument.body.name}
+                                                        </Typography>
+                                                        <Typography
+                                                            variant={'caption'}
+                                                            sx={{
+                                                                textOverflow: 'ellipsis',
+                                                                overflow: 'hidden',
+                                                                display: 'block',
+                                                                whiteSpace: 'nowrap'
+                                                            }}
+                                                        >
+                                                            {tl._parsedDocument.body.description}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box
+                                                        sx={{
+                                                            display: 'flex',
+                                                            gap: 1,
+                                                            alignItems: 'center',
+                                                            marginTop: 'auto'
+                                                        }}
+                                                    >
+                                                        <Avatar
+                                                            src={getDomainFromFQDN(tl.domainFQDN)?.meta?.logo}
+                                                            sx={{ height: 18, width: 18 }}
+                                                        />
+                                                        <Typography variant="caption">
+                                                            {getDomainFromFQDN(tl.domainFQDN)?.meta?.nickname}
+                                                        </Typography>
+                                                        <Box
+                                                            sx={{ display: 'flex', gap: 1, marginLeft: 'auto' }}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                e.preventDefault()
+                                                            }}
+                                                        >
+                                                            <WatchButton minimal small timelineFQID={tl.id} />
+                                                            <Tooltip title={t('quicklook')} placement={'top'} arrow>
+                                                                <CCIconButton
+                                                                    size={'small'}
+                                                                    onClick={() => {
+                                                                        open(tl.id)
+                                                                    }}
+                                                                >
+                                                                    <FindInPageIcon />
+                                                                </CCIconButton>
+                                                            </Tooltip>
+                                                        </Box>
                                                     </Box>
                                                 </Box>
-                                            </Box>
+                                            </CardActionArea>
                                         </Card>
                                     )
                                 })}
