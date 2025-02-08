@@ -1,4 +1,4 @@
-import { Box, Button, Divider, IconButton, TextField, Typography } from '@mui/material'
+import { Alert, AlertTitle, Box, Button, Divider, IconButton, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useClient } from '../../context/ClientContext'
 import { type ApEntity } from '../../model'
@@ -12,7 +12,7 @@ import { useSnackbar } from 'notistack'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { StreamPicker } from '../ui/StreamPicker'
 import { useGlobalState } from '../../context/GlobalState'
-import { type Timeline } from '@concrnt/worldlib'
+import { CommunityTimelineSchema, Schemas, type Timeline } from '@concrnt/worldlib'
 
 export const APSettings = (): JSX.Element => {
     const { client } = useClient()
@@ -26,25 +26,25 @@ export const APSettings = (): JSX.Element => {
     const [newAlias, setNewAlias] = useState('')
     const [listenTimelines, setListenTimelines] = useState<Array<Timeline<any>>>([])
     const { allKnownTimelines } = useGlobalState()
+    const [apTimeline, setApTimeline] = useState<Timeline<CommunityTimelineSchema> | null>(null)
+    const [meta, setMeta] = useState<any>({})
 
-    useEffect(() => {
-        const requestOptions = {
-            method: 'GET',
-            headers: {
-                'content-type': 'application/json'
+    console.log('apTimeline', apTimeline)
+
+    const timelineNGReason = (() => {
+        if (!client.ccid) return null
+        if (!apTimeline) return 'Activitypub受信用タイムラインが見つかりません'
+        if (apTimeline.policy === 'https://policy.concrnt.world/t/inline-read-write.json') {
+            if (!apTimeline.policyParams.writer.includes(client.ccid)) {
+                return '自身の書き込み権限が設定されていません'
+            }
+            if (!apTimeline.policyParams.writer.includes(meta.metadata?.proxyCCID)) {
+                return '受信用botアカウントの書き込み権限が設定されていません'
             }
         }
 
-        client.api
-            .fetchWithCredential<ApEntity>(client.host, `/ap/api/entity/${client.ccid}`, requestOptions)
-            .then((data) => {
-                setEntity(data.content)
-                if (data) setAliases(data.content.aliases ?? [])
-            })
-            .catch((e) => {
-                setEntity(null)
-            })
-    }, [])
+        return null
+    })()
 
     useEffect(() => {
         client.api
@@ -64,7 +64,34 @@ export const APSettings = (): JSX.Element => {
             .catch((e) => {
                 console.error(e)
             })
-    }, [allKnownTimelines])
+
+        const requestOptions = {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json'
+            }
+        }
+
+        client.api
+            .fetchWithCredential<ApEntity>(client.host, `/ap/api/entity/${client.ccid}`, requestOptions)
+            .then((data) => {
+                setEntity(data.content)
+                if (data) setAliases(data.content.aliases ?? [])
+            })
+            .catch((_) => {
+                setEntity(null)
+            })
+
+        client.getTimeline<CommunityTimelineSchema>('world.concrnt.t-ap@' + client.ccid).then((t) => {
+            setApTimeline(t)
+        })
+
+        fetch(`https://${client.host}/ap/nodeinfo/2.0`)
+            .then((res) => res.json())
+            .then((res) => {
+                setMeta(res)
+            })
+    }, [])
 
     const updateSettings = (): void => {
         client.api
@@ -122,7 +149,7 @@ export const APSettings = (): JSX.Element => {
                         width="100%"
                         alignItems="center"
                     >
-                        <Box>
+                        <Box display="flex" flexDirection="row" gap={1} alignItems="center">
                             <Typography variant="h2">
                                 @{entity.id}@{client.host}
                             </Typography>
@@ -145,6 +172,62 @@ export const APSettings = (): JSX.Element => {
                             </IconButton>
                         </Box>
                     </Box>
+                    {timelineNGReason && (
+                        <Alert
+                            severity="warning"
+                            action={
+                                <Button
+                                    variant="text"
+                                    color="inherit"
+                                    sx={{
+                                        height: '100%'
+                                    }}
+                                    onClick={() => {
+                                        if (meta.metadata?.proxyCCID === undefined)
+                                            alert('サーバー設定が不正です。管理者に問い合わせてください')
+
+                                        const base = apTimeline?.policyParams.writer ?? []
+                                        const writers = [...new Set([...base, client.ccid, meta.metadata?.proxyCCID])]
+
+                                        client.api
+                                            .upsertTimeline(
+                                                Schemas.communityTimeline,
+                                                {
+                                                    name: apTimeline?.document?.body?.name ?? 'ActivityPub',
+                                                    shortname: apTimeline?.document?.body?.shortname ?? 'activitypub',
+                                                    description:
+                                                        apTimeline?.document?.body?.description ??
+                                                        'ActivityPub home stream'
+                                                },
+                                                {
+                                                    semanticID: 'world.concrnt.t-ap',
+                                                    indexable: false,
+                                                    policy: 'https://policy.concrnt.world/t/inline-read-write.json',
+                                                    policyParams: JSON.stringify({
+                                                        isWritePublic: false,
+                                                        isReadPublic: true,
+                                                        writer: writers,
+                                                        reader: []
+                                                    })
+                                                }
+                                            )
+                                            .then((_) => {
+                                                window.location.reload()
+                                            })
+                                            .catch((e) => {
+                                                alert(e)
+                                            })
+                                    }}
+                                >
+                                    修復
+                                </Button>
+                            }
+                        >
+                            <AlertTitle>タイムラインの設定に問題があります</AlertTitle>
+                            <Typography>{timelineNGReason}</Typography>
+                        </Alert>
+                    )}
+
                     <ApFollowManager />
                 </>
             )}

@@ -152,7 +152,7 @@ export const APUserCard = memo<{ url: string; remove?: (_: { URL: string; shortI
                     }
                 })
                 .then((data) => {
-                    setPerson(data)
+                    setPerson(data.content)
                 })
         }, [props.url])
 

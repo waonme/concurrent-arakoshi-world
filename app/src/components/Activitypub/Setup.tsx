@@ -81,7 +81,7 @@ export const ApSetup = (): JSX.Element => {
                 policyParams: JSON.stringify({
                     isWritePublic: false,
                     isReadPublic: true,
-                    writer: [proxyCCID],
+                    writer: [client.ccid, proxyCCID],
                     reader: []
                 })
             }
