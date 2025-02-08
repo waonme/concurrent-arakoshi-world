@@ -94,6 +94,9 @@ export class Client {
             this.ccid = api.authProvider.getCCID()
             this.ckid = api.authProvider.getCKID()
         } catch (_) {}
+        this.api.onMessageInvalidate = (id) => {
+            delete this.messageCache[id]
+        }
     }
 
     messageCache: Record<string, Cache<Promise<Message<any>>>> = {}
@@ -272,11 +275,6 @@ export class Client {
         }
 
         return this.messageCache[id].data
-    }
-
-    invalidateMessage(id: MessageID): void {
-        this.api.invalidateMessage(id)
-        delete this.messageCache[id]
     }
 
     async createMarkdownCrnt(
@@ -953,7 +951,7 @@ export class Association<T> implements Omit<CoreAssociation<T>, 'document' | 'pa
 
     async delete(): Promise<void> {
         const { content } = await this.client.api.deleteAssociation(this.id, this.owner ?? this.author)
-        this.client.invalidateMessage(content.target)
+        this.client.api.invalidateMessage(content.target)
     }
 }
 
@@ -1368,7 +1366,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
         }
         this.onUpdate?.()
 
-        this.client.invalidateMessage(this.id)
+        this.client.api.invalidateMessage(this.id)
         const result = this.client.api
             .createAssociation<ReactionAssociationSchema>(
                 Schemas.reactionAssociation,
@@ -1406,7 +1404,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
             targetTimeline,
             txhash
         )
-        this.client.invalidateMessage(this.id)
+        this.client.api.invalidateMessage(this.id)
         return result
     }
 
@@ -1522,7 +1520,7 @@ export class Message<T> implements Omit<CoreMessage<T>, 'document' | 'policyPara
     }
 
     async delete(): Promise<void> {
-        this.client.invalidateMessage(this.id)
+        this.client.api.invalidateMessage(this.id)
         return await this.client.api.deleteMessage(this.id)
     }
 }
