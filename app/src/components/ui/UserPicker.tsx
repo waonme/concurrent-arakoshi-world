@@ -3,7 +3,6 @@ import { type User } from '@concrnt/worldlib'
 import { useClient } from '../../context/ClientContext'
 import { CCUserChip } from './CCUserChip'
 import { CCAvatar } from './CCAvatar'
-import { useMemo } from 'react'
 
 export interface UserPickerProps {
     selected: User[]
@@ -13,19 +12,6 @@ export interface UserPickerProps {
 
 export const UserPicker = (props: UserPickerProps): JSX.Element => {
     const { client } = useClient()
-
-    const selected = useMemo(
-        () =>
-            JSON.parse(
-                JSON.stringify(props.selected ?? [], (key, value) => {
-                    if (key === 'client' || key === 'api') {
-                        return undefined
-                    }
-                    return value
-                })
-            ),
-        [props.selected]
-    )
 
     return (
         <Box
@@ -41,7 +27,7 @@ export const UserPicker = (props: UserPickerProps): JSX.Element => {
                 filterSelectedOptions
                 sx={{ width: 1 }}
                 multiple
-                value={selected}
+                value={props.selected}
                 options={[...(client.ackings ?? []), ...(client.user ? [client.user] : [])]}
                 getOptionKey={(option: User) => option.ccid}
                 getOptionLabel={(option: User) => option.profile?.username ?? ''}
