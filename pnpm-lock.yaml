@@ -281,11 +281,7 @@ importers:
         specifier: ^7.3.0
         version: 7.3.0
 
-  client:
-    dependencies:
-      '@concrnt/client':
-        specifier: ^0.0.14
-        version: 0.0.14
+  client: {}
 
 packages:
 
@@ -2000,20 +1996,6 @@ packages:
       '@types/json-schema': 7.0.15
       call-me-maybe: 1.0.2
       js-yaml: 4.1.0
-    dev: false
-
-  /@concrnt/client@0.0.14:
-    resolution: {integrity: sha512-49ee4GLvzws45K3a0GoMtLzqmF9gQTFtn6d/isUcfNVYCdI6/xC6iV2Se/6PRlY4CPLknKYHnFyKs050t53mIg==}
-    dependencies:
-      '@cosmjs/amino': 0.33.0
-      '@cosmjs/crypto': 0.33.0
-      '@cosmjs/encoding': 0.33.0
-      elliptic: 6.6.1
-      ethers: 6.13.5
-      uuid: 11.0.5
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
     dev: false
 
   /@concrnt/client@0.0.15:
