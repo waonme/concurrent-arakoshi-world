@@ -13,7 +13,7 @@
       .e {
         fill: #fff;
         opacity: 0.1;
-        font-family: Roboto;
+        font-family: "Hiragino Sans W3", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
         font-size: 10px;
         font-weight: 600;
       }

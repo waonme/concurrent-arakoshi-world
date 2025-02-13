@@ -22,7 +22,8 @@ export function ConcurrentWordmark(props: ConcurrentWordmarkProps): JSX.Element 
                     color: props.color,
                     fontWeight: 600,
                     fontSize: '22px',
-                    fontFamily: 'Roboto'
+                    fontFamily:
+                        '"Hiragino Sans W3", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;'
                 }}
             >
                 Concrnt
