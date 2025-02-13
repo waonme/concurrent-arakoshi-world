@@ -21,7 +21,8 @@ export function ConcurrentWordmark(props: ConcurrentWordmarkProps): JSX.Element 
                 sx={{
                     color: props.color,
                     fontWeight: 600,
-                    fontSize: '22px'
+                    fontSize: '22px',
+                    fontFamily: 'Roboto'
                 }}
             >
                 Concrnt

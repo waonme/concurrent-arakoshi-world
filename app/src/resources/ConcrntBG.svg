@@ -13,9 +13,9 @@
       .e {
         fill: #fff;
         opacity: 0.1;
-        font-family: Corbel-Bold, Corbel;
-        font-size: 12px;
-        font-weight: 700;
+        font-family: Roboto;
+        font-size: 10px;
+        font-weight: 600;
       }
     </style>
     <pattern id="b" x="0" y="0" width="96" height="96" patternTransform="translate(-39.79 -3.23)" patternUnits="userSpaceOnUse" viewBox="0 0 96 96">

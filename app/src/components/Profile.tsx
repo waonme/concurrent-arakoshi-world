@@ -470,7 +470,7 @@ export function Profile(props: ProfileProps): JSX.Element {
                         alignItems: 'center',
                         backgroundImage: `url(${ConcrntBG})`,
                         backgroundRepeat: 'repeat',
-                        backgroundSize: '300px'
+                        backgroundSize: '400px'
                     }}
                     onClick={(e) => {
                         if (e.target === e.currentTarget) setOpenQR(false)
