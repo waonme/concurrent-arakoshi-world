@@ -575,30 +575,33 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
                             selectedSubprofile={selectedSubprofile}
                             setSelectedSubprofile={setSelectedSubprofile}
                             endAdornment={
-                                <CCIconButton
-                                    sx={{
-                                        visibility: destinationModified ? 'visible' : 'hidden'
-                                    }}
-                                    onClick={() => {
-                                        setDestTimelines(props.streamPickerInitial)
-                                        setPostHomeButton(props.defaultPostHome ?? true)
-                                        if (props.subprofile) {
-                                            client.api
-                                                .getProfile<ProfileSchema>(props.subprofile, client.ccid!)
-                                                .then((profile) => {
-                                                    setSelectedSubprofile(profile)
-                                                })
-                                        } else {
-                                            setSelectedSubprofile(undefined)
-                                        }
-                                    }}
-                                >
-                                    <ReplayIcon
-                                        sx={{
-                                            fontSize: '1.5rem'
+                                destinationModified ? (
+                                    <CCIconButton
+                                        onClick={() => {
+                                            setDestTimelines(props.streamPickerInitial)
+                                            setPostHomeButton(props.defaultPostHome ?? true)
+                                            if (props.subprofile) {
+                                                client.api
+                                                    .getProfile<ProfileSchema>(props.subprofile, client.ccid!)
+                                                    .then((profile) => {
+                                                        setSelectedSubprofile(profile)
+                                                    })
+                                            } else {
+                                                setSelectedSubprofile(undefined)
+                                            }
                                         }}
-                                    />
-                                </CCIconButton>
+                                        sx={{
+                                            width: '2rem',
+                                            height: '2rem'
+                                        }}
+                                    >
+                                        <ReplayIcon
+                                            sx={{
+                                                fontSize: '1.2rem'
+                                            }}
+                                        />
+                                    </CCIconButton>
+                                ) : undefined
                             }
                         />
                     </Box>

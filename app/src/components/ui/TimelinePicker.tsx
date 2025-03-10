@@ -154,7 +154,9 @@ export const TimelinePicker = (props: TimelinePickerProps): JSX.Element => {
                         </>
                     )
 
-                    InputProps.endAdornment = props.endAdornment
+                    InputProps.endAdornment = props.endAdornment ? (
+                        <InputAdornment position="end">{props.endAdornment}</InputAdornment>
+                    ) : undefined
 
                     return (
                         <InputBase
