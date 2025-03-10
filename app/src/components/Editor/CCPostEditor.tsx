@@ -228,7 +228,7 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
         const destTimelineIDs = destTimelines.map((t) => t.fqid).filter((e) => e)
 
         const homeTimeline = selectedSubprofile
-            ? 'world.concrnt.t-subhome.' + selectedSubprofile + '@' + client.user.ccid
+            ? 'world.concrnt.t-subhome.' + selectedSubprofile.id + '@' + client.user.ccid
             : client.user.homeTimeline
         const dest = [...new Set([...destTimelineIDs, ...(postHome ? [homeTimeline] : [])])].filter((e) => e)
 
