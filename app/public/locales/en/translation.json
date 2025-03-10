@@ -461,7 +461,7 @@
             "password&login": {
                 "title": "Password & Login",
                 "desc1": "Instead of deciding password on your own, you use a predefined password to log in. This password is extremely important and is referred to as the 'Master Key.' If your Master Key is exposed to others, it can lead to a permanent account takeover. Never share it with anyone.",
-                "desc2": "Additionally, if you lose your Master Key, you will permanently lose access to your account. You'll need to create a new account in order to continue using the service. Therefore, make sure to print or write it down and store it securely just like something valuable.",
+                "desc2": "Additionally, if you lose your Master Key, you will permanently lose access to your account. You'll need to create a new account in order to continue using the service. Therefore, make sure to print or write it down and store it securely, just like something valuable.",
                 "handsonTitle": "Save Your Master Key",
                 "handsonDesc": "Use the button below to securely save your Master Key in your preferred way."
             },
