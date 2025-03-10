@@ -32,6 +32,7 @@ export interface TimelinePickerProps {
     setSelected: (selected: Array<Timeline<CommunityTimelineSchema>>) => void
     sx?: SxProps
     options: Array<Timeline<CommunityTimelineSchema>>
+    onlyCommunities?: boolean
     placeholder?: string
     postHome?: boolean
     setPostHome?: (postHome: boolean) => void
@@ -104,36 +105,42 @@ export const TimelinePicker = (props: TimelinePickerProps): JSX.Element => {
 
                     InputProps.startAdornment = (
                         <>
-                            <Tooltip title={props.postHome ? t('postToHome') : t('noPostToHome')} arrow placement="top">
-                                <CCChip
-                                    size="small"
-                                    variant={props.postHome ? 'filled' : 'outlined'}
-                                    label={userName}
-                                    sx={{
-                                        color: props.postHome ? 'text.primary' : 'text.disabled',
-                                        borderStyle: props.postHome ? 'solid' : 'dashed',
-                                        textDecoration: props.postHome ? 'none' : 'line-through'
-                                    }}
-                                    icon={
-                                        <CCAvatar
-                                            circle
-                                            identiconSource={props.selectedSubprofile?.id ?? client?.ccid}
-                                            avatarURL={userIcon}
-                                            sx={{ width: 20, height: 20 }}
-                                        />
-                                    }
-                                    onClick={(e) => setProfileSelectAnchorEl(e.currentTarget)}
-                                    onDelete={() => props.setPostHome?.(!props.postHome)}
-                                    deleteIcon={
-                                        <CancelIcon
-                                            sx={{
-                                                transform: props.postHome ? 'rotate(0deg)' : 'rotate(45deg)',
-                                                transition: 'transform 0.2s'
-                                            }}
-                                        />
-                                    }
-                                />
-                            </Tooltip>
+                            {!props.onlyCommunities && (
+                                <Tooltip
+                                    title={props.postHome ? t('postToHome') : t('noPostToHome')}
+                                    arrow
+                                    placement="top"
+                                >
+                                    <CCChip
+                                        size="small"
+                                        variant={props.postHome ? 'filled' : 'outlined'}
+                                        label={userName}
+                                        sx={{
+                                            color: props.postHome ? 'text.primary' : 'text.disabled',
+                                            borderStyle: props.postHome ? 'solid' : 'dashed',
+                                            textDecoration: props.postHome ? 'none' : 'line-through'
+                                        }}
+                                        icon={
+                                            <CCAvatar
+                                                circle
+                                                identiconSource={props.selectedSubprofile?.id ?? client?.ccid}
+                                                avatarURL={userIcon}
+                                                sx={{ width: 20, height: 20 }}
+                                            />
+                                        }
+                                        onClick={(e) => setProfileSelectAnchorEl(e.currentTarget)}
+                                        onDelete={() => props.setPostHome?.(!props.postHome)}
+                                        deleteIcon={
+                                            <CancelIcon
+                                                sx={{
+                                                    transform: props.postHome ? 'rotate(0deg)' : 'rotate(45deg)',
+                                                    transition: 'transform 0.2s'
+                                                }}
+                                            />
+                                        }
+                                    />
+                                </Tooltip>
+                            )}
                             {InputProps.startAdornment}
                             {!focused && (
                                 <InputAdornment position="start" disablePointerEvents sx={{}}>
