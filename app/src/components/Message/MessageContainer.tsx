@@ -75,7 +75,8 @@ export const MessageContainer = memo<MessageContainerProps>((props: MessageConta
                     if (filter?.reason === 'word') {
                         setFilteredWord(filter.value)
                     } else if (filter?.reason === 'timeline') {
-                        setFilteredTimeline(filter.value)
+                        const tl = msg.postedTimelines?.find((timeline) => timeline.fqid === filter.value)
+                        tl && setFilteredTimeline(tl.document.body.name)
                     }
                 }
             })
@@ -142,7 +143,7 @@ export const MessageContainer = memo<MessageContainerProps>((props: MessageConta
                         }}
                     >
                         <Typography variant="caption" color="textDisabled">
-                            {t('mutedByTimeline')}: {filteredTimeline}
+                            {t('mutedByTimeline')}: #{filteredTimeline}
                         </Typography>
                         <Typography
                             variant="caption"
