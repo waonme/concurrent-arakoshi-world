@@ -178,6 +178,13 @@
             "language": "言語",
             "showTutorial": "メニューにチュートリアルを表示する",
             "add": "追加",
+            "cancel": "キャンセル",
+            "addMuteWord": "ミュートワードを追加",
+            "addMuteWordDesc": "ミュートしたい単語を入力してください",
+            "mute": "ミュート",
+            "wordMute": "ワードミュート",
+            "timelineMute": "タイムラインミュート",
+            "fontSize": "フォントサイズ",
             "notification": {
                 "title": "通知",
                 "notsupported": "お使いのドメインは通知をサポートしていません",

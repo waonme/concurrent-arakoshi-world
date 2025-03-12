@@ -191,7 +191,7 @@ export const GeneralSettings = (): JSX.Element => {
                 </Button>
             )}
             <Box>
-                <Typography variant="h3">{'文字サイズ'}</Typography>
+                <Typography variant="h3">{t('fontSize')}</Typography>
                 <Box
                     sx={{
                         display: 'flex',
@@ -534,7 +534,7 @@ export const GeneralSettings = (): JSX.Element => {
                     </AccordionActions>
                 </Accordion>
             )}
-            <Typography variant="h3">ミュート(ベータ)</Typography>
+            <Typography variant="h3">{t('mute')} (beta)</Typography>
             <Box
                 sx={{
                     marginLeft: 2
@@ -548,7 +548,7 @@ export const GeneralSettings = (): JSX.Element => {
                         justifyContent: 'space-between'
                     }}
                 >
-                    <Typography variant="h4">ワードミュート</Typography>
+                    <Typography variant="h4">{t('wordMute')}</Typography>
                     <Button
                         onClick={(_) => {
                             setOpenMuteAdder(true)
@@ -591,7 +591,7 @@ export const GeneralSettings = (): JSX.Element => {
                         justifyContent: 'space-between'
                     }}
                 >
-                    <Typography variant="h4">タイムラインミュート</Typography>
+                    <Typography variant="h4">{t('timelineMute')}</Typography>
                 </Box>
 
                 <List dense>
