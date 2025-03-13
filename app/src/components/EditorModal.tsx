@@ -103,7 +103,11 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
         (openOpts?: OpenOptions): void => {
             const opts = options.current ?? {}
             setPostProps({
-                streamPickerInitial: openOpts?.streamPickerInitial ?? opts.streamPickerInitial ?? homePostTimelines,
+                streamPickerInitial: (
+                    openOpts?.streamPickerInitial ??
+                    opts.streamPickerInitial ??
+                    homePostTimelines
+                ).filter((e) => e),
                 streamPickerOptions: allKnownTimelines,
                 defaultPostHome:
                     opts.defaultPostHome ?? (home?.defaultPostHome === undefined ? true : home.defaultPostHome),
