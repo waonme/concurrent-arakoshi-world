@@ -79,7 +79,7 @@ InlineCode = "`" a:[^`]+ "`"
     }
 }
 
-URL = s:("https://" / "http://") t:[a-zA-Z0-9#@\./]+ (space / newline)
+URL = s:("https://" / "http://") t:[a-zA-Z0-9!?/+\-_~=;.,*&@#$%()'[\]]+
 {
     return {
         type: "URL",
