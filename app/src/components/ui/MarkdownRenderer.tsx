@@ -1,11 +1,12 @@
-import { type ImgHTMLAttributes, type DetailedHTMLProps, memo, useEffect } from 'react'
+import { type ImgHTMLAttributes, type DetailedHTMLProps, memo, useEffect, useState } from 'react'
 import { Box, Button, Divider, IconButton, Tooltip, Typography } from '@mui/material'
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
+// import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
-import { type ReactMarkdownProps } from 'react-markdown/lib/ast-to-react'
+// import { type ReactMarkdownProps } from 'react-markdown/lib/ast-to-react'
 import breaks from 'remark-breaks'
 import { Codeblock } from './Codeblock'
+import cfm from '@concrnt/cfm'
 
 import type { EmojiLite } from '../../model'
 import {
@@ -73,12 +74,22 @@ export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRend
     const { enqueueSnackbar } = useSnackbar()
     const [themeName, setThemeName] = usePreference('themeName')
     const [customThemes, setCustomThemes] = usePreference('customThemes')
+    const [ast, setAst] = useState<any>(null)
     const summary = useAutoSummary()
 
     useEffect(() => {
         summary.update()
+        //parse(props.messagebody)
+        setAst(cfm.parse(props.messagebody))
     }, [props.messagebody])
 
+    return (
+        <Box>
+            <pre>{JSON.stringify(ast, null, 2)}</pre>
+        </Box>
+    )
+
+    /*
     return (
         <Box
             sx={{
@@ -562,6 +573,7 @@ export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRend
             </ReactMarkdown>
         </Box>
     )
+    */
 })
 
 MarkdownRenderer.displayName = 'MarkdownRenderer'
