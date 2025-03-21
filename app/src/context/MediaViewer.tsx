@@ -19,7 +19,7 @@ export interface MediaViewerState {
     openModel: (src?: string) => void
 }
 
-const exifKeys = ['Model', 'Lens', 'FocalLength', 'ExposureTime', 'FNumber', 'ISOSpeedRatings', 'Temperature']
+const exifKeys = ['Model', 'Lens', 'FocalLength', 'ExposureTime', 'FNumber', 'ISOSpeedRatings']
 
 const MediaViewerContext = createContext<MediaViewerState>({
     openSingle: () => {},
@@ -289,43 +289,44 @@ export const MediaViewerProvider = (props: MediaViewerProviderProps): JSX.Elemen
                                 />
                             </>
                         )}
-                        {exif && (
-                            <Box
-                                sx={{
-                                    backgroundColor: 'black',
-                                    color: 'white',
-                                    fontSize: '0.5rem',
-                                    display: 'grid',
-                                    gridTemplateColumns: 'auto auto',
-                                    position: 'absolute',
-                                    bottom: 'env(safe-area-inset-bottom)',
-                                    right: 1,
-                                    padding: 0.5
-                                }}
-                            >
-                                {exifKeys.map((key) => {
-                                    if (!exif[key]) return null
-                                    return (
-                                        <>
-                                            <Box>{key}: </Box>
-                                            <Box>{exif[key].description}</Box>
-                                        </>
-                                    )
-                                })}
-                            </Box>
-                        )}
 
                         <Box
                             width="100%"
                             display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            flexDirection="row"
+                            flexDirection="column"
                             p={1}
                             position="absolute"
                             bottom={'env(safe-area-inset-bottom)'}
+                            gap={1}
                         >
-                            <Button onClick={close}>Close</Button>
+                            <Box display="flex" justifyContent="right" alignItems="center">
+                                {exif && (
+                                    <Box
+                                        sx={{
+                                            backgroundColor: 'black',
+                                            color: 'white',
+                                            fontSize: '0.5rem',
+                                            display: 'grid',
+                                            gridTemplateColumns: 'auto auto',
+                                            padding: 0.5
+                                        }}
+                                    >
+                                        {exifKeys.map((key) => {
+                                            if (!exif[key]) return null
+                                            return (
+                                                <>
+                                                    <Box>{key}: </Box>
+                                                    <Box>{exif[key].description}</Box>
+                                                </>
+                                            )
+                                        })}
+                                    </Box>
+                                )}
+                            </Box>
+
+                            <Box display="flex" justifyContent="center" alignItems="center" flexDirection="row">
+                                <Button onClick={close}>Close</Button>
+                            </Box>
                         </Box>
                     </>
                 ) : (
