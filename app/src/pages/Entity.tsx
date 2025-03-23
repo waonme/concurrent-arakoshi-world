@@ -24,7 +24,8 @@ export function EntityPage(): JSX.Element {
     const { t } = useTranslation('', { keyPrefix: 'common' })
 
     const path = useLocation()
-    const tab = path.pathname.split('/')[2] ?? ''
+    let tab = path.pathname.split('/').pop() ?? ''
+    if (tab !== 'media' && tab !== 'activity') tab = ''
 
     const navigate = useNavigate()
 
@@ -38,7 +39,7 @@ export function EntityPage(): JSX.Element {
 
     const [showHeader, setShowHeader] = useState(false)
 
-    const subProfileID = path.hash.replace('#', '')
+    const subProfileID = params.profileid ?? path.hash.replace('#', '')
 
     const timelineID = subProfileID ? 'world.concrnt.t-subhome.' + subProfileID + '@' + id : user?.homeTimeline
 
