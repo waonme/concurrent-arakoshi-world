@@ -24,7 +24,7 @@ export function EntityPage(): JSX.Element {
     const { t } = useTranslation('', { keyPrefix: 'common' })
 
     const path = useLocation()
-    let tab = path.pathname.split('/').pop() ?? ''
+    let tab = path.pathname.split('/').pop()
     if (tab !== 'media' && tab !== 'activity') tab = ''
 
     const navigate = useNavigate()
@@ -117,8 +117,12 @@ export function EntityPage(): JSX.Element {
                         <Profile
                             user={user}
                             overrideSubProfileID={subProfileID}
-                            onSubProfileClicked={(id) => {
-                                window.location.hash = id
+                            onSubProfileClicked={(subID) => {
+                                if (subID) {
+                                    navigate(`/${id}/profile/${subID}` + (tab ? '/' + tab : ''))
+                                } else {
+                                    navigate(`/${id}` + (tab ? '/' + tab : ''))
+                                }
                             }}
                         />
                         <PrivateTimelineDoor timeline={timeline} />
@@ -139,19 +143,24 @@ export function EntityPage(): JSX.Element {
                                         <Profile
                                             user={user}
                                             overrideSubProfileID={subProfileID}
-                                            onSubProfileClicked={(id) => {
-                                                window.location.hash = id
+                                            onSubProfileClicked={(subID) => {
+                                                if (subID) {
+                                                    navigate(`/${id}/profile/${subID}` + (tab ? '/' + tab : ''))
+                                                } else {
+                                                    navigate(`/${id}` + (tab ? '/' + tab : ''))
+                                                }
                                             }}
                                         />
                                         <Tabs
                                             value={tab}
                                             onChange={(_, value) => {
-                                                if (value === '')
-                                                    navigate(`/${id}` + (subProfileID ? '#' + subProfileID : ''))
-                                                else
+                                                if (subProfileID) {
                                                     navigate(
-                                                        `/${id}/${value}` + (subProfileID ? '#' + subProfileID : '')
+                                                        `/${id}/profile/${subProfileID}` + (value ? '/' + value : '')
                                                     )
+                                                } else {
+                                                    navigate(`/${id}` + (value ? '/' + value : ''))
+                                                }
                                             }}
                                             textColor="secondary"
                                             indicatorColor="secondary"
