@@ -67,6 +67,20 @@ const sanitizeOption = {
     }
 }
 
+const RenderAst = (ast: any): JSX.Element => {
+    if (!ast) return <>null</>
+    switch (ast.type) {
+        case 'newline':
+            return <br />
+        case 'Line':
+            return ast.body.map((node: any) => RenderAst(node))
+        case 'Text':
+            return <Typography>{ast.body}</Typography>
+        default:
+            return <>unknown ast type: {ast.type}</>
+    }
+}
+
 export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRendererProps): JSX.Element => {
     const actions = useGlobalActions()
     const { getImageURL } = useGlobalState()
@@ -86,6 +100,7 @@ export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRend
     return (
         <Box>
             <pre>{JSON.stringify(ast, null, 2)}</pre>
+            {ast?.map((node: any) => RenderAst(node))}
         </Box>
     )
 
