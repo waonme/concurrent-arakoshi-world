@@ -54,7 +54,7 @@ CodeLine = !codeFence a:normalchar* newline
     return a.join('')
 }
 
-Heading = h:"#"+ space t:Line (newline / EOF)
+Heading = h:"#"+ space t:InlineElements (newline / EOF)
 {
   return {
      type: "Heading",
@@ -95,6 +95,15 @@ URL = s:("https://" / "http://") t:[^ ]+
     return {
         type: "URL",
         body: s + t.join('')
+    }
+}
+
+MDURL = "[" a:[^\]]* "](" t:[^)]+ ")"
+{
+    return {
+        type: "URL",
+        body: t.join(''),
+        alt: a.join('')
     }
 }
 
@@ -140,7 +149,12 @@ Spoiler = spoilerFence content:(!spoilerFence .)* spoilerFence
 }
 
 
-Line = e:HeadElement f:InlineElements* (newline / EOF)
+Line = i:InlineElements (newline / EOF)
+{
+    return i
+}
+
+InlineElements = e:HeadElement f:InlineElement*
 {
     const body = []
     let textbuf = ""
@@ -173,6 +187,6 @@ Line = e:HeadElement f:InlineElements* (newline / EOF)
     }
 }
 
-HeadElement = (Spoiler / URL / Emoji / InlineCode / Image / EmojiPack / Tag / Mention / normalchar)
-InlineElements = (Spoiler / URL / Emoji / InlineCode / Image / EmojiPack / space+ Tag / space+ Mention / normalchar) +
+HeadElement = (Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / Tag / Mention / normalchar)
+InlineElement = (Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / space+ Tag / space+ Mention / normalchar) +
 

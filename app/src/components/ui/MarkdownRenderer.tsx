@@ -28,6 +28,27 @@ export interface RenderAstProps {
     emojis: Record<string, EmojiLite>
 }
 
+const Spoiler = ({ body }: { body: string }) => {
+    const [open, setOpen] = useState(false)
+
+    return (
+        <Box
+            component="span"
+            sx={{
+                cursor: 'pointer',
+                color: open ? 'text.disabled' : 'transparent',
+                backgroundColor: open ? 'transparent' : 'text.primary'
+            }}
+            onClick={(e) => {
+                setOpen(!open)
+                e.stopPropagation()
+            }}
+        >
+            {body}
+        </Box>
+    )
+}
+
 const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
     if (Array.isArray(ast)) {
         return (
@@ -52,7 +73,12 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
         case 'newline':
             return <br />
         case 'Line':
-            return <RenderAst ast={ast.body} emojis={emojis} />
+            return (
+                <>
+                    <RenderAst ast={ast.body} emojis={emojis} />
+                    <br />
+                </>
+            )
         case 'Text':
             return ast.body
         case 'URL':
@@ -63,6 +89,8 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
             )
         case 'Timeline':
             return <TimelineChip timelineFQID={ast.body} />
+        case 'Spoiler':
+            return <Spoiler body={ast.body} />
         case 'Tag':
             if (ast.body.match(/[0-9a-fA-F]{6}$/)) {
                 return (
@@ -146,7 +174,21 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
                 </details>
             )
         case 'InlineCode':
-            return <code>{ast.body}</code>
+            return (
+                <Box
+                    component="span"
+                    sx={{
+                        fontFamily: 'Source Code Pro, monospace',
+                        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                        borderRadius: 1,
+                        border: '0.5px solid #ddd',
+                        padding: '0 0.5rem',
+                        margin: '0 0.2rem'
+                    }}
+                >
+                    {ast.body}
+                </Box>
+            )
         case 'Image':
             return (
                 <Box
@@ -252,13 +294,10 @@ export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRend
     return (
         <Box
             sx={{
-                whiteSpace: 'pre'
+                whiteSpace: 'pre-wrap'
             }}
         >
             <RenderAst ast={ast} emojis={props.emojiDict} />
-            <details onClick={(e) => e.stopPropagation()}>
-                <pre>{JSON.stringify(ast, null, 2)}</pre>
-            </details>
         </Box>
     )
 })
