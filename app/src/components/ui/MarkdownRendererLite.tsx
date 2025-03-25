@@ -1,19 +1,9 @@
-import { type ImgHTMLAttributes, type DetailedHTMLProps } from 'react'
-import { Box, Link, Typography } from '@mui/material'
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
-import { type ReactMarkdownProps } from 'react-markdown/lib/ast-to-react'
-import breaks from 'remark-breaks'
+import { useState, useEffect, memo } from 'react'
+import { Box, Typography } from '@mui/material'
+import cfm from '@concrnt/cfm'
 
 import type { EmojiLite } from '../../model'
-import {
-    userMentionRemarkPlugin,
-    emojiRemarkPlugin,
-    streamLinkRemarkPlugin,
-    literalLinkRemarkPlugin,
-    strikeThroughRemarkPlugin
-} from '../../util'
 import { CCUserChip } from './CCUserChip'
-import { LinkChip } from './LinkChip'
 import { TimelineChip } from './TimelineChip'
 import { useGlobalState } from '../../context/GlobalState'
 import { CCLink } from './CCLink'
@@ -25,285 +15,140 @@ export interface MarkdownRendererProps {
     limit?: number
 }
 
-export function MarkdownRendererLite(props: MarkdownRendererProps): JSX.Element {
+export interface RenderAstProps {
+    ast: any
+    props: MarkdownRendererProps
+}
+
+const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
+    if (Array.isArray(ast)) {
+        return (
+            <>
+                {ast.map((node: any) => (
+                    <RenderAst ast={node} props={props} />
+                ))}
+            </>
+        )
+    }
+
     const { getImageURL } = useGlobalState()
+
+    if (!ast) return <>null</>
+    switch (ast.type) {
+        case 'newline':
+            ;<>{!props.forceOneline && <br />}</>
+        case 'Line':
+            return (
+                <>
+                    <RenderAst ast={ast.body} props={props} />
+                    {!props.forceOneline && <br />}
+                </>
+            )
+        case 'Text':
+            return ast.body
+        case 'URL':
+            return (
+                <CCLink to={ast.body} color="secondary" underline="hover">
+                    {ast.body}
+                </CCLink>
+            )
+        case 'Timeline':
+            return <TimelineChip timelineFQID={ast.body} />
+        case 'Spoiler':
+            return <Box>{ast.body}</Box>
+        case 'Tag':
+            return <span>#{ast.body}</span>
+        case 'Mention': {
+            if (ast.body.startsWith('con1') && ast.body.length === 42) {
+                return <CCUserChip ccid={ast.body} />
+            } else {
+                return <span>@{ast.body}</span>
+            }
+        }
+        case 'Emoji': {
+            const emoji = props.emojiDict[ast.body]
+            return emoji ? (
+                <img
+                    src={getImageURL(emoji?.animURL ?? emoji?.imageURL, { maxHeight: 128 })}
+                    style={{
+                        height: '1.25em',
+                        verticalAlign: '-0.45em',
+                        marginBottom: '4px'
+                    }}
+                />
+            ) : (
+                <span>:{ast.body}:</span>
+            )
+        }
+        case 'Details':
+            return <span>[Details]</span>
+        case 'InlineCode':
+            return (
+                <Box
+                    component="span"
+                    sx={{
+                        fontFamily: 'Source Code Pro, monospace',
+                        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                        borderRadius: 1,
+                        border: '0.5px solid #ddd',
+                        padding: '0 0.5rem',
+                        margin: '0 0.2rem'
+                    }}
+                >
+                    {ast.body}
+                </Box>
+            )
+        case 'Image':
+            return <span>[Image: {ast.alt}]</span>
+        case 'CodeBlock':
+            return <span>[Codeblock]</span>
+        case 'EmojiPack':
+            return <span>[EmojiPack]</span>
+        case 'Heading':
+            return (
+                <Typography variant={`h${ast.level}` as any}>
+                    <RenderAst ast={ast.body} props={props} />
+                </Typography>
+            )
+        default:
+            return <>unknown ast type: {ast.type}</>
+    }
+}
+
+export const MarkdownRendererLite = memo<MarkdownRendererProps>((props: MarkdownRendererProps): JSX.Element => {
+    const [ast, setAst] = useState<any>(null)
+
+    useEffect(() => {
+        if (props.messagebody === '') {
+            setAst([])
+            return
+        }
+        try {
+            setAst(cfm.parse(props.messagebody))
+        } catch (e) {
+            console.error(e)
+            setAst([
+                {
+                    type: 'Text',
+                    body: props.messagebody
+                },
+                {
+                    type: 'Text',
+                    body: 'error: ' + JSON.stringify(e)
+                }
+            ])
+        }
+    }, [props.messagebody])
 
     return (
         <Box
             sx={{
-                width: '100%',
-                '& pre': {
-                    margin: 0
-                },
-                '& ul': {
-                    marginTop: 1,
-                    marginBottom: 1,
-                    listStyle: 'none',
-                    marginLeft: '0.8rem',
-                    paddingLeft: 0,
-                    fontSize: {
-                        xs: '0.9rem',
-                        sm: '1rem'
-                    },
-                    '&:firs-child': {
-                        marginTop: 0
-                    },
-                    '&:last-child': {
-                        marginBottom: 0
-                    },
-                    '& li': {
-                        '&::before': {
-                            content: '"•"',
-                            display: 'inline-block',
-                            width: '1em',
-                            marginLeft: '-1em',
-                            textAlign: 'center',
-                            fontSize: {
-                                xs: '0.7rem',
-                                sm: '0.8rem'
-                            },
-                            lineHeight: {
-                                xs: '0.9rem',
-                                sm: '1rem'
-                            }
-                        }
-                    }
-                },
-                '& ol': {
-                    marginTop: 1,
-                    marginBottom: 1,
-                    marginLeft: {
-                        xs: '1.3rem',
-                        sm: '1.4rem'
-                    },
-                    paddingLeft: 0,
-                    fontSize: {
-                        xs: '0.9rem',
-                        sm: '1rem'
-                    },
-                    '&:first-of-type': {
-                        marginTop: 0
-                    },
-                    '&:last-child': {
-                        marginBottom: 0
-                    }
-                }
+                whiteSpace: props.forceOneline ? 'inherit' : 'pre-wrap'
             }}
         >
-            <ReactMarkdown
-                remarkPlugins={[
-                    breaks,
-                    literalLinkRemarkPlugin,
-                    strikeThroughRemarkPlugin,
-                    userMentionRemarkPlugin,
-                    streamLinkRemarkPlugin,
-                    emojiRemarkPlugin
-                ]}
-                remarkRehypeOptions={{
-                    handlers: {
-                        userlink: (h, node) => {
-                            return h(node, 'userlink', { ccid: node.ccid })
-                        },
-                        streamlink: (h, node) => {
-                            return h(node, 'streamlink', { streamId: node.streamId })
-                        },
-                        emoji: (h, node) => {
-                            return h(node, 'emoji', { shortcode: node.shortcode })
-                        }
-                    }
-                }}
-                components={{
-                    userlink: ({ ccid }) => {
-                        return <CCUserChip ccid={ccid} />
-                    },
-                    streamlink: ({ streamId }) => {
-                        return <TimelineChip timelineFQID={streamId} />
-                    },
-                    social: ({ href, icon, service, children }) => {
-                        return (
-                            <LinkChip href={href} icon={icon} service={service}>
-                                {children}
-                            </LinkChip>
-                        )
-                    },
-                    p: ({ children }) => {
-                        if (props.forceOneline) return <span>{children}</span>
-                        return (
-                            <Typography
-                                sx={{
-                                    fontSize: {
-                                        xs: '0.9rem',
-                                        sm: '1rem'
-                                    },
-                                    mt: 1,
-                                    mb: 1,
-                                    '&:first-of-type': {
-                                        mt: 0
-                                    },
-                                    '&:last-child': {
-                                        mb: 0
-                                    }
-                                }}
-                                paragraph
-                            >
-                                {children}
-                            </Typography>
-                        )
-                    },
-                    h1: ({ children }) => {
-                        if (props.forceOneline) return <b>{children}</b>
-                        return (
-                            <Typography
-                                sx={{
-                                    mt: 1.8,
-                                    mb: 1,
-                                    '&:first-of-type': {
-                                        mt: 0
-                                    }
-                                }}
-                                variant="h1"
-                            >
-                                {children}
-                            </Typography>
-                        )
-                    },
-                    h2: ({ children }) => {
-                        if (props.forceOneline) return <b>{children}</b>
-                        return (
-                            <Typography
-                                sx={{
-                                    mt: 1.5,
-                                    mb: 1,
-                                    '&:first-of-type': {
-                                        mt: 0
-                                    },
-                                    '&:last-child': {
-                                        mb: 0
-                                    }
-                                }}
-                                variant="h2"
-                            >
-                                {children}
-                            </Typography>
-                        )
-                    },
-                    h3: ({ children }) => {
-                        if (props.forceOneline) return <b>{children}</b>
-                        return (
-                            <Typography
-                                sx={{
-                                    mt: 1,
-                                    mb: 1,
-                                    '&:first-of-type': {
-                                        mt: 0
-                                    },
-                                    '&:last-child': {
-                                        mb: 0
-                                    }
-                                }}
-                                variant="h3"
-                            >
-                                {children}
-                            </Typography>
-                        )
-                    },
-                    h4: ({ children }) =>
-                        props.forceOneline ? <b>{children}</b> : <Typography variant="h4">{children}</Typography>,
-                    h5: ({ children }) =>
-                        props.forceOneline ? <b>{children}</b> : <Typography variant="h5">{children}</Typography>,
-                    h6: ({ children }) =>
-                        props.forceOneline ? <b>{children}</b> : <Typography variant="h6">{children}</Typography>,
-                    ul: ({ children }) => (props.forceOneline ? <>{children}</> : <ul style={{}}>{children}</ul>),
-                    ol: ({ children }) => (props.forceOneline ? <>{children}</> : <ol style={{}}>{children}</ol>),
-                    li: ({ children }) => {
-                        if (props.forceOneline) {
-                            return <span>- {children} </span>
-                        } else {
-                            return <li style={{ marginLeft: 0 }}>{children}</li>
-                        }
-                    },
-                    blockquote: ({ children }) => (
-                        <blockquote style={{ margin: 0, paddingLeft: '1rem', borderLeft: '4px solid #ccc' }}>
-                            {children}
-                        </blockquote>
-                    ),
-                    a: ({ children, href }) => {
-                        if (!href) return <></>
-                        return (
-                            <CCLink to={href} color="secondary" underline="hover">
-                                {children}
-                            </CCLink>
-                        )
-                    },
-                    code: ({ node, children, inline }) => {
-                        const language = node.position
-                            ? props.messagebody
-                                  .slice(node.position.start.offset, node.position.end.offset)
-                                  .split('\n')[0]
-                                  .slice(3)
-                            : ''
-
-                        if (language === 'theme') {
-                            try {
-                                const theme = JSON.parse(String(children))
-                                return <span>[Theme: {theme.meta?.name ?? 'no title'}]</span>
-                            } catch (e) {
-                                console.error(e)
-                            }
-                        }
-
-                        return inline ? (
-                            <Box
-                                component="span"
-                                sx={{
-                                    fontFamily: 'Source Code Pro, monospace',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                                    borderRadius: 1,
-                                    border: '0.5px solid #ddd',
-                                    padding: '0 0.5rem',
-                                    margin: '0 0.2rem'
-                                }}
-                            >
-                                {children}
-                            </Box>
-                        ) : (
-                            <span>[Codeblock]</span>
-                        )
-                    },
-                    img: (
-                        props: Pick<
-                            DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>,
-                            'key' | keyof ImgHTMLAttributes<HTMLImageElement>
-                        > &
-                            ReactMarkdownProps
-                    ) => {
-                        return <span>[Image: {props.alt}]</span>
-                    },
-                    emoji: ({ shortcode }) => {
-                        const emoji = props.emojiDict[shortcode]
-                        return emoji ? (
-                            <img
-                                src={getImageURL(emoji?.animURL ?? emoji?.imageURL, { maxHeight: 128 })}
-                                style={{
-                                    height: '1.25em',
-                                    verticalAlign: '-0.45em',
-                                    marginBottom: '4px'
-                                }}
-                            />
-                        ) : (
-                            <span>:{shortcode}:</span>
-                        )
-                    },
-                    video: (_props) => {
-                        return <span>[Video]</span>
-                    },
-                    br: () => <></>
-                }}
-            >
-                {props.limit
-                    ? props.messagebody.slice(0, props.limit) + (props.messagebody.length > props.limit ? '...' : '')
-                    : props.messagebody}
-            </ReactMarkdown>
+            <RenderAst ast={ast} props={props} />
         </Box>
     )
-}
+})
+
+MarkdownRendererLite.displayName = 'MarkdownRendererLite'

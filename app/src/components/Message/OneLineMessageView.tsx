@@ -38,7 +38,7 @@ export const OneLineMessageView = (props: OneLineMessageViewProps): JSX.Element 
                 color: 'text.disabled',
                 overflow: 'hidden',
                 flex: 1,
-                gap: { xs: 1, sm: 2 }
+                gap: { xs: 1 }
             }}
         >
             <IconButton
