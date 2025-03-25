@@ -69,7 +69,18 @@ Image = "![" a:[^\]]* "](" u:[^)]+ ")"
     	type: "Image",
         alt: a.join(''),
         url: u.join('')
-    } }
+    }
+}
+
+EmojiPack = "<emojipack" space* "src" space* "=" space* "\"" body:[^"]+ "\"" space* "/"? ">" "</emojipack>"?
+{
+    return {
+        type: "EmojiPack",
+        body: body.join('')
+    }
+}
+
+
 
 InlineCode = "`" a:[^`]+ "`"
 {
@@ -79,7 +90,7 @@ InlineCode = "`" a:[^`]+ "`"
     }
 }
 
-URL = s:("https://" / "http://") t:[a-zA-Z0-9!?/+\-_~=;.,*&@#$%()'[\]]+
+URL = s:("https://" / "http://") t:[^ ]+
 {
     return {
         type: "URL",
@@ -162,6 +173,6 @@ Line = e:HeadElement f:InlineElements* (newline / EOF)
     }
 }
 
-HeadElement = (Spoiler / URL / Emoji / InlineCode / Image / Tag / Mention / normalchar)
-InlineElements = (Spoiler / URL / Emoji / InlineCode / Image / space+ Tag / space+ Mention / normalchar) +
+HeadElement = (Spoiler / URL / Emoji / InlineCode / Image / EmojiPack / Tag / Mention / normalchar)
+InlineElements = (Spoiler / URL / Emoji / InlineCode / Image / EmojiPack / space+ Tag / space+ Mention / normalchar) +
 
