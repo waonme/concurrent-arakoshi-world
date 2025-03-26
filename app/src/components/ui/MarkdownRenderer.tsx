@@ -275,7 +275,6 @@ export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRend
     const summary = useAutoSummary()
 
     useEffect(() => {
-        summary.update()
         if (props.messagebody === '') {
             setAst([])
             return
@@ -296,6 +295,10 @@ export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRend
             ])
         }
     }, [props.messagebody])
+
+    useEffect(() => {
+        summary.update()
+    }, [ast])
 
     return (
         <Box
