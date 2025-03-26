@@ -143,7 +143,11 @@ export const MarkdownRendererLite = memo<MarkdownRendererProps>((props: Markdown
     return (
         <Box
             sx={{
-                whiteSpace: props.forceOneline ? 'inherit' : 'pre-wrap'
+                whiteSpace: props.forceOneline ? 'inherit' : 'pre-wrap',
+                fontSize: {
+                    xs: '0.9rem',
+                    sm: '1rem'
+                }
             }}
         >
             <RenderAst ast={ast} props={props} />

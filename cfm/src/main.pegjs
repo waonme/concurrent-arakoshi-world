@@ -16,7 +16,7 @@ markdown = l:(Block / newline)+
 	return l
 }
 
-Block = Heading / CodeBlock / Details / Line
+Block = Heading / Quote / CodeBlock / Details / Line
 
 Summary = startSummary l:(!stopSummary normalchar)* stopSummary newline?
 {
@@ -63,6 +63,14 @@ Heading = h:"#"+ space t:InlineElements (newline / EOF)
   }
 }
 
+Quote = ">" space t:InlineElements (newline / EOF)
+{
+    return {
+        type: "Quote",
+        body: t
+    }
+}
+
 Image = "![" a:[^\]]* "](" u:[^)]+ ")"
 {
     return {
@@ -90,7 +98,7 @@ InlineCode = "`" a:[^`]+ "`"
     }
 }
 
-URL = s:("https://" / "http://") t:[^ ]+
+URL = s:("https://" / "http://") t:[^ 　\n]+
 {
     return {
         type: "URL",

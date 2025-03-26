@@ -91,6 +91,12 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
             return <TimelineChip timelineFQID={ast.body} />
         case 'Spoiler':
             return <Spoiler body={ast.body} />
+        case 'Quote':
+            return (
+                <blockquote style={{ margin: 0, paddingLeft: '1rem', borderLeft: '4px solid #ccc' }}>
+                    <RenderAst ast={ast.body} emojis={emojis} />
+                </blockquote>
+            )
         case 'Tag':
             if (ast.body.match(/[0-9a-fA-F]{6}$/)) {
                 return (
@@ -294,7 +300,11 @@ export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRend
     return (
         <Box
             sx={{
-                whiteSpace: 'pre-wrap'
+                whiteSpace: 'pre-wrap',
+                fontSize: {
+                    xs: '0.9rem',
+                    sm: '1rem'
+                }
             }}
         >
             <RenderAst ast={ast} emojis={props.emojiDict} />
