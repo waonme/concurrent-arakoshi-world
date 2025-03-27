@@ -115,7 +115,7 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
     }
 }
 
-export const MarkdownRendererLite = memo<MarkdownRendererProps>((props: MarkdownRendererProps): JSX.Element => {
+export const MarkdownRendererLite = (props: MarkdownRendererProps): JSX.Element => {
     const [ast, setAst] = useState<any>(null)
 
     useEffect(() => {
@@ -153,6 +153,4 @@ export const MarkdownRendererLite = memo<MarkdownRendererProps>((props: Markdown
             <RenderAst ast={ast} props={props} />
         </Box>
     )
-})
-
-MarkdownRendererLite.displayName = 'MarkdownRendererLite'
+}

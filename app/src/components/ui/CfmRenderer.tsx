@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Button, Divider, IconButton, Tooltip, Typography } from '@mui/material'
 import { Codeblock } from './Codeblock'
 import cfm from '@concrnt/cfm'
@@ -270,7 +270,7 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
     }
 }
 
-export const CfmRenderer = memo<CfmRendererProps>((props: CfmRendererProps): JSX.Element => {
+export const CfmRenderer = (props: CfmRendererProps): JSX.Element => {
     const [ast, setAst] = useState<any>(null)
     const summary = useAutoSummary()
 
@@ -313,6 +313,4 @@ export const CfmRenderer = memo<CfmRendererProps>((props: CfmRendererProps): JSX
             <RenderAst ast={ast} emojis={props.emojiDict} />
         </Box>
     )
-})
-
-CfmRenderer.displayName = 'CfmRenderer'
+}
