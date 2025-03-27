@@ -1,7 +1,7 @@
 import { type Message, type MarkdownMessageSchema, type RerouteMessageSchema } from '@concrnt/worldlib'
 import { MessageViewBase } from './MessageViewBase'
-import { MarkdownRenderer } from '../ui/MarkdownRenderer'
 import { useMemo } from 'react'
+import { CfmRenderer } from '../ui/CfmRenderer'
 
 export interface MarkdownMessageViewProps {
     message: Message<MarkdownMessageSchema>
@@ -18,7 +18,7 @@ export interface MarkdownMessageViewProps {
 export const MarkdownMessageView = (props: MarkdownMessageViewProps): JSX.Element => {
     const renderer = useMemo(
         () => (
-            <MarkdownRenderer
+            <CfmRenderer
                 messagebody={props.message.document.body.body ?? 'no content'}
                 emojiDict={props.message.document.body.emojis ?? {}}
             />

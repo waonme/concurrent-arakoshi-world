@@ -14,10 +14,10 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { useClient } from '../../context/ClientContext'
 import { useInspector } from '../../context/Inspector'
 import { MarkdownRendererLite } from '../ui/MarkdownRendererLite'
-import { MarkdownRenderer } from '../ui/MarkdownRenderer'
 import { FaTheaterMasks } from 'react-icons/fa'
 import { useConfirm } from '../../context/Confirm'
 import { CCLink } from '../ui/CCLink'
+import { CfmRenderer } from '../ui/CfmRenderer'
 
 export interface RerouteMessageFrameProp {
     message: Message<RerouteMessageSchema>
@@ -164,7 +164,7 @@ export const RerouteMessageFrame = (props: RerouteMessageFrameProp): JSX.Element
                         arrow
                         placement="top"
                         title={
-                            <MarkdownRenderer
+                            <CfmRenderer
                                 messagebody={props.message.document.body.body}
                                 emojiDict={props.message.document.body.emojis ?? {}}
                             />

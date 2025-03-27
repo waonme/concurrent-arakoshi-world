@@ -18,7 +18,7 @@ import { useGlobalState } from '../../context/GlobalState'
 import { useAutoSummary } from '../../context/AutoSummaryContext'
 import { CCLink } from './CCLink'
 
-export interface MarkdownRendererProps {
+export interface CfmRendererProps {
     messagebody: string
     emojiDict: Record<string, EmojiLite>
 }
@@ -270,7 +270,7 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
     }
 }
 
-export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRendererProps): JSX.Element => {
+export const CfmRenderer = memo<CfmRendererProps>((props: CfmRendererProps): JSX.Element => {
     const [ast, setAst] = useState<any>(null)
     const summary = useAutoSummary()
 
@@ -315,4 +315,4 @@ export const MarkdownRenderer = memo<MarkdownRendererProps>((props: MarkdownRend
     )
 })
 
-MarkdownRenderer.displayName = 'MarkdownRenderer'
+CfmRenderer.displayName = 'CfmRenderer'
