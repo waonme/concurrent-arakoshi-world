@@ -96,7 +96,7 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
         case 'URL':
             return (
                 <CCLink to={ast.body} color="secondary" underline="hover">
-                    {ast.body}
+                    {ast.alt || ast.body}
                 </CCLink>
             )
         case 'Timeline':
