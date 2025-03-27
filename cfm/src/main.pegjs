@@ -88,8 +88,6 @@ EmojiPack = "<emojipack" space* "src" space* "=" space* "\"" body:[^"]+ "\"" spa
     }
 }
 
-
-
 InlineCode = "`" a:[^`]+ "`"
 {
 	return {
@@ -128,6 +126,38 @@ Mention = "@" a:[a-zA-Z0-9@]+
 	return {
     	type: "Mention",
         body: a.join('')
+    }
+}
+
+Italic = "*" s:[^\*]+ "*"
+{
+    return {
+        type: "Italic",
+        body: s.join('')
+    }
+}
+
+Bold = "**" s:[^\*]+ "**"
+{
+    return {
+        type: "Bold",
+        body: s.join('')
+    }
+}
+
+BoldItalic = "***" s:[^\*]+ "***"
+{
+    return {
+        type: "BoldItalic",
+        body: s.join('')
+    }
+}
+
+Strike = "~~" s:[^~]+ "~~"
+{
+    return {
+        type: "Strike",
+        body: s.join('')
     }
 }
 
@@ -195,6 +225,6 @@ InlineElements = e:HeadElement f:InlineElement*
     }
 }
 
-HeadElement = (Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / Tag / Mention / normalchar)
-InlineElement = (Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / space+ Tag / space+ Mention / normalchar) +
+HeadElement = (Italic / Bold / BoldItalic / Strike / Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / Tag / Mention / normalchar)
+InlineElement = (Italic / Bold / BoldItalic / Strike / Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / space+ Tag / space+ Mention / normalchar) +
 

@@ -46,6 +46,18 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
             )
         case 'Text':
             return ast.body
+        case 'Italic':
+            return <i>{ast.body}</i>
+        case 'Bold':
+            return <b>{ast.body}</b>
+        case 'BoldItalic':
+            return (
+                <b>
+                    <i>{ast.body}</i>
+                </b>
+            )
+        case 'Strike':
+            return <s>{ast.body}</s>
         case 'URL':
             return (
                 <CCLink to={ast.body} color="secondary" underline="hover">
