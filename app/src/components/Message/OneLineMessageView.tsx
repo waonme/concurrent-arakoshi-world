@@ -4,11 +4,11 @@ import { CCAvatar } from '../ui/CCAvatar'
 import { TimeDiff } from '../ui/TimeDiff'
 import { type Message, type ReplyMessageSchema, type MarkdownMessageSchema } from '@concrnt/worldlib'
 import { MarkdownRendererLite } from '../ui/MarkdownRendererLite'
-import { MarkdownRenderer } from '../ui/MarkdownRenderer'
 import { useEffect, useState } from 'react'
 import { useClient } from '../../context/ClientContext'
 import { CCLink } from '../ui/CCLink'
 import { Profile } from '@concrnt/client'
+import { CfmRenderer } from '../ui/CfmRenderer'
 
 export interface OneLineMessageViewProps {
     message: Message<MarkdownMessageSchema | ReplyMessageSchema>
@@ -38,7 +38,7 @@ export const OneLineMessageView = (props: OneLineMessageViewProps): JSX.Element 
                 color: 'text.disabled',
                 overflow: 'hidden',
                 flex: 1,
-                gap: { xs: 1, sm: 2 }
+                gap: { xs: 1 }
             }}
         >
             <IconButton
@@ -80,7 +80,7 @@ export const OneLineMessageView = (props: OneLineMessageViewProps): JSX.Element 
                             arrow
                             placement="top"
                             title={
-                                <MarkdownRenderer
+                                <CfmRenderer
                                     messagebody={props.message.document.body.body}
                                     emojiDict={props.message.document.body.emojis ?? {}}
                                 />
