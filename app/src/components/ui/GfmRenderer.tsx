@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Box, Divider, Tooltip, Typography } from '@mui/material'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -18,7 +18,7 @@ export interface GfmRendererProps {
     emojiDict: Record<string, EmojiLite>
 }
 
-export const GfmRenderer = memo<GfmRendererProps>((props: GfmRendererProps): JSX.Element => {
+export default function GfmRenderer(props: GfmRendererProps): JSX.Element {
     const { getImageURL } = useGlobalState()
     const mediaViewer = useMediaViewer()
     const summary = useAutoSummary()
@@ -336,6 +336,4 @@ export const GfmRenderer = memo<GfmRendererProps>((props: GfmRendererProps): JSX
             </Markdown>
         </Box>
     )
-})
-
-GfmRenderer.displayName = 'GfmRenderer'
+}
