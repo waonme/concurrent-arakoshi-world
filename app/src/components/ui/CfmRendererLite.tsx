@@ -36,7 +36,7 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
     if (!ast) return <></>
     switch (ast.type) {
         case 'newline':
-            props.forceOneline ? <></> : <br />
+            return props.forceOneline ? <></> : <br />
         case 'Line':
             return (
                 <>
