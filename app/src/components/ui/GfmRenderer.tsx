@@ -198,6 +198,15 @@ export default function GfmRenderer(props: GfmRendererProps): JSX.Element {
                             {children}
                         </blockquote>
                     ),
+                    hr: () => {
+                        return (
+                            <Divider
+                                sx={{
+                                    my: 1
+                                }}
+                            />
+                        )
+                    },
                     a: ({ children, href }) => {
                         if (!href) return <></>
                         let matchYoutubeVideo = href?.match(/https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/)
