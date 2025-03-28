@@ -37,7 +37,7 @@ import { type ConcurrentTheme } from './model'
 import { TimelineDrawerProvider } from './context/TimelineDrawer'
 import { UserDrawerProvider } from './context/UserDrawer'
 import { Schemas } from '@concrnt/worldlib'
-import type { MarkdownMessageSchema, ProfileSchema, ReplyAssociationSchema } from '@concrnt/worldlib'
+import type { ProfileSchema, ReplyAssociationSchema } from '@concrnt/worldlib'
 import { SearchDrawerProvider } from './context/SearchDrawer'
 
 const SwitchMasterToSub = lazy(() => import('./components/SwitchMasterToSub'))

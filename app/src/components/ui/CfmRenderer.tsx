@@ -53,8 +53,8 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
     if (Array.isArray(ast)) {
         return (
             <>
-                {ast.map((node: any) => (
-                    <RenderAst ast={node} emojis={emojis} />
+                {ast.map((node: any, i: number) => (
+                    <RenderAst key={i} ast={node} emojis={emojis} />
                 ))}
             </>
         )

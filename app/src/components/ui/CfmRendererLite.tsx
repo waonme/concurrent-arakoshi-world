@@ -24,8 +24,8 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
     if (Array.isArray(ast)) {
         return (
             <>
-                {ast.map((node: any) => (
-                    <RenderAst ast={node} props={props} />
+                {ast.map((node: any, i: number) => (
+                    <RenderAst key={i} ast={node} props={props} />
                 ))}
             </>
         )
