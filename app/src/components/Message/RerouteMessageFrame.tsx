@@ -13,7 +13,7 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch'
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { useClient } from '../../context/ClientContext'
 import { useInspector } from '../../context/Inspector'
-import { MarkdownRendererLite } from '../ui/MarkdownRendererLite'
+import { CfmRendererLite } from '../ui/CfmRendererLite'
 import { FaTheaterMasks } from 'react-icons/fa'
 import { useConfirm } from '../../context/Confirm'
 import { CCLink } from '../ui/CCLink'
@@ -177,7 +177,7 @@ export const RerouteMessageFrame = (props: RerouteMessageFrameProp): JSX.Element
                             minWidth={0}
                             sx={{ fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
                         >
-                            <MarkdownRendererLite
+                            <CfmRendererLite
                                 messagebody={props.message.document.body.body}
                                 emojiDict={props.message.document.body.emojis ?? {}}
                                 forceOneline={true}

@@ -3,7 +3,7 @@ import { Link as routerLink } from 'react-router-dom'
 import { CCAvatar } from '../ui/CCAvatar'
 import { TimeDiff } from '../ui/TimeDiff'
 import { type Message, type ReplyMessageSchema, type MarkdownMessageSchema } from '@concrnt/worldlib'
-import { MarkdownRendererLite } from '../ui/MarkdownRendererLite'
+import { CfmRendererLite } from '../ui/CfmRendererLite'
 import { useEffect, useState } from 'react'
 import { useClient } from '../../context/ClientContext'
 import { CCLink } from '../ui/CCLink'
@@ -87,7 +87,7 @@ export const OneLineMessageView = (props: OneLineMessageViewProps): JSX.Element 
                             }
                         >
                             <Box>
-                                <MarkdownRendererLite
+                                <CfmRendererLite
                                     messagebody={props.message.document.body.body}
                                     emojiDict={props.message.document.body.emojis ?? {}}
                                     forceOneline={true}

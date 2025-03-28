@@ -8,7 +8,7 @@ import { TimelineChip } from './TimelineChip'
 import { useGlobalState } from '../../context/GlobalState'
 import { CCLink } from './CCLink'
 
-export interface MarkdownRendererProps {
+export interface CfmRendererLiteProps {
     messagebody: string
     emojiDict: Record<string, EmojiLite>
     forceOneline?: boolean
@@ -17,7 +17,7 @@ export interface MarkdownRendererProps {
 
 export interface RenderAstProps {
     ast: any
-    props: MarkdownRendererProps
+    props: CfmRendererLiteProps
 }
 
 const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
@@ -33,10 +33,10 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
 
     const { getImageURL } = useGlobalState()
 
-    if (!ast) return <>null</>
+    if (!ast) return <></>
     switch (ast.type) {
         case 'newline':
-            ;<>{!props.forceOneline && <br />}</>
+            props.forceOneline ? <></> : <br />
         case 'Line':
             return (
                 <>
@@ -127,7 +127,7 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
     }
 }
 
-export const MarkdownRendererLite = (props: MarkdownRendererProps): JSX.Element => {
+export const CfmRendererLite = (props: CfmRendererLiteProps): JSX.Element => {
     const [ast, setAst] = useState<any>(null)
 
     useEffect(() => {
