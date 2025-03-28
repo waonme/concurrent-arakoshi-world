@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Box, Button, Divider, IconButton, Tooltip, Typography } from '@mui/material'
 import { Codeblock } from './Codeblock'
 import cfm from '@concrnt/cfm'
+import { keyframes } from '@emotion/react'
 
 import type { EmojiLite } from '../../model'
 import { CCUserChip } from './CCUserChip'
@@ -17,6 +18,30 @@ import { useMediaViewer } from '../../context/MediaViewer'
 import { useGlobalState } from '../../context/GlobalState'
 import { useAutoSummary } from '../../context/AutoSummaryContext'
 import { CCLink } from './CCLink'
+
+const marquee = keyframes`
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+`
+
+const flipMarquee = keyframes`
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+`
 
 export interface CfmRendererProps {
     messagebody: string
@@ -81,6 +106,30 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
             )
         case 'Text':
             return ast.body
+        case 'Marquee':
+            return (
+                <Box
+                    sx={{
+                        width: '100%',
+                        overflow: 'hidden'
+                    }}
+                >
+                    <Box
+                        sx={{
+                            animation: `${marquee} 10s linear infinite`
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                animation: `${flipMarquee} 10s linear infinite`,
+                                width: 'max-content'
+                            }}
+                        >
+                            <RenderAst ast={ast.body} emojis={emojis} />
+                        </Box>
+                    </Box>
+                </Box>
+            )
         case 'Italic':
             return <i>{ast.body}</i>
         case 'Bold':

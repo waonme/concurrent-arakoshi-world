@@ -9,6 +9,8 @@ startSummary = "<summary>"
 stopSummary = "</summary>"
 startDetails = "<details>"
 stopDetails = "</details>"
+startMarquee = "<marquee>"
+stopMarquee = "</marquee>"
 EOF = !.
 
 markdown = l:(Block / newline)+
@@ -16,7 +18,40 @@ markdown = l:(Block / newline)+
 	return l
 }
 
-Block = Heading / Quote / CodeBlock / Details / Line
+Block = Heading / Marquee /  Quote / CodeBlock / Details / Line
+
+Marquee = startMarquee b:(!stopMarquee HeadElement)+ stopMarquee (newline / EOF)
+{
+    const body = []
+    let textbuf = ""
+    for (const elem of b.flat(Infinity).filter(e => e)) {
+        if (typeof elem === "string") {
+            textbuf += elem
+        } else {
+            if (textbuf !== "") {
+                body.push({
+                    type: "Text",
+                    body: textbuf
+                })
+                textbuf = ""
+            }
+            body.push(elem)
+        }
+    }
+
+    if (textbuf !== "") {
+        body.push({
+            type: "Text",
+            body: textbuf
+        })
+        textbuf = ""
+    }
+
+    return {
+        type: "Marquee",
+        body: body
+    }
+}
 
 Summary = startSummary l:(!stopSummary normalchar)* stopSummary newline?
 {
@@ -226,5 +261,5 @@ InlineElements = e:HeadElement f:InlineElement*
 }
 
 HeadElement = (Italic / Bold / BoldItalic / Strike / Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / Tag / Mention / normalchar)
-InlineElement = (Italic / Bold / BoldItalic / Strike / Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / space+ Tag / space+ Mention / normalchar) +
+InlineElement = (Italic / Bold / BoldItalic / Strike / Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / space+ Tag / space+ Mention / normalchar)
 

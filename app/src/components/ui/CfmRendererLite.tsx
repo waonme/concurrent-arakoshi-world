@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect } from 'react'
 import { Box, Typography } from '@mui/material'
 import cfm from '@concrnt/cfm'
 
@@ -44,6 +44,8 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
                     {!props.forceOneline && <br />}
                 </>
             )
+        case 'Marquee':
+            return <RenderAst ast={ast.body} props={props} />
         case 'Text':
             return ast.body
         case 'Italic':
