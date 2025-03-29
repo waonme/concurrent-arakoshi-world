@@ -15,6 +15,7 @@ import { useGlobalState } from './GlobalState'
 
 import GroupsIcon from '@mui/icons-material/Groups'
 import HikingIcon from '@mui/icons-material/Hiking'
+import { useTranslation } from 'react-i18next'
 
 export interface GlobalActionsState {
     openMobileMenu: (open?: boolean) => void
@@ -49,6 +50,7 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
     const [emojiPackages, setEmojiPackages] = usePreference('emojiPackages')
     const { enqueueSnackbar } = useSnackbar()
     const theme = useTheme()
+    const { t } = useTranslation('', { keyPrefix: 'welcome' })
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false)
 
@@ -183,7 +185,7 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                                     }}
                                 >
                                     <Typography variant="h2" component="div" gutterBottom>
-                                        コンカレントへようこそ！
+                                        {t('welcome')}
                                     </Typography>
                                     <Box
                                         sx={{
@@ -208,10 +210,8 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                                                     fontSize: '5rem'
                                                 }}
                                             />
-                                            <Typography variant="h3">コミュニティベースで始める</Typography>
-                                            <Typography variant="caption">
-                                                コンカレントを始めたての人向けのコミュニティをフォローした状態で始めます
-                                            </Typography>
+                                            <Typography variant="h3">{t('startWithCommunity')}</Typography>
+                                            <Typography variant="caption">{t('startWithCommunityDesc')}</Typography>
                                             <Box flex={1} />
                                             <Button
                                                 fullWidth
@@ -219,7 +219,7 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                                                     setupList(true)
                                                 }}
                                             >
-                                                はじめる
+                                                {t('start')}
                                             </Button>
                                         </Paper>
                                         <Paper
@@ -238,8 +238,8 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                                                     fontSize: '5rem'
                                                 }}
                                             />
-                                            <Typography variant="h3">ひとりで始める</Typography>
-                                            <Typography variant="caption">最低限の設定で始めます</Typography>
+                                            <Typography variant="h3">{t('startWithAlone')}</Typography>
+                                            <Typography variant="caption">{t('startWithAloneDesc')}</Typography>
                                             <Box flex={1} />
                                             <Button
                                                 fullWidth
@@ -247,7 +247,7 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                                                     setupList(false)
                                                 }}
                                             >
-                                                はじめる
+                                                {t('start')}
                                             </Button>
                                         </Paper>
                                     </Box>
