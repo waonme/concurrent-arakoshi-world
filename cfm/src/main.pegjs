@@ -1,3 +1,35 @@
+
+{
+    function reduceText(e) {
+        const body = []
+        let textbuf = ""
+        for (const elem of e.flat(Infinity).filter(e => e)) {
+            if (typeof elem === "string") {
+                textbuf += elem
+            } else {
+                if (textbuf !== "") {
+                    body.push({
+                        type: "Text",
+                        body: textbuf
+                    })
+                    textbuf = ""
+                }
+                body.push(elem)
+            }
+        }
+
+        if (textbuf !== "") {
+            body.push({
+                type: "Text",
+                body: textbuf
+            })
+            textbuf = ""
+        }
+
+        return body
+    }
+}
+
 start = markdown
 
 newline = "\n" { return {type: 'newline'} }
@@ -15,58 +47,33 @@ EOF = !.
 
 markdown = l:(Block / newline)+
 {
-	return l
+    return l
 }
 
-Block = Heading / Marquee /  Quote / CodeBlock / Details / Line
+Block = Heading / Marquee / Quote / CodeBlock / Details / Line
+
+Heading = h:"#"+ space t:InlineElements (newline / EOF)
+{
+    return {
+        type: "Heading",
+        level: h.length,
+        body: t
+    }
+}
 
 Marquee = startMarquee b:(!stopMarquee HeadElement)+ stopMarquee (newline / EOF)
 {
-    const body = []
-    let textbuf = ""
-    for (const elem of b.flat(Infinity).filter(e => e)) {
-        if (typeof elem === "string") {
-            textbuf += elem
-        } else {
-            if (textbuf !== "") {
-                body.push({
-                    type: "Text",
-                    body: textbuf
-                })
-                textbuf = ""
-            }
-            body.push(elem)
-        }
-    }
-
-    if (textbuf !== "") {
-        body.push({
-            type: "Text",
-            body: textbuf
-        })
-        textbuf = ""
-    }
-
     return {
         type: "Marquee",
-        body: body
+        body: reduceText(body)
     }
 }
 
-Summary = startSummary l:(!stopSummary normalchar)* stopSummary newline?
+Quote = ">" space t:InlineElements (newline / EOF)
 {
     return {
-        type: "Summary",
-        body: l.map(a=>a[1]).join('')
-    }
-}
-
-Details = startDetails newline? s:Summary? a:(!stopDetails (Block / newline))* newline? stopDetails (newline / EOF)
-{
-    return {
-        type: "Details",
-        summary: s,
-        body: a.flat().filter(e => e)
+        type: "Quote",
+        body: t
     }
 }
 
@@ -89,27 +96,32 @@ CodeLine = !codeFence a:normalchar* newline
     return a.join('')
 }
 
-Heading = h:"#"+ space t:InlineElements (newline / EOF)
-{
-  return {
-     type: "Heading",
-     level: h.length,
-     body: t
-  }
-}
-
-Quote = ">" space t:InlineElements (newline / EOF)
+Summary = startSummary l:(!stopSummary normalchar)* stopSummary newline?
 {
     return {
-        type: "Quote",
-        body: t
+        type: "Summary",
+        body: l.map(a=>a[1]).join('')
     }
+}
+
+Details = startDetails newline? s:Summary? a:(!stopDetails (Block / newline))* newline? stopDetails (newline / EOF)
+{
+    return {
+        type: "Details",
+        summary: s,
+        body: a.flat().filter(e => e)
+    }
+}
+
+Line = i:InlineElements (newline / EOF)
+{
+    return i
 }
 
 Image = "![" a:[^\]]* "](" u:[^)]+ ")"
 {
     return {
-    	type: "Image",
+        type: "Image",
         alt: a.join(''),
         url: u.join('')
     }
@@ -125,8 +137,8 @@ EmojiPack = "<emojipack" space* "src" space* "=" space* "\"" body:[^"]+ "\"" spa
 
 InlineCode = "`" a:[^`]+ "`"
 {
-	return {
-    	type: "InlineCode",
+    return {
+        type: "InlineCode",
         body: a.join('')
     }
 }
@@ -151,119 +163,8 @@ MDURL = "[" a:[^\]]* "](" t:[^)]+ ")"
 Emoji = ":" s:[a-zA-Z0-9_]+ ":"
 {
     return {
-		type: "Emoji",
+        type: "Emoji",
         body: s.join('')
-    }
-}
-
-Mention = "@" a:[a-zA-Z0-9@]+
-{
-	return {
-    	type: "Mention",
-        body: a.join('')
-    }
-}
-
-Italic = "*" b:(!"*" HeadElement)+ "*"
-{
-
-    const body = []
-    let textbuf = ""
-    for (const elem of b.flat(Infinity).filter(e => e)) {
-        if (typeof elem === "string") {
-            textbuf += elem
-        } else {
-            if (textbuf !== "") {
-                body.push({
-                    type: "Text",
-                    body: textbuf
-                })
-                textbuf = ""
-            }
-            body.push(elem)
-        }
-    }
-
-    if (textbuf !== "") {
-        body.push({
-            type: "Text",
-            body: textbuf
-        })
-        textbuf = ""
-    }
-
-    return {
-        type: "Italic",
-        body: body
-    }
-}
-
-Bold = "**" b:(!"**" HeadElement)+ "**"
-{
-
-
-    const body = []
-    let textbuf = ""
-    for (const elem of b.flat(Infinity).filter(e => e)) {
-        if (typeof elem === "string") {
-            textbuf += elem
-        } else {
-            if (textbuf !== "") {
-                body.push({
-                    type: "Text",
-                    body: textbuf
-                })
-                textbuf = ""
-            }
-            body.push(elem)
-        }
-    }
-
-    if (textbuf !== "") {
-        body.push({
-            type: "Text",
-            body: textbuf
-        })
-        textbuf = ""
-    }
-
-    return {
-        type: "Bold",
-        body: body
-    }
-}
-
-Strike = "~~" b:(!"~~" HeadElement)+ "~~"
-{
-
-    const body = []
-    let textbuf = ""
-    for (const elem of b.flat(Infinity).filter(e => e)) {
-        if (typeof elem === "string") {
-            textbuf += elem
-        } else {
-            if (textbuf !== "") {
-                body.push({
-                    type: "Text",
-                    body: textbuf
-                })
-                textbuf = ""
-            }
-            body.push(elem)
-        }
-    }
-
-    if (textbuf !== "") {
-        body.push({
-            type: "Text",
-            body: textbuf
-        })
-        textbuf = ""
-    }
-
-    return {
-        type: "Strike",
-        body: body
     }
 }
 
@@ -284,50 +185,51 @@ Tag = "#" a:[^ \n#]+
     }
 }
 
-Spoiler = spoilerFence content:(!spoilerFence .)* spoilerFence
+Mention = "@" a:[a-zA-Z0-9@]+
 {
     return {
-        type: "Spoiler",
-        body: content.map(c => c[1]).join('')
+        type: "Mention",
+        body: a.join('')
     }
 }
 
-
-Line = i:InlineElements (newline / EOF)
+Italic = "*" b:(!"*" HeadElement)+ "*"
 {
-    return i
+    return {
+        type: "Italic",
+        body: reduceText(b)
+    }
+}
+
+Bold = "**" b:(!"**" HeadElement)+ "**"
+{
+    return {
+        type: "Bold",
+        body: reduceText(b)
+    }
+}
+
+Strike = "~~" b:(!"~~" HeadElement)+ "~~"
+{
+    return {
+        type: "Strike",
+        body: reduceText(b)
+    }
+}
+
+Spoiler = spoilerFence b:(!spoilerFence HeadElement)+ spoilerFence
+{
+    return {
+        type: "Spoiler",
+        body: reduceText(b)
+    }
 }
 
 InlineElements = e:HeadElement f:InlineElement*
 {
-    const body = []
-    let textbuf = ""
-    for (const elem of [e, f].flat(Infinity)) {
-        if (typeof elem === "string") {
-            textbuf += elem
-        } else {
-            if (textbuf !== "") {
-                body.push({
-                    type: "Text",
-                    body: textbuf
-                })
-                textbuf = ""
-            }
-            body.push(elem)
-        }
-    }
-
-    if (textbuf !== "") {
-        body.push({
-            type: "Text",
-            body: textbuf
-        })
-        textbuf = ""
-    }
-
     return {
         type: "Line",
-        body: body
+        body: reduceText([e, f])
     }
 }
 

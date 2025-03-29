@@ -53,7 +53,7 @@ export interface RenderAstProps {
     emojis: Record<string, EmojiLite>
 }
 
-const Spoiler = ({ body }: { body: string }) => {
+const Spoiler = ({ children }: { children: JSX.Element }) => {
     const [open, setOpen] = useState(false)
 
     return (
@@ -69,7 +69,7 @@ const Spoiler = ({ body }: { body: string }) => {
                 e.stopPropagation()
             }}
         >
-            {body}
+            {children}
         </Box>
     )
 }
@@ -157,7 +157,11 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
         case 'Timeline':
             return <TimelineChip timelineFQID={ast.body} />
         case 'Spoiler':
-            return <Spoiler body={ast.body} />
+            return (
+                <Spoiler>
+                    <RenderAst ast={ast.body} emojis={emojis} />
+                </Spoiler>
+            )
         case 'Quote':
             return (
                 <blockquote style={{ margin: 0, paddingLeft: '1rem', borderLeft: '4px solid #ccc' }}>

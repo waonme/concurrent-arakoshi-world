@@ -20,6 +20,27 @@ export interface RenderAstProps {
     props: CfmRendererLiteProps
 }
 
+const Spoiler = ({ children }: { children: JSX.Element }) => {
+    const [open, setOpen] = useState(false)
+
+    return (
+        <Box
+            component="span"
+            sx={{
+                cursor: 'pointer',
+                color: open ? 'text.disabled' : 'transparent',
+                backgroundColor: open ? 'transparent' : 'text.primary'
+            }}
+            onClick={(e) => {
+                setOpen(!open)
+                e.stopPropagation()
+            }}
+        >
+            {children}
+        </Box>
+    )
+}
+
 const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
     if (Array.isArray(ast)) {
         return (
@@ -75,7 +96,11 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
         case 'Timeline':
             return <TimelineChip timelineFQID={ast.body} />
         case 'Spoiler':
-            return <Box>{ast.body}</Box>
+            return (
+                <Spoiler>
+                    <RenderAst ast={ast.body} props={props} />
+                </Spoiler>
+            )
         case 'Tag':
             return <span>#{ast.body}</span>
         case 'Mention': {
