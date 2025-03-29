@@ -1,8 +1,8 @@
 import { Box, Paper, Modal, Typography, Divider, Button, Drawer, useTheme, Tooltip } from '@mui/material'
 import { InspectorProvider } from '../context/Inspector'
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import { useClient } from './ClientContext'
-import { type CommunityTimelineSchema, Schemas, type Timeline } from '@concrnt/worldlib'
+import { isNonNull, Schemas } from '@concrnt/worldlib'
 import { usePreference } from './PreferenceContext'
 import { ProfileEditor } from '../components/ProfileEditor'
 import { Menu } from '../components/Menu/Menu'
@@ -10,9 +10,11 @@ import { CCDrawer } from '../components/ui/CCDrawer'
 import { type EmojiPackage } from '../model'
 import { experimental_VGrid as VGrid } from 'virtua'
 import { useSnackbar } from 'notistack'
-import { StreamCard } from '../components/Stream/Card'
 import { LogoutButton } from '../components/Settings/LogoutButton'
 import { useGlobalState } from './GlobalState'
+
+import GroupsIcon from '@mui/icons-material/Groups'
+import HikingIcon from '@mui/icons-material/Hiking'
 
 export interface GlobalActionsState {
     openMobileMenu: (open?: boolean) => void
@@ -58,11 +60,13 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
     const setupAccountRequired = client?.user !== null && client?.user.profile === undefined
     const noListDetected = Object.keys(lists).length === 0
 
-    const [timelines, setTimelines] = useState<Array<Timeline<CommunityTimelineSchema>>>([])
-    const [selectedTieline, setSelectedTimeline] = useState<string | undefined>(undefined)
-
     const setupList = useCallback(
-        (timeline?: string) => {
+        (withCommunity: boolean) => {
+            const preferredTimeline = localStorage.getItem('preferredTimeline')
+            const timelines = [
+                ...new Set([preferredTimeline, 'tar69vv26r5s4wk0r067v20bvyw@ariake.concrnt.net'].filter(isNonNull))
+            ]
+
             client.api
                 .upsertSubscription(
                     Schemas.listSubscription,
@@ -72,9 +76,14 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                     { indexable: false }
                 )
                 .then(async (sub) => {
-                    if (timeline) {
-                        await client.api.subscribe(timeline, sub.id)
+                    if (withCommunity) {
+                        await Promise.all(
+                            timelines.map(async (timeline) => {
+                                await client.api.subscribe(timeline, sub.id)
+                            })
+                        )
                     }
+
                     if (client.ccid) {
                         await client.api.subscribe('world.concrnt.t-home@' + client.ccid, sub.id)
                     }
@@ -85,7 +94,7 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                             isIconTab: false,
                             expanded: false,
                             defaultPostHome: true,
-                            defaultPostStreams: timeline ? [timeline] : []
+                            defaultPostStreams: withCommunity ? [timelines[0]] : []
                         }
                     }
                     setLists(list)
@@ -94,27 +103,6 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
         },
         [client]
     )
-
-    useEffect(() => {
-        if (noListDetected) {
-            client
-                .getTimelinesBySchema<CommunityTimelineSchema>(client.host, Schemas.communityTimeline)
-                .then((timelines) => {
-                    const preferredTimeline = localStorage.getItem('preferredTimeline')
-                    if (preferredTimeline && timelines.find((t) => t.id === preferredTimeline)) {
-                        setSelectedTimeline(preferredTimeline)
-                        // move to the top
-                        const t = timelines.find((t) => t.id === preferredTimeline)
-                        if (t) {
-                            timelines.splice(timelines.indexOf(t), 1)
-                            timelines.unshift(t)
-                        }
-                    }
-
-                    setTimelines(timelines)
-                })
-        }
-    }, [])
 
     const openMobileMenu = useCallback((open?: boolean) => {
         setMobileMenuOpen(open ?? true)
@@ -182,87 +170,92 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                         <ProfileEditor initial={client?.user?.profile} />
                     </Paper>
                 </Modal>
-
-                <Modal open={isCanonicalUser && noListDetected} onClose={() => {}}>
-                    <Paper sx={style}>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                padding: 1,
-                                overflowX: 'hidden'
-                            }}
-                        >
-                            <Typography variant="h2" component="div" gutterBottom>
-                                コンカレントへようこそ！
-                            </Typography>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    overflowX: 'hidden',
-                                    gap: 2
-                                }}
-                            >
-                                <Typography variant="h3" component="div">
-                                    ウォッチするコミュニティを選ぶ(任意)
-                                </Typography>
-
+                <>
+                    {isCanonicalUser && noListDetected && (
+                        <Modal open={true} onClose={() => {}}>
+                            <Paper sx={style}>
                                 <Box
                                     sx={{
                                         display: 'flex',
-                                        overflowX: 'auto'
+                                        flexDirection: 'column',
+                                        padding: 1,
+                                        overflowX: 'hidden'
                                     }}
                                 >
+                                    <Typography variant="h2" component="div" gutterBottom>
+                                        コンカレントへようこそ！
+                                    </Typography>
                                     <Box
                                         sx={{
                                             display: 'flex',
                                             flexDirection: 'row',
-                                            flex: 1,
-                                            gap: 2,
-                                            py: 1
+                                            gap: 1
                                         }}
                                     >
-                                        {timelines.map((timeline) => (
-                                            <StreamCard
-                                                key={timeline.id}
-                                                timelineFQID={timeline.fqid}
-                                                name={timeline.document.body.name}
-                                                description={timeline.document.body.description ?? 'no description'}
-                                                banner={timeline.document.body.banner ?? ''}
-                                                domain={client.host}
-                                                onClick={() => {
-                                                    if (selectedTieline === timeline.id) {
-                                                        setSelectedTimeline(undefined)
-                                                    } else {
-                                                        setSelectedTimeline(timeline.id)
-                                                    }
-                                                }}
+                                        <Paper
+                                            variant="outlined"
+                                            sx={{
+                                                flex: 1,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: 1,
+                                                padding: 1,
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <GroupsIcon
                                                 sx={{
-                                                    outline:
-                                                        timeline.id === selectedTieline
-                                                            ? `2px solid ${theme.palette.primary.main}`
-                                                            : 'none',
-                                                    width: '300px'
+                                                    fontSize: '5rem'
                                                 }}
                                             />
-                                        ))}
+                                            <Typography variant="h3">コミュニティベースで始める</Typography>
+                                            <Typography variant="caption">
+                                                コンカレントを始めたての人向けのコミュニティをフォローした状態で始めます
+                                            </Typography>
+                                            <Box flex={1} />
+                                            <Button
+                                                fullWidth
+                                                onClick={() => {
+                                                    setupList(true)
+                                                }}
+                                            >
+                                                はじめる
+                                            </Button>
+                                        </Paper>
+                                        <Paper
+                                            variant="outlined"
+                                            sx={{
+                                                flex: 1,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: 1,
+                                                padding: 1,
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <HikingIcon
+                                                sx={{
+                                                    fontSize: '5rem'
+                                                }}
+                                            />
+                                            <Typography variant="h3">ひとりで始める</Typography>
+                                            <Typography variant="caption">最低限の設定で始めます</Typography>
+                                            <Box flex={1} />
+                                            <Button
+                                                fullWidth
+                                                onClick={() => {
+                                                    setupList(false)
+                                                }}
+                                            >
+                                                はじめる
+                                            </Button>
+                                        </Paper>
                                     </Box>
                                 </Box>
-
-                                <Button
-                                    fullWidth
-                                    onClick={() => {
-                                        setupList(selectedTieline)
-                                    }}
-                                >
-                                    はじめる
-                                </Button>
-                            </Box>
-                        </Box>
-                    </Paper>
-                </Modal>
-
+                            </Paper>
+                        </Modal>
+                    )}
+                </>
                 <Drawer
                     anchor={'left'}
                     open={mobileMenuOpen}
