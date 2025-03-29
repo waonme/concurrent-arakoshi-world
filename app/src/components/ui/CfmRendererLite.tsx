@@ -49,17 +49,23 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
         case 'Text':
             return ast.body
         case 'Italic':
-            return <i>{ast.body}</i>
+            return (
+                <i>
+                    <RenderAst ast={ast.body} props={props} />
+                </i>
+            )
         case 'Bold':
-            return <b>{ast.body}</b>
-        case 'BoldItalic':
             return (
                 <b>
-                    <i>{ast.body}</i>
+                    <RenderAst ast={ast.body} props={props} />
                 </b>
             )
         case 'Strike':
-            return <s>{ast.body}</s>
+            return (
+                <s>
+                    <RenderAst ast={ast.body} props={props} />
+                </s>
+            )
         case 'URL':
             return (
                 <CCLink to={ast.body} color="secondary" underline="hover">

@@ -164,35 +164,106 @@ Mention = "@" a:[a-zA-Z0-9@]+
     }
 }
 
-Italic = "*" s:[^\*]+ "*"
+Italic = "*" b:(!"*" HeadElement)+ "*"
 {
+
+    const body = []
+    let textbuf = ""
+    for (const elem of b.flat(Infinity).filter(e => e)) {
+        if (typeof elem === "string") {
+            textbuf += elem
+        } else {
+            if (textbuf !== "") {
+                body.push({
+                    type: "Text",
+                    body: textbuf
+                })
+                textbuf = ""
+            }
+            body.push(elem)
+        }
+    }
+
+    if (textbuf !== "") {
+        body.push({
+            type: "Text",
+            body: textbuf
+        })
+        textbuf = ""
+    }
+
     return {
         type: "Italic",
-        body: s.join('')
+        body: body
     }
 }
 
-Bold = "**" s:[^\*]+ "**"
+Bold = "**" b:(!"**" HeadElement)+ "**"
 {
+
+
+    const body = []
+    let textbuf = ""
+    for (const elem of b.flat(Infinity).filter(e => e)) {
+        if (typeof elem === "string") {
+            textbuf += elem
+        } else {
+            if (textbuf !== "") {
+                body.push({
+                    type: "Text",
+                    body: textbuf
+                })
+                textbuf = ""
+            }
+            body.push(elem)
+        }
+    }
+
+    if (textbuf !== "") {
+        body.push({
+            type: "Text",
+            body: textbuf
+        })
+        textbuf = ""
+    }
+
     return {
         type: "Bold",
-        body: s.join('')
+        body: body
     }
 }
 
-BoldItalic = "***" s:[^\*]+ "***"
+Strike = "~~" b:(!"~~" HeadElement)+ "~~"
 {
-    return {
-        type: "BoldItalic",
-        body: s.join('')
-    }
-}
 
-Strike = "~~" s:[^~]+ "~~"
-{
+    const body = []
+    let textbuf = ""
+    for (const elem of b.flat(Infinity).filter(e => e)) {
+        if (typeof elem === "string") {
+            textbuf += elem
+        } else {
+            if (textbuf !== "") {
+                body.push({
+                    type: "Text",
+                    body: textbuf
+                })
+                textbuf = ""
+            }
+            body.push(elem)
+        }
+    }
+
+    if (textbuf !== "") {
+        body.push({
+            type: "Text",
+            body: textbuf
+        })
+        textbuf = ""
+    }
+
     return {
         type: "Strike",
-        body: s.join('')
+        body: body
     }
 }
 
@@ -260,6 +331,6 @@ InlineElements = e:HeadElement f:InlineElement*
     }
 }
 
-HeadElement = (Italic / Bold / BoldItalic / Strike / Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / Tag / Mention / normalchar)
-InlineElement = (Italic / Bold / BoldItalic / Strike / Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / space+ Tag / space+ Mention / normalchar)
+HeadElement = (Italic / Bold / Strike / Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / Tag / Mention / normalchar)
+InlineElement = (Italic / Bold / Strike / Image / Spoiler / URL / MDURL / Emoji / InlineCode / EmojiPack / space+ Tag / space+ Mention / normalchar)
 

@@ -131,17 +131,23 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
                 </Box>
             )
         case 'Italic':
-            return <i>{ast.body}</i>
+            return (
+                <i>
+                    <RenderAst ast={ast.body} emojis={emojis} />
+                </i>
+            )
         case 'Bold':
-            return <b>{ast.body}</b>
-        case 'BoldItalic':
             return (
                 <b>
-                    <i>{ast.body}</i>
+                    <RenderAst ast={ast.body} emojis={emojis} />
                 </b>
             )
         case 'Strike':
-            return <s>{ast.body}</s>
+            return (
+                <s>
+                    <RenderAst ast={ast.body} emojis={emojis} />
+                </s>
+            )
         case 'URL':
             return (
                 <CCLink to={ast.body} color="secondary" underline="hover">
