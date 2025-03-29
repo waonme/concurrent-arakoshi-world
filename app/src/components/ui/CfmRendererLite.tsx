@@ -7,6 +7,7 @@ import { CCUserChip } from './CCUserChip'
 import { TimelineChip } from './TimelineChip'
 import { useGlobalState } from '../../context/GlobalState'
 import { CCLink } from './CCLink'
+import { WellKnownLink } from '../WellKnownLink'
 
 export interface CfmRendererLiteProps {
     messagebody: string
@@ -89,9 +90,11 @@ const RenderAst = ({ ast, props }: RenderAstProps): JSX.Element => {
             )
         case 'URL':
             return (
-                <CCLink to={ast.body} color="secondary" underline="hover">
-                    {ast.alt || ast.body}
-                </CCLink>
+                <WellKnownLink href={ast.body}>
+                    <CCLink to={ast.body} color="secondary" underline="hover">
+                        {ast.alt || ast.body}
+                    </CCLink>
+                </WellKnownLink>
             )
         case 'Timeline':
             return <TimelineChip timelineFQID={ast.body} />

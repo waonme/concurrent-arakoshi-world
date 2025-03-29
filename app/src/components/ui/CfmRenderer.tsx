@@ -18,6 +18,7 @@ import { useMediaViewer } from '../../context/MediaViewer'
 import { useGlobalState } from '../../context/GlobalState'
 import { useAutoSummary } from '../../context/AutoSummaryContext'
 import { CCLink } from './CCLink'
+import { WellKnownLink } from '../WellKnownLink'
 
 const marquee = keyframes`
     0% {
@@ -150,9 +151,11 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
             )
         case 'URL':
             return (
-                <CCLink to={ast.body} color="secondary" underline="hover">
-                    {ast.alt || ast.body}
-                </CCLink>
+                <WellKnownLink href={ast.body}>
+                    <CCLink to={ast.body} color="secondary" underline="hover">
+                        {ast.alt || ast.body}
+                    </CCLink>
+                </WellKnownLink>
             )
         case 'Timeline':
             return <TimelineChip timelineFQID={ast.body} />
