@@ -270,9 +270,9 @@ export const ProfileSettings = (): JSX.Element => {
                                 flexWrap: 'wrap'
                             }}
                         >
-                            {homeTimeline?.policy
-                                .getReaders()
-                                ?.map((e: string) => <CCUserChip avatar key={e} ccid={e} />)}
+                            {(homeTimeline?.policy.getReaders() ?? []).map((e: string) => (
+                                <CCUserChip avatar key={e} ccid={e} />
+                            ))}
                         </Box>
                         <Button
                             variant="outlined"

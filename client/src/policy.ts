@@ -223,12 +223,12 @@ export class InlineReadWritePolicy implements Policy {
     }
 
     copyWithAddReaders(readers: string[]): Policy {
-        const newReaders = new Set([...this.policyParams.reader, ...readers])
+        const newReaders = [...new Set([...this.policyParams.reader, ...readers])]
         return new InlineReadWritePolicy(this.policy, JSON.stringify({ ...this.policyParams, reader: newReaders }))
     }
 
     copyWithAddWriters(writers: string[]): Policy {
-        const newWriters = new Set([...this.policyParams.writer, ...writers])
+        const newWriters = [...new Set([...this.policyParams.writer, ...writers])]
         return new InlineReadWritePolicy(this.policy, JSON.stringify({ ...this.policyParams, writer: newWriters }))
     }
 

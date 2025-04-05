@@ -202,7 +202,7 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
     const isPrivate = useMemo(() => {
         return (
             destTimelines.some((dest) => {
-                return !dest.policy.isReadPublic
+                return !dest.policy.isReadPublic()
             }) || participants.length > 0
         )
     }, [destTimelines, participants])
