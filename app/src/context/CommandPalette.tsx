@@ -81,9 +81,11 @@ export const CommandPaletteProvider = (props: CommandPaletteProps): JSX.Element 
                 if (selectedIndex < timelineLength) {
                     const timeline = timelines![selectedIndex]
                     navigate(`/timeline/${timeline.id}`)
+                    reset()
                 } else {
                     const user = users![selectedIndex - timelineLength]
                     navigate(`/${user.author}`)
+                    reset()
                 }
                 e.preventDefault()
             }
@@ -92,7 +94,9 @@ export const CommandPaletteProvider = (props: CommandPaletteProps): JSX.Element 
     )
 
     const onBlur = useCallback(() => {
-        reset()
+        setTimeout(() => {
+            reset()
+        }, 100)
     }, [])
 
     useEffect(() => {
@@ -109,7 +113,6 @@ export const CommandPaletteProvider = (props: CommandPaletteProps): JSX.Element 
         // press ctrl + k to open the command palette
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 'k') {
-                reset()
                 e.preventDefault()
                 setOpen(true)
             }
@@ -181,6 +184,7 @@ export const CommandPaletteProvider = (props: CommandPaletteProps): JSX.Element 
                                         selected={selectedIndex === i}
                                         key={timeline.id}
                                         timelineID={timeline.id}
+                                        onClick={reset}
                                     />
                                 ))}
                             </List>
@@ -205,6 +209,7 @@ export const CommandPaletteProvider = (props: CommandPaletteProps): JSX.Element 
                                         }}
                                         component={RouterLink}
                                         to={`/${user.author}`}
+                                        onClick={reset}
                                     >
                                         <CCAvatar
                                             sx={{
