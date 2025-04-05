@@ -105,10 +105,10 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
             if (!e) return
             setTimeline(e)
             setDocumentBody(e.document.body)
-            setPolicyParams(JSON.stringify(e.policyParams))
+            setPolicyParams(JSON.stringify(e.policy.getPolicyParams()))
             setVisible(e.indexable)
             setSchemaDraft(e.schema)
-            setPolicyDraft(e.policy || '')
+            setPolicyDraft(e.policy.getPolicySchemaURL())
 
             e.getAssociations().then((assocs) => {
                 setRequests(assocs.filter((e) => e.schema === Schemas.readAccessRequestAssociation))
