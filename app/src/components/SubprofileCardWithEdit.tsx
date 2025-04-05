@@ -58,13 +58,9 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
 
     const [update, setUpdate] = useState<number>(0)
 
-    const isTimelineValid =
-        timeline &&
-        timeline.document.policy === 'https://policy.concrnt.world/t/inline-read-write.json' &&
-        timeline.policyParams.isWritePublic === false &&
-        timeline.policyParams.writer.includes(client.ccid)
+    const isTimelineValid = timeline && !timeline.policy.isWritePublic() && timeline.policy.isReadable(client)
 
-    const isTimelinePrivate = timeline && timeline.policyParams.isReadPublic === false
+    const isTimelinePrivate = timeline && !timeline.policy.isReadPublic()
 
     useEffect(() => {
         client.api.invalidateTimeline('world.concrnt.t-subhome.' + props.subProfile.id + '@' + client.ccid!)
@@ -111,12 +107,7 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
         <MenuItem
             key="togglePrivate"
             onClick={() => {
-                if (!timeline?.policyParams) return
-                const currentPolicy = timeline.policyParams
-                currentPolicy.isReadPublic = !currentPolicy.isReadPublic
-                if (!currentPolicy.reader.includes(client.ccid)) {
-                    currentPolicy.reader.push(client.ccid)
-                }
+                if (!timeline || !client.ccid) return
                 client.api
                     .upsertTimeline(
                         Schemas.subprofileTimeline,
@@ -126,8 +117,13 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
                         {
                             semanticID: 'world.concrnt.t-subhome.' + props.subProfile.id,
                             indexable: false,
-                            policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                            policyParams: JSON.stringify(currentPolicy)
+                            policy: timeline.policy.getPolicySchemaURL(),
+                            policyParams: JSON.stringify(
+                                timeline.policy
+                                    .copyWithNewReadPublic(!isTimelinePrivate)
+                                    .copyWithAddReaders([client.ccid])
+                                    .getPolicyParams()
+                            )
                         }
                     )
                     .then(() => {
@@ -202,7 +198,7 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
                       key="managereaders"
                       onClick={() => {
                           if (!timeline) return
-                          Promise.all(timeline.policyParams.reader.map((e: string) => client.getUser(e))).then(
+                          Promise.all((timeline.policy.getReaders() ?? []).map((e: string) => client.getUser(e))).then(
                               (users) => {
                                   setSelectedUsers(users.filter((u) => u) as User[])
                                   setOpenReaderEditor(true)
@@ -339,9 +335,7 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
                     <Button
                         onClick={() => {
                             if (!timeline) return
-                            const reader = selectedUsers.map((u) => u.ccid)
-                            const currentPolicy = timeline.policyParams
-                            currentPolicy.reader = reader
+                            const readers = selectedUsers.map((u) => u.ccid)
                             client.api
                                 .upsertTimeline(
                                     Schemas.subprofileTimeline,
@@ -351,8 +345,10 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
                                     {
                                         semanticID: 'world.concrnt.t-subhome.' + props.subProfile.id,
                                         indexable: false,
-                                        policy: 'https://policy.concrnt.world/t/inline-read-write.json',
-                                        policyParams: JSON.stringify(currentPolicy)
+                                        policy: timeline.policy.getPolicySchemaURL(),
+                                        policyParams: JSON.stringify(
+                                            timeline.policy.copyWithNewReaders(readers).getPolicyParams()
+                                        )
                                     }
                                 )
                                 .then(() => {
