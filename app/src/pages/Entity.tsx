@@ -30,7 +30,7 @@ export function EntityPage(): JSX.Element {
     const navigate = useNavigate()
 
     const [timeline, setTimeline] = useState<Timeline<EmptyTimelineSchema> | null>(null)
-    const isPrivate = !timeline?.policy.isReadPublic()
+    const isPrivate = !timeline?.policy.isReadable(client)
 
     const [user, setUser] = useState<User | null | undefined>(null)
 

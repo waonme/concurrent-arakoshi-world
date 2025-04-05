@@ -59,8 +59,7 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
     const [update, setUpdate] = useState<number>(0)
 
     const isTimelineValid = timeline && !timeline.policy.isWritePublic() && timeline.policy.isReadable(client)
-
-    const isTimelinePrivate = timeline && !timeline.policy.isReadPublic()
+    const isTimelinePublic = timeline && timeline.policy.isReadPublic()
 
     useEffect(() => {
         client.api.invalidateTimeline('world.concrnt.t-subhome.' + props.subProfile.id + '@' + client.ccid!)
@@ -120,7 +119,7 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
                             policy: timeline.policy.getPolicySchemaURL(),
                             policyParams: JSON.stringify(
                                 timeline.policy
-                                    .copyWithNewReadPublic(!isTimelinePrivate)
+                                    .copyWithNewReadPublic(!isTimelinePublic)
                                     .copyWithAddReaders([client.ccid])
                                     .getPolicyParams()
                             )
@@ -129,17 +128,19 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
                     .then(() => {
                         timeline.invalidate()
                         props.onModified?.()
+                        setUpdate((prev) => prev + 1)
+                        enqueueSnackbar('公開設定を変更しました', { variant: 'success' })
                     })
             }}
         >
             <ListItemIcon>
-                {isTimelinePrivate ? (
-                    <LockOpenIcon sx={{ color: 'text.primary' }} />
-                ) : (
+                {isTimelinePublic ? (
                     <LockIcon sx={{ color: 'text.primary' }} />
+                ) : (
+                    <LockOpenIcon sx={{ color: 'text.primary' }} />
                 )}
             </ListItemIcon>
-            <ListItemText>{isTimelinePrivate ? <>ホームを公開する</> : <>ホームを非公開にする</>}</ListItemText>
+            <ListItemText>{isTimelinePublic ? <>ホームを非公開にする</> : <>ホームを公開する</>}</ListItemText>
         </MenuItem>,
         <MenuItem
             key="edit"
@@ -192,7 +193,7 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
                   </MenuItem>
               ]
             : []),
-        ...(!timeline || isTimelinePrivate
+        ...(!timeline || !isTimelinePublic
             ? [
                   <MenuItem
                       key="managereaders"
@@ -255,7 +256,7 @@ export const SubprofileCardWithEdit = (props: SubprofileCardWithEditProps): JSX.
                         }}
                     >
                         {published ? <>掲載中</> : <>未掲載</>}
-                        {isTimelinePrivate ? <LockIcon /> : <></>}
+                        {isTimelinePublic ? <></> : <LockIcon />}
                     </Box>
                     {requests.length > 0 ? <>{requests.length} 件の閲覧リクエスト</> : <></>}
                     {timeline ? (

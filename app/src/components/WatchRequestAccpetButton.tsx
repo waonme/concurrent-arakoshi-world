@@ -44,16 +44,15 @@ export const WatchRequestAcceptButton = (props: WatchRequestAcceptButtonProps): 
             <Button
                 disabled={working}
                 onClick={() => {
-                    if (!target.policy.getPolicyParams()) return
                     setWorking(true)
-                    const currentPolicy = target.policy.getPolicyParams()
-                    currentPolicy.reader.push(requester.ccid)
                     client.api
                         .upsertTimeline(target.schema, target.document.body, {
                             id: props.targetTimeline.id.split('@')[0],
                             indexable: target.indexable,
                             policy: target.policy.getPolicySchemaURL(),
-                            policyParams: JSON.stringify(currentPolicy)
+                            policyParams: JSON.stringify(
+                                target.policy.copyWithAddReaders([requester.ccid]).getPolicyParams()
+                            )
                         })
                         .then(() => {
                             props.request.delete().then(() => {
