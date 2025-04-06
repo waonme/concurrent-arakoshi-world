@@ -61,19 +61,19 @@ export class UnknownPolicy implements Policy {
     }
 
     isWriteable(): boolean {
-        return false
+        return true
     }
 
     isWritePublic(): boolean {
-        return false
+        return true
     }
 
     isReadable(): boolean {
-        return false
+        return true
     }
 
     isReadPublic(): boolean {
-        return false
+        return true
     }
 
     getWriters(): string[] | undefined {
