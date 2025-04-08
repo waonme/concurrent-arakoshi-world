@@ -215,10 +215,16 @@ export class InlineReadWritePolicy implements Policy {
     }
 
     getWriters(): string[] | undefined {
+        if (this.policyParams.isWritePublic) {
+            return undefined
+        }
         return this.policyParams.writer
     }
 
     getReaders(): string[] | undefined {
+        if (this.policyParams.isReadPublic) {
+            return undefined
+        }
         return this.policyParams.reader
     }
 
