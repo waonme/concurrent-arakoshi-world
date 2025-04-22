@@ -1,4 +1,7 @@
-import { Client } from './client'
+import { Client } from '../client'
+import { InlineAllowDenyPolicy } from './inlineAllowDenyPolicy'
+import { InlineReadWritePolicy } from './inlineReadWritePolicy'
+import { RestrictAckeesPolicy } from './restrictAckees'
 
 export interface Policy {
     isRegistered(): boolean
@@ -21,13 +24,17 @@ export interface Policy {
     getReaders(): string[] | undefined
 }
 
-export const loadPolicy = (policy?: string, policyParamsStr?: string): Policy => {
+export const loadPolicy = (policy?: string, policyParamsStr?: string, resource?: any): Policy => {
     if (!policy) {
         return new DefaultPolicy()
     }
     switch (policy) {
         case 'https://policy.concrnt.world/t/inline-read-write.json':
             return new InlineReadWritePolicy(policy, policyParamsStr)
+        case 'https://policy.concrnt.world/t/inline-allow-deny.json':
+            return new InlineAllowDenyPolicy(policy, policyParamsStr)
+        case 'https://policy.concrnt.world/t/restrict-ackees.json':
+            return new RestrictAckeesPolicy(policy, policyParamsStr, resource)
         default:
             return new UnknownPolicy(policy, policyParamsStr)
     }
@@ -168,95 +175,5 @@ export class DefaultPolicy implements Policy {
 
     copyWithNewWritePublic(_writePublic: boolean): Policy {
         throw new Error('Default policy does not support this')
-    }
-}
-
-export class InlineReadWritePolicy implements Policy {
-    policy: string
-    policyParams?: any
-
-    constructor(policy: string, policyParamsStr?: string) {
-        this.policy = policy
-        if (policyParamsStr) {
-            try {
-                this.policyParams = JSON.parse(policyParamsStr)
-            } catch (e) {
-                console.error('CLIENT::Timeline::constructor::error', e)
-            }
-        }
-    }
-
-    isRegistered(): boolean {
-        return true
-    }
-
-    getPolicySchemaURL(): string {
-        return this.policy
-    }
-
-    getPolicyParams(): any {
-        return this.policyParams
-    }
-
-    isWritePublic(): boolean {
-        return this.policyParams.isWritePublic
-    }
-
-    isWriteable(client: Client): boolean {
-        return this.policyParams.isWritePublic ? true : this.policyParams.writer?.includes(client.ccid ?? '')
-    }
-
-    isReadPublic(): boolean {
-        return this.policyParams.isReadPublic
-    }
-
-    isReadable(client: Client): boolean {
-        return this.policyParams.isReadPublic ? true : this.policyParams.reader?.includes(client.ccid ?? '')
-    }
-
-    getWriters(): string[] | undefined {
-        if (this.policyParams.isWritePublic) {
-            return undefined
-        }
-        return this.policyParams.writer
-    }
-
-    getReaders(): string[] | undefined {
-        if (this.policyParams.isReadPublic) {
-            return undefined
-        }
-        return this.policyParams.reader
-    }
-
-    copyWithAddReaders(readers: string[]): Policy {
-        const newReaders = [...new Set([...this.policyParams.reader, ...readers])]
-        return new InlineReadWritePolicy(this.policy, JSON.stringify({ ...this.policyParams, reader: newReaders }))
-    }
-
-    copyWithAddWriters(writers: string[]): Policy {
-        const newWriters = [...new Set([...this.policyParams.writer, ...writers])]
-        return new InlineReadWritePolicy(this.policy, JSON.stringify({ ...this.policyParams, writer: newWriters }))
-    }
-
-    copyWithNewReaders(readers: string[]): Policy {
-        return new InlineReadWritePolicy(this.policy, JSON.stringify({ ...this.policyParams, reader: readers }))
-    }
-
-    copyWithNewWriters(writers: string[]): Policy {
-        return new InlineReadWritePolicy(this.policy, JSON.stringify({ ...this.policyParams, writer: writers }))
-    }
-
-    copyWithNewReadPublic(readPublic: boolean): Policy {
-        return new InlineReadWritePolicy(
-            this.policy,
-            JSON.stringify({ ...this.policyParams, isReadPublic: readPublic })
-        )
-    }
-
-    copyWithNewWritePublic(writePublic: boolean): Policy {
-        return new InlineReadWritePolicy(
-            this.policy,
-            JSON.stringify({ ...this.policyParams, isWritePublic: writePublic })
-        )
     }
 }

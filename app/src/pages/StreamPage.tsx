@@ -69,6 +69,8 @@ export const StreamPage = memo((): JSX.Element => {
         }
     }, [timeline])
 
+    console.log(timeline?.policy)
+
     return (
         <>
             <Helmet>

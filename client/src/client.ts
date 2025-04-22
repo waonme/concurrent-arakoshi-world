@@ -1017,7 +1017,7 @@ export class Timeline<T> implements Omit<CoreTimeline<T>, 'document' | 'parsedDo
         this.signature = data.signature
         this.cdate = data.cdate
         this.mdate = data.mdate
-        this.policy = loadPolicy(data.policy, data.policyParams)
+        this.policy = loadPolicy(data.policy, data.policyParams, this)
     }
 
     toJSON(): any {

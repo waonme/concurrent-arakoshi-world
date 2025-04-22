@@ -278,7 +278,9 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
                     policyDraft === '' ? '空の場合はデフォルトポリシーが適用されます' : 'PolicyJSONのURLを入力。'
                 }
                 options={{
-                    基本的な権限設定: 'https://policy.concrnt.world/t/inline-read-write.json'
+                    基本的な権限設定: 'https://policy.concrnt.world/t/inline-allow-deny.json',
+                    '基本的な権限設定(レガシー)': 'https://policy.concrnt.world/t/inline-read-write.json',
+                    フォロイー限定設定: 'https://policy.concrnt.world/t/restrict-ackees.json'
                 }}
                 value={policyDraft ?? ''}
                 onChange={(value) => {
