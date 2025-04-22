@@ -13,6 +13,8 @@ export interface Policy {
     isWritePublic(): boolean
     isReadPublic(): boolean
 
+    isRequestable(): boolean
+
     copyWithAddReaders(readers: string[]): Policy
     copyWithAddWriters(writers: string[]): Policy
     copyWithNewReaders(readers: string[]): Policy
@@ -83,6 +85,10 @@ export class UnknownPolicy implements Policy {
         return true
     }
 
+    isRequestable(): boolean {
+        return false
+    }
+
     getWriters(): string[] | undefined {
         return undefined
     }
@@ -138,6 +144,10 @@ export class DefaultPolicy implements Policy {
     }
 
     isReadPublic(): boolean {
+        return true
+    }
+
+    isRequestable(): boolean {
         return true
     }
 

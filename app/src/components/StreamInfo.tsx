@@ -1,4 +1,6 @@
 import {
+    Alert,
+    AlertTitle,
     Box,
     Button,
     Divider,
@@ -159,6 +161,15 @@ export function StreamInfo(props: StreamInfoProps): JSX.Element {
                 p: 1
             }}
         >
+            {!timeline.policy.isRegistered() && (
+                <>
+                    <Alert severity="info">
+                        <AlertTitle>このコミュニティにはカスタムポリシーが設定されています</AlertTitle>
+                        そのため、読み込み権限・書き込み権限のあるユーザーの表示が正常に行われない場合があります。
+                    </Alert>
+                </>
+            )}
+
             {isAuthor && (
                 <>
                     <Typography variant="h3">閲覧リクエスト({requests.length})</Typography>

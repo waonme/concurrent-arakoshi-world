@@ -25,6 +25,10 @@ export class InlineAllowDenyPolicy implements Policy {
         return true
     }
 
+    isRequestable(): boolean {
+        return true
+    }
+
     getPolicySchemaURL(): string {
         return this.policy
     }

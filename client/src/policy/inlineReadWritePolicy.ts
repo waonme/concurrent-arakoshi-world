@@ -16,6 +16,10 @@ export class InlineReadWritePolicy implements Policy {
         }
     }
 
+    isRequestable(): boolean {
+        return true
+    }
+
     isRegistered(): boolean {
         return true
     }

@@ -25,6 +25,10 @@ export class RestrictAckeesPolicy implements Policy {
         return true
     }
 
+    isRequestable(): boolean {
+        return false
+    }
+
     getPolicySchemaURL(): string {
         return this.policy
     }
