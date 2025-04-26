@@ -8,7 +8,6 @@ import { StreamInfo } from '../components/StreamInfo'
 import { usePreference } from '../context/PreferenceContext'
 import { type CommunityTimelineSchema, type Timeline as typeTimeline } from '@concrnt/worldlib'
 import { CCDrawer } from '../components/ui/CCDrawer'
-import WatchingStreamContextProvider from '../context/WatchingStreamContext'
 import { type VListHandle } from 'virtua'
 
 import TagIcon from '@mui/icons-material/Tag'
@@ -96,43 +95,41 @@ export const StreamPage = memo((): JSX.Element => {
                     }}
                 />
                 {timeline?.policy.isReadable(client) ? (
-                    <WatchingStreamContextProvider watchingStreams={timelineFQIDs}>
-                        <RealtimeTimeline
-                            timelineFQIDs={timelineFQIDs}
-                            ref={timelineRef}
-                            header={
-                                (timeline.policy.isWriteable(client) && (
+                    <RealtimeTimeline
+                        timelineFQIDs={timelineFQIDs}
+                        ref={timelineRef}
+                        header={
+                            (timeline.policy.isWriteable(client) && (
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column'
+                                    }}
+                                >
                                     <Box
                                         sx={{
-                                            display: 'flex',
-                                            flexDirection: 'column'
+                                            display: {
+                                                xs: showEditorOnTopMobile ? 'block' : 'none',
+                                                sm: showEditorOnTop ? 'block' : 'none'
+                                            }
                                         }}
                                     >
-                                        <Box
+                                        <CCPostEditor
+                                            minRows={3}
+                                            maxRows={7}
+                                            streamPickerInitial={timelines}
+                                            streamPickerOptions={[...new Set([...allKnownTimelines, ...timelines])]}
                                             sx={{
-                                                display: {
-                                                    xs: showEditorOnTopMobile ? 'block' : 'none',
-                                                    sm: showEditorOnTop ? 'block' : 'none'
-                                                }
+                                                p: { xs: 0.5, sm: 1 }
                                             }}
-                                        >
-                                            <CCPostEditor
-                                                minRows={3}
-                                                maxRows={7}
-                                                streamPickerInitial={timelines}
-                                                streamPickerOptions={[...new Set([...allKnownTimelines, ...timelines])]}
-                                                sx={{
-                                                    p: { xs: 0.5, sm: 1 }
-                                                }}
-                                            />
-                                            <Divider sx={{ mx: { xs: 0.5, sm: 1, md: 1 } }} />
-                                        </Box>
+                                        />
+                                        <Divider sx={{ mx: { xs: 0.5, sm: 1, md: 1 } }} />
                                     </Box>
-                                )) ||
-                                undefined
-                            }
-                        />
-                    </WatchingStreamContextProvider>
+                                </Box>
+                            )) ||
+                            undefined
+                        }
+                    />
                 ) : (
                     <Box>
                         <StreamInfo id={targetTimelineID} />
