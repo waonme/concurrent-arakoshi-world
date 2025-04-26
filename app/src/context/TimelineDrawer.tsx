@@ -13,7 +13,7 @@ import { Box } from '@mui/material'
 
 import OpenInFullIcon from '@mui/icons-material/OpenInFull'
 import { useNavigate } from 'react-router-dom'
-import { TimelineInfo } from '../components/TimelineInfo'
+import { TimelineBanner } from '../components/TimelineBanner'
 
 export interface TimelineDrawerState {
     open: (id: string) => void
@@ -92,7 +92,7 @@ export const TimelineDrawerProvider = (props: TimelineDrawerProps): JSX.Element 
                         <RealtimeTimeline
                             timelineFQIDs={timelineIDs}
                             ref={timelineRef}
-                            header={timeline ? <TimelineInfo timeline={timeline} /> : <></>}
+                            header={timeline ? <TimelineBanner timeline={timeline} /> : <></>}
                         />
                     ) : (
                         <Box>{timeline && <PrivateTimelineDoor timeline={timeline} />}</Box>

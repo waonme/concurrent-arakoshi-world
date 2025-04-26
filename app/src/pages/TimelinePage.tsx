@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { TimelineHeader } from '../components/TimelineHeader'
 import { useClient } from '../context/ClientContext'
 import { RealtimeTimeline } from '../components/RealtimeTimeline'
-import { StreamInfo } from '../components/StreamInfo'
+import { TimelineInfo } from '../components/TimelineInfo'
 import { usePreference } from '../context/PreferenceContext'
 import { type CommunityTimelineSchema, type Timeline as typeTimeline } from '@concrnt/worldlib'
 import { CCDrawer } from '../components/ui/CCDrawer'
@@ -19,8 +19,9 @@ import { CCPostEditor } from '../components/Editor/CCPostEditor'
 import { useEditorModal } from '../components/EditorModal'
 import { PrivateTimelineDoor } from '../components/PrivateTimelineDoor'
 import { Helmet } from 'react-helmet-async'
+import { TimelineBanner } from '../components/TimelineBanner'
 
-export const StreamPage = memo((): JSX.Element => {
+export const TimelinePage = memo((): JSX.Element => {
     const { client } = useClient()
     const { allKnownTimelines } = useGlobalState()
 
@@ -34,7 +35,7 @@ export const StreamPage = memo((): JSX.Element => {
     const targetTimelineID = id ?? ''
     const [timeline, setTimeline] = useState<typeTimeline<CommunityTimelineSchema> | null>(null)
 
-    const [timelineInfoOpen, setTimelineInfoOpen] = useState<boolean>(false)
+    const [timelineInfoOpen, setTimelineBannerOpen] = useState<boolean>(false)
 
     const isOwner = useMemo(() => {
         return timeline?.author === client.ccid
@@ -91,7 +92,7 @@ export const StreamPage = memo((): JSX.Element => {
                         timelineRef.current?.scrollToIndex(0, { align: 'start', smooth: true })
                     }}
                     onSecondaryActionClick={() => {
-                        setTimelineInfoOpen(true)
+                        setTimelineBannerOpen(true)
                     }}
                 />
                 {timeline?.policy.isReadable(client) ? (
@@ -132,7 +133,7 @@ export const StreamPage = memo((): JSX.Element => {
                     />
                 ) : (
                     <Box>
-                        <StreamInfo id={targetTimelineID} />
+                        {timeline && <TimelineBanner timeline={timeline} />}
                         {timeline && <PrivateTimelineDoor timeline={timeline} />}
                     </Box>
                 )}
@@ -140,11 +141,10 @@ export const StreamPage = memo((): JSX.Element => {
             <CCDrawer
                 open={timelineInfoOpen}
                 onClose={() => {
-                    setTimelineInfoOpen(false)
+                    setTimelineBannerOpen(false)
                 }}
             >
-                <StreamInfo
-                    detailed
+                <TimelineInfo
                     id={targetTimelineID}
                     writers={timeline?.policy?.getWriters()}
                     readers={timeline?.policy?.getReaders()}
@@ -153,4 +153,4 @@ export const StreamPage = memo((): JSX.Element => {
         </>
     )
 })
-StreamPage.displayName = 'StreamPage'
+TimelinePage.displayName = 'TimelinePage'

@@ -5,7 +5,7 @@ import { SnackbarProvider, closeSnackbar, enqueueSnackbar } from 'notistack'
 import { ConcordProvider } from './context/ConcordContext'
 
 import { Menu } from './components/Menu/Menu'
-import { Explorer, Notifications, Settings, StreamPage, EntityPage, MessagePage, ListPage, Devtool } from './pages'
+import { Explorer, Notifications, Settings, TimelinePage, EntityPage, MessagePage, ListPage, Devtool } from './pages'
 
 import useSound from 'use-sound'
 import { MobileMenu } from './components/Menu/MobileMenu'
@@ -486,7 +486,7 @@ function App(): JSX.Element {
                                 <Route path="/:id/profile/:profileid/media" element={<EntityPage />} />
                                 <Route path="/:id/profile/:profileid/activity" element={<EntityPage />} />
                                 <Route path="/:authorID/:messageID" element={<MessagePage />} />
-                                <Route path="/timeline/:id" element={<StreamPage />} />
+                                <Route path="/timeline/:id" element={<TimelinePage />} />
                                 <Route path="/contacts" element={<ContactsPage />} />
                                 <Route path="/explorer/:tab" element={<ExplorerPlusPage />} />
                                 <Route path="/classicexplorer/:tab" element={<Explorer />} />
