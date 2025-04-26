@@ -2,7 +2,6 @@ import { Box, Divider, ListItem, ListItemIcon, ListItemText, type SxProps, Typog
 import React, { memo, useEffect, useState, useRef, forwardRef, type ForwardedRef } from 'react'
 import { AssociationFrame } from './Association/AssociationFrame'
 import { Loading } from './ui/Loading'
-import { MessageContainer } from './Message/MessageContainer'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken'
 import { type Query, type QueryTimelineReader } from '@concrnt/client'
@@ -20,7 +19,6 @@ import {
     type Message
 } from '@concrnt/worldlib'
 import { CCAvatar } from './ui/CCAvatar'
-import { CfmRenderer } from './ui/CfmRenderer'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
 import AddReactionIcon from '@mui/icons-material/AddReaction'
 import { CfmRendererLite } from './ui/CfmRendererLite'
@@ -69,11 +67,17 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
 
     const [notifications, setNotifications] = useState<WrappedNotification[]>([])
 
+    const iter = useRef(0)
+
     const summariseNotifications = async () => {
+        console.log(iter)
         if (!timeline.current) return
 
+        const newItems = timeline.current.body.slice(iter.current, timeline.current.body.length)
+        iter.current = timeline.current.body.length
+
         const resolved = await Promise.all(
-            timeline.current?.body.map(async (e) => {
+            newItems.map(async (e) => {
                 return client.getAssociation<any>(e.resourceID, e.owner)
             })
         )
@@ -123,7 +127,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
             })
         }
 
-        setNotifications(newNotifications)
+        setNotifications((prev) => [...prev, ...newNotifications])
     }
 
     useEffect(() => {
@@ -135,7 +139,10 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
             timeline.current
                 .init(props.timeline, props.query, props.batchSize ?? 16)
                 .then((hasMore) => {
+                    if (isCancelled) return
                     setHasMoreData(hasMore)
+                    setNotifications([])
+                    iter.current = 0
                     summariseNotifications()
                 })
                 .finally(() => {
@@ -227,10 +234,10 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                                   const schema = e.items?.[0].schema
                                   switch (schema) {
                                       case Schemas.likeAssociation:
-                                          element = <SummarisedLike items={e.items} />
+                                          element = <SummarisedLike items={e.items!} />
                                           break
                                       case Schemas.reactionAssociation:
-                                          element = <SummarisedReaction items={e.items} />
+                                          element = <SummarisedReaction items={e.items!} />
                                           break
                                   }
                                   break
@@ -239,9 +246,10 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                                       <AssociationFrame
                                           dimOnHover
                                           sx={timelineElemSx}
-                                          associationID={e.item.id}
-                                          associationOwner={e.item.owner}
+                                          associationID={e.item!.id}
+                                          associationOwner={e.item!.owner}
                                           after={divider}
+                                          lastUpdated={0}
                                           perspective={props.perspective}
                                       />
                                   )
