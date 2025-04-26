@@ -363,13 +363,25 @@ const SummarisedLike = (props: { items: Association<any>[] }) => {
                         />
                     ))}
                 </Box>
-                <Typography>your post liked by {props.items.length} people</Typography>
-                <blockquote style={{ margin: 0, paddingLeft: '1rem', borderLeft: '4px solid #ccc' }}>
-                    <CfmRendererLite
-                        messagebody={target?.document.body.body ?? 'no content'}
-                        emojiDict={target?.document.body.emojis ?? {}}
-                    />
-                </blockquote>
+                <Box>
+                    {props.items.length === 1 ? (
+                        <Typography>
+                            {props.items[0].authorUser?.profile?.username}さんがあなたのカレントをお気に入りしました
+                        </Typography>
+                    ) : (
+                        <Typography>
+                            {props.items[0].authorUser?.profile?.username}さんと他{props.items.length - 1}
+                            人があなたのカレントをお気に入りしました
+                        </Typography>
+                    )}
+
+                    <Typography variant="caption">
+                        <CfmRendererLite
+                            messagebody={target?.document.body.body ?? 'no content'}
+                            emojiDict={target?.document.body.emojis ?? {}}
+                        />
+                    </Typography>
+                </Box>
             </Box>
         </ListItem>
     )
@@ -460,13 +472,24 @@ const SummarisedReaction = (props: { items: Association<any>[] }) => {
                         )
                     })}
                 </Box>
-                <Typography>your post liked by {props.items.length} people</Typography>
-                <blockquote style={{ margin: 0, paddingLeft: '1rem', borderLeft: '4px solid #ccc' }}>
-                    <CfmRendererLite
-                        messagebody={target?.document.body.body ?? 'no content'}
-                        emojiDict={target?.document.body.emojis ?? {}}
-                    />
-                </blockquote>
+                <Box>
+                    {props.items.length === 1 ? (
+                        <Typography>
+                            {props.items[0].authorUser?.profile?.username}さんがあなたのカレントにリアクションしました
+                        </Typography>
+                    ) : (
+                        <Typography>
+                            {props.items[0].authorUser?.profile?.username}さんと他{props.items.length - 1}
+                            人があなたのカレントにリアクションしました
+                        </Typography>
+                    )}
+                    <Typography variant="caption">
+                        <CfmRendererLite
+                            messagebody={target?.document.body.body ?? 'no content'}
+                            emojiDict={target?.document.body.emojis ?? {}}
+                        />
+                    </Typography>
+                </Box>
             </Box>
         </ListItem>
     )
