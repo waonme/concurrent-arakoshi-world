@@ -1,21 +1,21 @@
 import { Box, Divider, ListItem, ListItemIcon, ListItemText, type SxProps, Typography, useTheme } from '@mui/material'
 import React, { memo, useEffect, useState, useRef, forwardRef, type ForwardedRef } from 'react'
-import { AssociationFrame } from '../Association/AssociationFrame'
-import { Loading } from '../ui/Loading'
-import { MessageContainer } from '../Message/MessageContainer'
+import { AssociationFrame } from './Association/AssociationFrame'
+import { Loading } from './ui/Loading'
+import { MessageContainer } from './Message/MessageContainer'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken'
 import { type TimelineReader } from '@concrnt/client'
-import { useRefWithForceUpdate } from '../../hooks/useRefWithForceUpdate'
+import { useRefWithForceUpdate } from '../hooks/useRefWithForceUpdate'
 import useSound from 'use-sound'
-import { usePreference } from '../../context/PreferenceContext'
+import { usePreference } from '../context/PreferenceContext'
 import { VList, type VListHandle } from 'virtua'
-import { useClient } from '../../context/ClientContext'
-import { UseSoundFormats } from '../../constants'
-import { useGlobalState } from '../../context/GlobalState'
-import { PullToRefresh } from '../PullToRefresh'
+import { useClient } from '../context/ClientContext'
+import { UseSoundFormats } from '../constants'
+import { useGlobalState } from '../context/GlobalState'
+import { PullToRefresh } from './PullToRefresh'
 
-export interface TimelineProps {
+export interface RealtimeTimelineProps {
     timelineFQIDs: string[]
     perspective?: string
     header?: JSX.Element
@@ -36,7 +36,7 @@ const timelineElemSx: SxProps = {
     p: { xs: 0.5, sm: 1, md: 1 }
 }
 
-const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle>): JSX.Element => {
+const timeline = forwardRef((props: RealtimeTimelineProps, ref: ForwardedRef<VListHandle>): JSX.Element => {
     const { client } = useClient()
     const { isDomainOffline } = useGlobalState()
     const theme = useTheme()
@@ -258,5 +258,5 @@ const renderError = ({ error }: FallbackProps): JSX.Element => {
     )
 }
 
-export const Timeline = memo(timeline)
-Timeline.displayName = 'Timeline'
+export const RealtimeTimeline = memo(timeline)
+RealtimeTimeline.displayName = 'Timeline'

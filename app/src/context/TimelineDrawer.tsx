@@ -7,7 +7,7 @@ import { type VListHandle } from 'virtua'
 
 import TagIcon from '@mui/icons-material/Tag'
 import LockIcon from '@mui/icons-material/Lock'
-import { Timeline } from '../components/Timeline'
+import { RealtimeTimeline } from '../components/RealtimeTimeline'
 import { PrivateTimelineDoor } from '../components/PrivateTimelineDoor'
 import { Box } from '@mui/material'
 
@@ -89,7 +89,7 @@ export const TimelineDrawerProvider = (props: TimelineDrawerProps): JSX.Element 
                     }}
                 >
                     {timeline?.policy.isReadable(client) ? (
-                        <Timeline
+                        <RealtimeTimeline
                             timelineFQIDs={timelineIDs}
                             ref={timelineRef}
                             header={timeline ? <TimelineInfo timeline={timeline} /> : <></>}

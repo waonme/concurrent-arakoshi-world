@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, Button, Paper, Typography } from '@mui/material'
 import { useParams, Link as NavLink } from 'react-router-dom'
-import { Timeline } from '../components/Timeline/main'
+import { RealtimeTimeline } from '../components/RealtimeTimeline'
 import { Client } from '@concrnt/worldlib'
 import { type Timeline as CoreTimeline } from '@concrnt/client'
 import { FullScreenLoading } from '../components/ui/FullScreenLoading'
@@ -132,7 +132,7 @@ export default function GuestTimelinePage(): JSX.Element {
                                         </Box>
                                     </Box>
                                 ) : (
-                                    <Timeline
+                                    <RealtimeTimeline
                                         noRealtime
                                         timelineFQIDs={targetStream}
                                         header={<StreamInfo id={timeline.id} />}

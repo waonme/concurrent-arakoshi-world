@@ -3,7 +3,7 @@ import { Box, Divider } from '@mui/material'
 import { useParams } from 'react-router-dom'
 import { TimelineHeader } from '../components/TimelineHeader'
 import { useClient } from '../context/ClientContext'
-import { Timeline } from '../components/Timeline/main'
+import { RealtimeTimeline } from '../components/RealtimeTimeline'
 import { StreamInfo } from '../components/StreamInfo'
 import { usePreference } from '../context/PreferenceContext'
 import { type CommunityTimelineSchema, type Timeline as typeTimeline } from '@concrnt/worldlib'
@@ -97,7 +97,7 @@ export const StreamPage = memo((): JSX.Element => {
                 />
                 {timeline?.policy.isReadable(client) ? (
                     <WatchingStreamContextProvider watchingStreams={timelineFQIDs}>
-                        <Timeline
+                        <RealtimeTimeline
                             timelineFQIDs={timelineFQIDs}
                             ref={timelineRef}
                             header={
