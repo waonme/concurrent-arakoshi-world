@@ -1,10 +1,10 @@
 import { Box, Divider, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { useClient } from '../context/ClientContext'
-import { QueryTimelineReader } from '../components/QueryTimeline'
 import { useMemo, useState } from 'react'
 import { TimelineFilter } from '../components/TimelineFilter'
 import { Helmet } from 'react-helmet-async'
+import { NotificationTimeline } from '../components/NotificationTimeline'
 
 export function Notifications(): JSX.Element {
     const { t } = useTranslation('', { keyPrefix: 'pages.notifications' })
@@ -44,7 +44,7 @@ export function Notifications(): JSX.Element {
                     <TimelineFilter selected={selected} setSelected={setSelected} />
                     <Divider />
                 </Box>
-                {timeline && <QueryTimelineReader timeline={timeline} query={query} />}
+                {timeline && <NotificationTimeline timeline={timeline} query={query} />}
             </Box>
         </>
     )
