@@ -1,4 +1,15 @@
-import { Box, Divider, ListItem, ListItemIcon, ListItemText, type SxProps, Typography, useTheme } from '@mui/material'
+import {
+    alpha,
+    Box,
+    Divider,
+    IconButton,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    type SxProps,
+    Typography,
+    useTheme
+} from '@mui/material'
 import React, { memo, useEffect, useState, useRef, forwardRef, type ForwardedRef } from 'react'
 import { AssociationFrame } from './Association/AssociationFrame'
 import { Loading } from './ui/Loading'
@@ -14,7 +25,6 @@ import {
     MediaMessageSchema,
     ReplyMessageSchema,
     Schemas,
-    User,
     type Association,
     type Message
 } from '@concrnt/worldlib'
@@ -22,6 +32,7 @@ import { CCAvatar } from './ui/CCAvatar'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
 import AddReactionIcon from '@mui/icons-material/AddReaction'
 import { CfmRendererLite } from './ui/CfmRendererLite'
+import { Link as routerLink, useNavigate } from 'react-router-dom'
 
 export interface TimelineProps {
     timeline: string
@@ -300,6 +311,9 @@ export const NotificationTimeline = memo(timeline)
 NotificationTimeline.displayName = 'NotificationTimeline'
 
 const SummarisedLike = (props: { items: Association<any>[] }) => {
+    const theme = useTheme()
+    const navigate = useNavigate()
+
     const [target, setTarget] = useState<Message<
         MarkdownMessageSchema | ReplyMessageSchema | MediaMessageSchema
     > | null>(null)
@@ -315,9 +329,18 @@ const SummarisedLike = (props: { items: Association<any>[] }) => {
                 alignItems: 'flex-start',
                 flex: 1,
                 gap: { xs: 0.5, sm: 1 },
-                p: { xs: 0.5, sm: 1, md: 1 }
+                p: { xs: 0.5, sm: 1, md: 1 },
+                '&:hover': {
+                    backgroundColor: alpha(theme.palette.divider, 0.05),
+                    transition: 'background-color 0.2s'
+                }
             }}
             disablePadding
+            onClick={() => {
+                const selectedString = window.getSelection()?.toString()
+                if (selectedString !== '') return
+                navigate(`/${target?.author}/${target?.id}`)
+            }}
         >
             <Box
                 sx={{
@@ -353,24 +376,37 @@ const SummarisedLike = (props: { items: Association<any>[] }) => {
                     }}
                 >
                     {props.items?.map((item) => (
-                        <CCAvatar
-                            circle
-                            key={item.id}
-                            avatarURL={item.authorUser?.profile?.avatar}
-                            sx={{
-                                width: { width: '32px', height: '32px' }
-                            }}
-                        />
+                        <IconButton
+                            to={`/${item.author}`}
+                            component={routerLink}
+                            onClick={(e) => e.stopPropagation()}
+                            sx={{ p: 0 }}
+                        >
+                            <CCAvatar
+                                circle
+                                key={item.id}
+                                avatarURL={
+                                    item.document.body.profileOverride?.avatar ?? item.authorUser?.profile?.avatar
+                                }
+                                sx={{
+                                    width: { width: '32px', height: '32px' }
+                                }}
+                            />
+                        </IconButton>
                     ))}
                 </Box>
                 <Box>
                     {props.items.length === 1 ? (
                         <Typography>
-                            {props.items[0].authorUser?.profile?.username}さんがあなたのカレントをお気に入りしました
+                            {props.items[0].document.body.profileOverride?.username ??
+                                props.items[0].authorUser?.profile?.username}
+                            さんがあなたのカレントをお気に入りしました
                         </Typography>
                     ) : (
                         <Typography>
-                            {props.items[0].authorUser?.profile?.username}さんと他{props.items.length - 1}
+                            {props.items[0].document.body.profileOverride?.username ??
+                                props.items[0].authorUser?.profile?.username}
+                            さんと他{props.items.length - 1}
                             人があなたのカレントをお気に入りしました
                         </Typography>
                     )}
@@ -388,6 +424,9 @@ const SummarisedLike = (props: { items: Association<any>[] }) => {
 }
 
 const SummarisedReaction = (props: { items: Association<any>[] }) => {
+    const theme = useTheme()
+    const navigate = useNavigate()
+
     const [target, setTarget] = useState<Message<
         MarkdownMessageSchema | ReplyMessageSchema | MediaMessageSchema
     > | null>(null)
@@ -396,13 +435,13 @@ const SummarisedReaction = (props: { items: Association<any>[] }) => {
         props.items[0].getTargetMessage().then(setTarget)
     }, [props.items])
 
-    const reactions: Record<string, User[]> = {}
+    const reactions: Record<string, Association<any>[]> = {}
     for (const item of props.items) {
         if (!item.authorUser) continue
         if (item.variant in reactions) {
-            reactions[item.variant].push(item.authorUser)
+            reactions[item.variant].push(item)
         } else {
-            reactions[item.variant] = [item.authorUser]
+            reactions[item.variant] = [item]
         }
     }
 
@@ -413,9 +452,18 @@ const SummarisedReaction = (props: { items: Association<any>[] }) => {
                 alignItems: 'flex-start',
                 flex: 1,
                 gap: { xs: 0.5, sm: 1 },
-                p: { xs: 0.5, sm: 1, md: 1 }
+                p: { xs: 0.5, sm: 1, md: 1 },
+                '&:hover': {
+                    backgroundColor: alpha(theme.palette.divider, 0.05),
+                    transition: 'background-color 0.2s'
+                }
             }}
             disablePadding
+            onClick={() => {
+                const selectedString = window.getSelection()?.toString()
+                if (selectedString !== '') return
+                navigate(`/${target?.author}/${target?.id}`)
+            }}
         >
             <Box
                 sx={{
@@ -457,14 +505,24 @@ const SummarisedReaction = (props: { items: Association<any>[] }) => {
                                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>
                                     <img src={key} style={{ width: '32px', height: '32px' }} />
                                     {value.map((item) => (
-                                        <CCAvatar
-                                            circle
-                                            key={item.ccid}
-                                            avatarURL={item.profile?.avatar}
-                                            sx={{
-                                                width: { width: '32px', height: '32px' }
-                                            }}
-                                        />
+                                        <IconButton
+                                            key={item.author}
+                                            to={`/${item.author}`}
+                                            component={routerLink}
+                                            onClick={(e) => e.stopPropagation()}
+                                            sx={{ p: 0 }}
+                                        >
+                                            <CCAvatar
+                                                circle
+                                                avatarURL={
+                                                    item.document.body.profileOverride?.avatar ??
+                                                    item.authorUser?.profile?.avatar
+                                                }
+                                                sx={{
+                                                    width: { width: '32px', height: '32px' }
+                                                }}
+                                            />
+                                        </IconButton>
                                     ))}
                                 </Box>
                                 <Divider orientation="vertical" />
@@ -475,11 +533,15 @@ const SummarisedReaction = (props: { items: Association<any>[] }) => {
                 <Box>
                     {props.items.length === 1 ? (
                         <Typography>
-                            {props.items[0].authorUser?.profile?.username}さんがあなたのカレントにリアクションしました
+                            {props.items[0].document.body.profileOverride?.username ??
+                                props.items[0].authorUser?.profile?.username}
+                            さんがあなたのカレントにリアクションしました
                         </Typography>
                     ) : (
                         <Typography>
-                            {props.items[0].authorUser?.profile?.username}さんと他{props.items.length - 1}
+                            {props.items[0].document.body.profileOverride?.username ??
+                                props.items[0].authorUser?.profile?.username}
+                            さんと他{props.items.length - 1}
                             人があなたのカレントにリアクションしました
                         </Typography>
                     )}
