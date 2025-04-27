@@ -1,6 +1,6 @@
 import { Box, Paper, Modal, Typography, Divider, Button, Drawer, useTheme, Tooltip } from '@mui/material'
 import { InspectorProvider } from '../context/Inspector'
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import { useClient } from './ClientContext'
 import { isNonNull, Schemas } from '@concrnt/worldlib'
 import { usePreference } from './PreferenceContext'
@@ -272,6 +272,7 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
                     }}
                 >
                     <Menu
+                        latestNotification={0}
                         onClick={() => {
                             setMobileMenuOpen(false)
                         }}
