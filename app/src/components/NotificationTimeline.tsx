@@ -82,7 +82,6 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
     const iter = useRef(0)
 
     const summariseNotifications = async () => {
-        console.log(iter)
         if (!timeline.current) return
 
         const newItems = timeline.current.body.slice(iter.current, timeline.current.body.length)
@@ -194,6 +193,9 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
         const hasMore = (await timeline.current?.reload()) ?? false
         setHasMoreData(hasMore)
         await new Promise((resolve) => setTimeout(resolve, 1000))
+        setNotifications([])
+        iter.current = 0
+        summariseNotifications()
         setIsFetching(false)
     }
 
@@ -380,6 +382,7 @@ const SummarisedLike = (props: { items: Association<any>[] }) => {
                 >
                     {props.items?.map((item) => (
                         <IconButton
+                            key={item.id}
                             to={`/${item.author}`}
                             component={routerLink}
                             onClick={(e) => e.stopPropagation()}
@@ -387,7 +390,6 @@ const SummarisedLike = (props: { items: Association<any>[] }) => {
                         >
                             <CCAvatar
                                 circle
-                                key={item.id}
                                 avatarURL={
                                     item.document.body.profileOverride?.avatar ?? item.authorUser?.profile?.avatar
                                 }
@@ -509,12 +511,12 @@ const SummarisedReaction = (props: { items: Association<any>[] }) => {
                 >
                     {Object.entries(reactions).map(([key, value]) => {
                         return (
-                            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>
+                            <Box key={key} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>
                                     <img src={key} style={{ width: '32px', height: '32px' }} />
                                     {value.map((item) => (
                                         <IconButton
-                                            key={item.author}
+                                            key={item.id}
                                             to={`/${item.author}`}
                                             component={routerLink}
                                             onClick={(e) => e.stopPropagation()}
