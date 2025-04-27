@@ -33,6 +33,7 @@ import StarOutlineIcon from '@mui/icons-material/StarOutline'
 import AddReactionIcon from '@mui/icons-material/AddReaction'
 import { CfmRendererLite } from './ui/CfmRendererLite'
 import { Link as routerLink, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export interface TimelineProps {
     timeline: string
@@ -314,6 +315,8 @@ const SummarisedLike = (props: { items: Association<any>[] }) => {
     const theme = useTheme()
     const navigate = useNavigate()
 
+    const { t } = useTranslation('', { keyPrefix: 'pages.notifications' })
+
     const [target, setTarget] = useState<Message<
         MarkdownMessageSchema | ReplyMessageSchema | MediaMessageSchema
     > | null>(null)
@@ -398,16 +401,20 @@ const SummarisedLike = (props: { items: Association<any>[] }) => {
                 <Box>
                     {props.items.length === 1 ? (
                         <Typography>
-                            {props.items[0].document.body.profileOverride?.username ??
-                                props.items[0].authorUser?.profile?.username}
-                            さんがあなたのカレントをお気に入りしました
+                            {t('favorite', {
+                                name:
+                                    props.items[0].document.body.profileOverride?.username ??
+                                    props.items[0].authorUser?.profile?.username
+                            })}
                         </Typography>
                     ) : (
                         <Typography>
-                            {props.items[0].document.body.profileOverride?.username ??
-                                props.items[0].authorUser?.profile?.username}
-                            さんと他{props.items.length - 1}
-                            人があなたのカレントをお気に入りしました
+                            {t('favoriteMany', {
+                                name:
+                                    props.items[0].document.body.profileOverride?.username ??
+                                    props.items[0].authorUser?.profile?.username,
+                                count: props.items.length - 1
+                            })}
                         </Typography>
                     )}
 
@@ -426,6 +433,7 @@ const SummarisedLike = (props: { items: Association<any>[] }) => {
 const SummarisedReaction = (props: { items: Association<any>[] }) => {
     const theme = useTheme()
     const navigate = useNavigate()
+    const { t } = useTranslation('', { keyPrefix: 'pages.notifications' })
 
     const [target, setTarget] = useState<Message<
         MarkdownMessageSchema | ReplyMessageSchema | MediaMessageSchema
@@ -533,16 +541,20 @@ const SummarisedReaction = (props: { items: Association<any>[] }) => {
                 <Box>
                     {props.items.length === 1 ? (
                         <Typography>
-                            {props.items[0].document.body.profileOverride?.username ??
-                                props.items[0].authorUser?.profile?.username}
-                            さんがあなたのカレントにリアクションしました
+                            {t('reaction', {
+                                name:
+                                    props.items[0].document.body.profileOverride?.username ??
+                                    props.items[0].authorUser?.profile?.username
+                            })}
                         </Typography>
                     ) : (
                         <Typography>
-                            {props.items[0].document.body.profileOverride?.username ??
-                                props.items[0].authorUser?.profile?.username}
-                            さんと他{props.items.length - 1}
-                            人があなたのカレントにリアクションしました
+                            {t('reactionMany', {
+                                name:
+                                    props.items[0].document.body.profileOverride?.username ??
+                                    props.items[0].authorUser?.profile?.username,
+                                count: props.items.length - 1
+                            })}
                         </Typography>
                     )}
                     <Typography variant="caption">
