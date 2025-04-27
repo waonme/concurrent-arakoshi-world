@@ -1,12 +1,13 @@
 import { Box, Divider, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { useClient } from '../context/ClientContext'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { TimelineFilter } from '../components/TimelineFilter'
 import { Helmet } from 'react-helmet-async'
 import { NotificationTimeline } from '../components/NotificationTimeline'
+import { usePreference } from '../context/PreferenceContext'
 
-export function Notifications(): JSX.Element {
+export function Notifications(props: { latestNotification: number }): JSX.Element {
     const { t } = useTranslation('', { keyPrefix: 'pages.notifications' })
     const { client } = useClient()
 
@@ -17,6 +18,14 @@ export function Notifications(): JSX.Element {
     const query = useMemo(() => {
         return selected ? { schema: selected } : {}
     }, [selected])
+
+    const [latestSeenNotification, setLatestSeenNotification] = usePreference('lastSeenNotification')
+
+    useEffect(() => {
+        if (latestSeenNotification !== props.latestNotification) {
+            setLatestSeenNotification(props.latestNotification)
+        }
+    }, [props.latestNotification])
 
     return (
         <>
