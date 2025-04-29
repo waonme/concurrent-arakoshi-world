@@ -16,14 +16,21 @@ export default function ExifInfo(props: ExifInfoProps): JSX.Element {
         fetch(props.src)
             .then((response) => response.blob())
             .then(async (blob) => {
-                const exifData = ExifReader.load(await blob.arrayBuffer())
-                const newInfos: Record<string, string> = {}
-                for (const key of props.keys) {
-                    if (exifData[key]) {
-                        newInfos[key] = exifData[key].description
+                try {
+                    const exifData = ExifReader.load(await blob.arrayBuffer())
+                    const newInfos: Record<string, string> = {}
+                    for (const key of props.keys) {
+                        if (exifData[key]) {
+                            newInfos[key] = exifData[key].description
+                        }
                     }
+                    setInfos(newInfos)
+                } catch (error) {
+                    console.error("Error parsing EXIF data:", error)
                 }
-                setInfos(newInfos)
+            })
+            .catch((error) => {
+                console.error("Error fetching image:", error)
             })
     }, [props.src, props.keys])
 
