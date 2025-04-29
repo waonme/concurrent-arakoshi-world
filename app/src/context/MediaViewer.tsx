@@ -8,9 +8,7 @@ import AppsIcon from '@mui/icons-material/Apps'
 import { type WorldMedia } from '../model'
 import { useGlobalState } from './GlobalState'
 import ExifReader from 'exifreader'
-
-import '@google/model-viewer'
-
+import { ModelViewer } from '../components/ModelViewer'
 const zoomFactor = 8
 
 export interface MediaViewerState {
@@ -276,18 +274,14 @@ export const MediaViewerProvider = (props: MediaViewerProviderProps): JSX.Elemen
                         )}
 
                         {previewModel && (
-                            <>
-                                <model-viewer
-                                    src={previewModel}
-                                    autoplay
-                                    camera-controls
-                                    style={{
-                                        backgroundColor: '#3f3f3f',
-                                        width: '90vw',
-                                        height: '90vh'
-                                    }}
-                                />
-                            </>
+                            <ModelViewer
+                                src={previewModel}
+                                style={{
+                                    backgroundColor: '#3f3f3f',
+                                    width: '90vw',
+                                    height: '90vh'
+                                }}
+                            />
                         )}
 
                         <Box
