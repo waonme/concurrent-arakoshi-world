@@ -284,7 +284,7 @@ export const MediaViewerProvider = (props: MediaViewerProviderProps): JSX.Elemen
                             gap={1}
                         >
                             <Box display="flex" justifyContent="right" alignItems="center">
-                                <Suspense>
+                                <Suspense fallback={<CircularProgress />}>
                                     <ExifInfo
                                         src={getImageURL(previewImage)}
                                         keys={[
