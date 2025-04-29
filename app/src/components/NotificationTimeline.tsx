@@ -168,6 +168,7 @@ const timeline = forwardRef((props: TimelineProps, ref: ForwardedRef<VListHandle
                         setHasMoreData(hasMore)
                     })
                     .finally(() => {
+                        if (isCancelled) return
                         setTimelineLoading(false)
                     })
                 return t
