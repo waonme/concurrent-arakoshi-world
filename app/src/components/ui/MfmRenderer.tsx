@@ -566,7 +566,7 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
     return <>unknown ast type: {ast.type}</>
 }
 
-export const MfmRenderer = (props: MfmRendererProps): JSX.Element => {
+export default function MfmRenderer(props: MfmRendererProps): JSX.Element {
     const [ast, setAst] = useState<any>(null)
     const summary = useAutoSummary()
 

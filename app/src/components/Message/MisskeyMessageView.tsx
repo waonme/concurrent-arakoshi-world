@@ -1,7 +1,8 @@
 import { type Message, type MarkdownMessageSchema, type RerouteMessageSchema } from '@concrnt/worldlib'
 import { MessageViewBase } from './MessageViewBase'
-import { useMemo } from 'react'
-import { MfmRenderer } from '../ui/MfmRenderer'
+import { lazy, Suspense, useMemo } from 'react'
+
+const MfmRenderer = lazy(() => import('../ui/MfmRenderer'))
 
 export interface MisskeyMessageViewProps {
     message: Message<MarkdownMessageSchema>
@@ -18,10 +19,12 @@ export interface MisskeyMessageViewProps {
 export const MisskeyMessageView = (props: MisskeyMessageViewProps): JSX.Element => {
     const renderer = useMemo(
         () => (
-            <MfmRenderer
-                messagebody={props.message.document.body.body ?? 'no content'}
-                emojiDict={props.message.document.body.emojis ?? {}}
-            />
+            <Suspense fallback={<div>Loading...</div>}>
+                <MfmRenderer
+                    messagebody={props.message.document.body.body ?? 'no content'}
+                    emojiDict={props.message.document.body.emojis ?? {}}
+                />
+            </Suspense>
         ),
         [props.message.id]
     )
