@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAutoSummary } from '../../context/AutoSummaryContext'
-import { Box, Divider, Tooltip, Typography } from '@mui/material'
+import { Box, Divider, Tooltip, Typography, useTheme } from '@mui/material'
 import { EmojiLite } from '../../model'
 import * as mfm from 'mfm-js'
 
@@ -139,6 +139,7 @@ export interface MfmRendererProps {
 
 const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
     const { getImageURL } = useGlobalState()
+    const theme = useTheme()
 
     if (Array.isArray(ast)) {
         return (
@@ -436,35 +437,44 @@ const RenderAst = ({ ast, emojis }: RenderAstProps): JSX.Element => {
                     )
                 }
                 case 'fg': {
-                    let color = ast.props.args.color
-                    color = color ?? 'f00'
+                    let color = ast.props.args.color ?? theme.palette.primary.main
+                    if (color[0] !== '#') {
+                        color = color.replace(/([0-9a-f]{3})/g, '#$1')
+                    }
                     return (
-                        <span style={{ color: `#${color}` }}>
+                        <span style={{ display: 'inline-block', color: `#${color}` }}>
                             <RenderAst ast={ast.children} emojis={emojis} />
                         </span>
                     )
                 }
                 case 'bg': {
-                    let color = ast.props.args.color
-                    color = color ?? 'f00'
+                    let color = ast.props.args.color ?? theme.palette.background.default
+                    if (color[0] !== '#') {
+                        color = color.replace(/([0-9a-f]{3})/g, '#$1')
+                    }
                     return (
-                        <span style={{ backgroundColor: `#${color}` }}>
+                        <span style={{ display: 'inline-block', backgroundColor: `#${color}` }}>
                             <RenderAst ast={ast.children} emojis={emojis} />
                         </span>
                     )
                 }
                 case 'border': {
-                    let color = ast.props.args.color
-                    color = color ?? 'f00'
+                    let color = ast.props.args.color ?? theme.palette.divider
+                    if (color[0] !== '#') {
+                        color = color.replace(/([0-9a-f]{3})/g, '#$1')
+                    }
+                    const style = ast.props.args.style ?? 'solid'
                     const width = ast.props.args.width ?? 1
                     const radius = ast.props.args.radius ?? 0
+                    const overflow = ast.props.args.noclip ? 'unset' : 'clip'
                     return (
                         <Box
                             sx={{
-                                border: `${width}px solid #${color}`,
+                                border: `${width}px ${style} ${color}`,
                                 borderRadius: `${radius}px`,
                                 display: 'inline-block',
-                                padding: '0.5em'
+                                padding: '0.5em',
+                                overflow: overflow
                             }}
                         >
                             <RenderAst ast={ast.children} emojis={emojis} />
