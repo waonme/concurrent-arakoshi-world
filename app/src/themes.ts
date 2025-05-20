@@ -316,6 +316,7 @@ export const ConcurrentDefaultTheme = {
                 },
                 html: {
                     overscrollBehaviorY: 'none',
+                    fontSize: '16px',
                     userSelect: 'none'
                 },
                 body: {
