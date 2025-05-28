@@ -71,9 +71,13 @@ export const MessageViewBase = (props: MessageViewProps): JSX.Element => {
             return '@' + id + '@bsky.brid.gy'
         }
 
-        const split = actor.split('/')
-
-        return split.length > 0 ? split[split.length - 1] + '@' + split[split.length - 2] : undefined
+        try {
+            const url = new URL(actor)
+            const parts = url.pathname.split('/').filter(Boolean) // Split and remove empty segments
+            return parts.length > 1 ? parts[parts.length - 1] + '@' + url.hostname : undefined
+        } catch {
+            return undefined // Return undefined if the URL is invalid
+        }
     }, [props.message])
 
     return (
