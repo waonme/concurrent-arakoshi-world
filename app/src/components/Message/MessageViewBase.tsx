@@ -74,7 +74,7 @@ export const MessageViewBase = (props: MessageViewProps): JSX.Element => {
         try {
             const url = new URL(actor)
             const parts = url.pathname.split('/').filter(Boolean) // Split and remove empty segments
-            return parts.length > 1 ? parts[parts.length - 1] + '@' + url.hostname : undefined
+            return parts.length >= 1 ? parts[parts.length - 1] + '@' + url.hostname : undefined
         } catch {
             return undefined // Return undefined if the URL is invalid
         }
