@@ -62,6 +62,20 @@ export const MessageViewBase = (props: MessageViewProps): JSX.Element => {
         return Aids.every((v, i) => v === Bids[i])
     }, [props.rerouted, props.message])
 
+    const apId = useMemo(() => {
+        const actor = props.message.document.meta?.apActor
+        if (!actor) return undefined
+
+        if (actor.startsWith('https://bsky.brid.gy/')) {
+            const id = actor.split('/').pop()
+            return '@' + id + '@bsky.brid.gy'
+        }
+
+        const split = actor.split('/')
+
+        return split.length > 0 ? split[split.length - 1] + '@' + split[split.length - 2] : undefined
+    }, [props.message])
+
     return (
         <ContentWithCCAvatar
             message={props.message}
@@ -69,6 +83,7 @@ export const MessageViewBase = (props: MessageViewProps): JSX.Element => {
             profileOverride={props.message.document.body.profileOverride}
             avatarOverride={characterOverride?.parsedDoc.body.avatar}
             characterOverride={characterOverride?.parsedDoc.body}
+            apId={apId}
         >
             <MessageHeader
                 usernameOverride={characterOverride?.parsedDoc.body.username}
