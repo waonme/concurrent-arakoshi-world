@@ -707,7 +707,6 @@ export const GeneralSettings = (): JSX.Element => {
                                     return
                                 }
                                 const jwt = client.api.authProvider.issueJWT({
-                                    iss: client.ckid || client.ccid,
                                     aud: client.host,
                                     sub: 'CONCRNT_INVITE',
                                     exp: Math.floor((new Date().getTime() + 14 * 24 * 60 * 60 * 1000) / 1000).toString()
