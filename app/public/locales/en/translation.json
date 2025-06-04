@@ -68,8 +68,7 @@
             "loginToRequest": "Log in to send a request."
         },
         "invitation": {
-            "toConcrnt": "To Concrnt",
-            "welcome": "Welcome!",
+            "welcome": "Welcome to Concrnt!",
             "description": "Concrnt is a new era SNS that enriches your world just a little bit.",
             "invitedBy": "Invited by {{username}}",
             "createAccount": "Create Account"

@@ -99,8 +99,6 @@ export default function Invitation(): JSX.Element {
                                     textAlign: 'center'
                                 }}
                             >
-                                {t('toConcrnt')}
-                                <wbr />
                                 {t('welcome')}
                             </Typography>
                             <Typography
