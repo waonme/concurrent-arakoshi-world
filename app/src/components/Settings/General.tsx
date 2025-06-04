@@ -519,7 +519,7 @@ export const GeneralSettings = (): JSX.Element => {
             {!enableConcord && (
                 <Accordion disableGutters>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography variant="h4">Concord Network(プレビュー)</Typography>
+                        <Typography variant="h4">Concord Network(Preview)</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                         Concord
@@ -665,11 +665,11 @@ export const GeneralSettings = (): JSX.Element => {
             </Box>
             <Accordion disableGutters>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="h4">招待</Typography>
+                    <Typography variant="h4">{t('invitation')}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Alert severity="info" sx={{ marginBottom: 2 }}>
-                        所属ドメインが招待制の場合、あなたが招待権限を持っている必要があります。詳しくはドメイン管理者にお問合せください。
+                        {t('inviteNote')}
                     </Alert>
                     <Box
                         sx={{
@@ -720,7 +720,7 @@ export const GeneralSettings = (): JSX.Element => {
                                 enqueueSnackbar(t('copied'), { variant: 'success' })
                             }}
                         >
-                            {t('generateInviteCode')}
+                            {t('copyInviteLink')}
                         </Button>
                     </Box>
                 </AccordionDetails>

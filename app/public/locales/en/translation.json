@@ -18,13 +18,29 @@
         "reaction": "Reaction",
         "mutedByWord": "Post muted by word",
         "mutedByTimeline": "Post muted by timeline",
-        "show": "Show"
+        "show": "Show",
+        "followed": "Follows you",
+        "addToList": "Add to List",
+        "failedToRender": "An error occurred while rendering this element",
+        "noDescription": "No description available",
+        "ignore": "Ignore",
+        "ignored": "Ignored",
+        "addToViewer": "Allow"
     },
     "app": {
         "updateAvailable": "New version available",
-        "updateNow": "Update"
+        "updateNow": "Update",
+        "isNotCanonicalUser": "You are currently logged in to a domain that is not your canonical domain. Please log in again after completing the migration process.",
+        "domainIsOffline": "Your domain {{ domain }} is currently in read-only mode due to being offline. Please wait until it is restored."
+
     },
     "pages": {
+        "main": {
+            "title": "Concrnt-World Beta",
+            "post": "Post",
+            "document": "Document",
+            "forum": "Forum"
+        },
         "home": {
             "title": "Home"
         },
@@ -47,6 +63,9 @@
             "communities": "Communities",
             "peoples": "Peoples",
             "createNew": "Create new",
+            "classicEdition": "Classic Edition",
+            "globalEdition": "Global View",
+            "createFailed": "Failed to create",
             "createNewCommunity": {
                 "title": "Create new community",
                 "desc1": "Create a new community on ",
@@ -95,6 +114,69 @@
         "now": "just now"
     },
     "ui": {
+        "migrator": {
+            "next": "Next",
+            "masterLoginRequired": "Migration is a critical account operation and requires login with your master key.",
+            "step0": {
+                "title": "Enter destination",
+                "migrateTo": "Destination domain"
+            },
+            "step1": {
+                "title": "Register on the destination",
+                "desc": "First, register on the destination domain.",
+                "move": "Go to registration page",
+                "checkAndNext": "Verify and continue",
+                "error": "It seems registration has not been completed. Detected domain: {{domain}}"
+            },
+            "step2": {
+                "title": "Download repository data from current address"
+            },
+            "step3": {
+                "title": "Upload repository data to destination",
+                "desc": "It may take some time for all data to be fully loaded."
+            },
+            "step4": {
+                "title": "Copy settings to destination",
+                "error": "An error occurred.",
+                "exec": ""
+            },
+            "step5": {
+                "title": "Send deletion request to current address",
+                "desc": "A 7-day grace period will be set, during which you can cancel the deletion if necessary.",
+                "exec": "Send deletion request"
+            },
+            "done": {
+                "title": "Migration complete!",
+                "reload": "Reload to finish"
+            }
+        },
+        "manageRepo": {
+            "idle": "Import repository data",
+            "loading": "Importing (this may take some time)",
+            "success": "Import completed!",
+            "error": "Import failed (please check the console logs)",
+            "source": "Import source domain (optional)",
+            "log": "Import log",
+            "reload": "Reload",
+            "syncing": "Backup data is currently syncing. Please wait... ({{progress}})",
+            "backupAvailable": "The latest backup data is available for download.",
+            "syncRequested": "Update requested. Please wait a moment.",
+            "requestSync": "Request update",
+            "backupUnavailable": "No backup data available. Please request an update.",
+            "backupOutOfSync": "The currently downloadable backup data is from {{ date }} {{ time }}.",
+            "export": "Export backup data",
+            "preparing": "Preparing backup data. Please wait...",
+            "exportPartial": "Exporting backup data as of {{ date }} {{ time }}."
+        },
+        "privateTimeline": {
+            "isPrivate": "This timeline is private.",
+            "notRequestable": "This timeline does not accept access requests.",
+            "requested": "Request sent",
+            "request": "Send request"
+        },
+        "userPicker": {
+            "placeholder": "Select users"
+        },
         "postButton": {
             "plaintext": "Post",
             "markdown": "Post",
@@ -118,10 +200,17 @@
             "emoji": "Emojis",
             "clearDraft": "Clear draft",
             "addDestination": "Add destination",
-            "postToHome": "Also posting to home timeline",
-            "noPostToHome": "Not posting to home timeline",
             "current": "Post",
             "whisper": "Whisper",
+            "whisperWarn": "Caution",
+            "whisperWarnTitle": "Whisper is NOT end-to-end encrypted",
+            "whisperWarnDesc": "This is a basic protection feature. Do not share sensitive information on Concrnt.",
+            "whisperDesc": "Selecting users here will make the post visible only to those users.",
+            "fetchImageFailed": "Access to the specified URL was denied",
+            "hideContent": "Hide content",
+            "add": "Add",
+            "clickToShow": "Click to show",
+            "enterContent": "Enter content...",
             "plzAttachMedia": "You need to attach media in media post mode",
             "plzAddMessage": "Message must not be empty",
             "plzAddDestination": "Select at least one destination",
@@ -164,6 +253,42 @@
             "delete": "Delete",
             "reallyDelete": "Really delete this message?",
             "confirmDelete": "Confirm"
+        },
+        "emoji": {
+            "letsAddEmojiPack" : "Let's add an emoji package from settings",
+            "addEmojis": "Add Emojis"
+        },
+        "timelineInfo": {
+            "updated": "Updated",
+            "failedToUpdate": "Failed to update",
+            "warnCustomPolicy": "This community has a custom policy set",
+            "warnCustomPolicyDesc": "As a result, displaying users with read/write permissions may not work correctly.",
+            "readRequests": "Read Requests ({{ count }})",
+            "indexable": "Indexable",
+            "schema": "Schema",
+            "schemaDesc": "Enter the JsonSchema URL. Normally, you don’t need to change this.",
+            "attributes": "Attributes",
+            "policy": "Policy",
+            "policyDesc": "If empty, the default policy will be applied.",
+            "enterPolicy": "Enter the URL of the Policy JSON.",
+            "inlineAllowDeny": "Basic Permission Settings",
+            "inlineReadWrite": "Basic Permission Settings (Legacy)",
+            "restrictAckees": "Restrict to Followees",
+            "params": "Policy Parameters",
+            "save": "Save",
+            "delete": "Delete",
+            "deleteDesc": "This action cannot be undone. Deleting a community does not remove messages, but may sever links to them.",
+            "deleteConfirm": "Are you sure you want to delete this community?",
+            "deleted": "Deleted",
+            "searchResultPlaceholder": "Search results will appear here",
+            "searchResultEmpty": "No results found",
+            "searchResultTitle": "Search results for {{ query }}",
+            "prev": "Previous",
+            "next": "Next",
+            "searchNotAvailable": "Search is not available on {{ host }}",
+            "search": "Search",
+            "info": "Info",
+            "edit": "Edit"
         }
     },
     "settings": {
@@ -175,7 +300,9 @@
             "showEditorOnTopMobile": "Show editor on top (mobile)",
             "autoSwitchMediaPostType": "Automatically switch the post type when an image is attached",
             "developerMode": "Developer mode",
-            "generateInviteLink": "Generate invite link",
+            "copyInviteLink": "Copy invite link",
+            "invitation": "Invitation",
+            "inviteNote": "If your domain is invitation-only, you need to have invitation privileges. Please contact your domain administrator for more details.",
             "inviteComment": "Invite comment (optional)",
             "inviteTimeline": "Invite timeline (optional)",
             "copied": "Copied",
@@ -217,10 +344,65 @@
         },
         "profile": {
             "title": "Profile",
-            "update": "Update",
-            "updated": "Updated",
-            "secret": "Secret code",
-            "secretCannotBeRestored": "Since this account was imported using the private key instead of the secret code, the secret code cannot be restored."
+
+            "home": {
+                "isRestrictedTitle": "Currently, the viewers of home posts are restricted",
+                "isRestrictedDesc": "Currently, the content posted on the home timeline can be viewed by the following users.",
+                "editReaders": "Edit Home Viewers",
+                "requests": "Home View Requests",
+
+                "makeRestricted": {
+                    "title": "Do you want to restrict the viewers of home posts?",
+                    "desc": "If you restrict it, the content posted on the home timeline will only be viewable by users you specify individually.",
+                    "do": "Restrict Viewers"
+                },
+
+                "isOpenedTitle": "Currently, home posts are set to public",
+                "isOpenedDesc": "Currently, posts on the home timeline, except for those to restricted timelines, are viewable by anyone.",
+                "makeOpened": {
+                    "title": "Do you want to make home posts public?",
+                    "desc": "If you make it public, all past posts will be viewable by all users.",
+                    "do": "Make Public"
+                }
+            },
+
+            "badges": {
+                "title": "Badges",
+                "makePublic": "Make Public",
+                "makePrivate": "Make Private",
+                "inspect": "Inspect",
+                "removeAllBadges": "Remove all badges (currently {{ count }})",
+                "removeBadgeConfirm": "Are you sure you want to remove all badges?"
+
+            },
+
+            "subprofile": {
+                "title": "Sub Profile",
+                "new": "Create New",
+                "newTitle": "New Sub Profile",
+                "templateURL": "Template URL",
+                "create": "Create",
+                "editViewerRestriction": "Edit Viewer Restriction",
+                "update": "Update",
+                "updated": "Updated",
+                "showInProfile": "Show in Main Profile",
+                "hideInProfile": "Hide from Main Profile",
+                "shownInProfile": "Currently shown in Main Profile",
+                "hiddenInProfile": "Currently hidden from Main Profile",
+                "visibilityUpdated": "Visibility updated",
+                "makePublic": "Make Post Public",
+                "makePrivate": "Make Post Private",
+                "requests": "View Requests",
+                "requestsWithCount": "{{ count }} View Requests",
+                "errNoTimeline": "No sub-profile timeline found",
+                "errTimelineInvalid": "Sub-profile timeline settings are incomplete",
+                "edit": "Edit Sub Profile",
+                "fixTimeline": "Fix Sub Profile Timeline",
+                "timelineFixed": "Sub Profile Timeline fixed",
+                "delete": "Delete",
+                "confirmDelete": "Are you sure you want to delete this sub-profile?",
+                "plzHideBeforeDelete": "Please hide from the main profile before deleting"
+            }
         },
         "identity": {
             "title": "Identity",
@@ -231,6 +413,27 @@
             },
             "hideSubKey": "Hide deactivated sub-keys",
             "deactivate": "Deactivate",
+            "deactivateConfirm": "Are you sure you want to deactivate this sub-key?",
+            "deactivateDesc": "Deactivating a sub-key will log out all devices currently logged in with that sub-key.",
+            "sessionInfo": "Session Information",
+            "deleteAccount": "Delete Account",
+            "delete": "Delete",
+            "deleteConfirm": "Are you sure you want to delete your account?",
+            "deleteDescription": "Your account deletion request will be processed immediately. It is recommended to download your data from Data Management before deletion.",
+            "deleteRequested": "Your account deletion request has been accepted.",
+            "copySubkeyDesc": "You can copy your sub-key using the button on the right, but please handle it with care as it is sensitive information like a password.",
+            "registrationInfo": "Information registered with the domain {{ fqdn }}",
+            "devkeyTitle": "[For Developers] Master Key in hex format",
+            "devkeyDesc": "You can copy the private key of the master key from here for use in bots or other applications.",
+            "alias": {
+                "completed": "An alias {{ alias }} has been set for your account.",
+                "uncompleted": "Account alias is not set (can only be set in privileged mode)",
+                "description": "If you own a domain, you can set an alias for your account by creating the following TXT record.",
+                "domainToSet": "Domain to set",
+                "verify": "Verify Settings",
+                "verifySuccess": "Alias settings have been verified successfully.",
+                "verifyFailed": "Failed to verify alias settings. Please check your DNS configuration."
+            },
             "switchMasterToSub": {
                 "masterKeyFormat": "Master-key format:",
                 "sendEmail": "Send to my email",
@@ -307,7 +510,26 @@
             "register": "Register",
             "helperText": "The following charaters can be used: a-z, A-Z, 0-9",
             "alreadyRegistered": "This user is already registered.",
-            "tryAnotherID": "Try another ID."
+            "tryAnotherID": "Try another ID.",
+            "follow": "Follow",
+            "followers": "Followers",
+            "followApUser": "Follow ActivityPub user",
+            "errApTimelineIsMissing": "ActivityPub receiving timeline is missing",
+            "errApTimelineWriteSelf": "You do not have write permission to the ActivityPub receiving timeline",
+            "errApTimelineWriteProxy": "The receiving bot account does not have write permission",
+            "updateFailed": "Failed to update",
+            "serverBroken": "Server configuration is invalid. Please contact the administrator.",
+            "fix": "Fix",
+            "settingsNG": "There is a problem with the timeline settings",
+            "inquery": "Inquiry",
+            "settings": "Settings",
+            "forwardTimeline": "Forwarding Timeline",
+            "forwardTimelineDesc": "If empty, the home timeline will be used",
+            "addForwardTimeline": "Add Forwarding Timeline",
+            "update": "Update",
+            "moveOption": "Move Options",
+            "addMoveOrigins": "Add Move Origins",
+            "add": "Add"
         },
         "qr": {
             "title": "Login Code",
@@ -547,5 +769,20 @@
             "hideTutorial": "Hide tutorial from the menu",
             "otherTips": "## Additional Tips\n\n### For Password Manager Users & Frequent Logins\n\nIf you're using a password manager to log in to , it's recommended to use a Sub Key instead of the Master Key.\nThis is because:\n1. Some password managers struggle with handling Japanese characters as passwords.\n2. Logging in with the Master Key creates a new session.\n\nYou can copy your Sub Key from Settings > ID Management while logged in under normal mode. Sub Key login works via the same login screen as the Master Key, with a dedicated input field.\n\n## Other Features\n\n### Sub-Profiles\nConcrnt lets you create multiple profiles. You can choose which profile to use when posting.\n\n### ActivityPub Integration\nBy enabling ActivityPub integration, you can interact with other ActivityPub-compatible platforms (Mastodon, Misskey, Pleroma, etc.).\n\n### Data Management & Migration\nConcrnt is a decentralized SNS, allowing you to manage your own data.\nTo safeguard against server shutdowns, regularly export your data from Settings > Data Management and keep it securely.\nYou can also migrate to a different server if your current one shuts down."
         }
+    },
+    "emergency": {
+        "title": "Crash Report",
+        "reload": "Reload",
+        "recoverTools": "Recovery Tools",
+        "whenToUseTools": "If reloading doesn’t help after 3 tries ↓",
+        "softReset": "Reset everything except login info and reload",
+        "recoverTheme": "Reset theme and launch with sync disabled",
+        "hardReset": "Reset everything (login info will also be lost)",
+        "support": "Support",
+        "supportDesc": "If reloading doesn't resolve the issue, there may be a serious problem. Check the latest updates using the link below.",
+        "reportFailed": "Failed to send report (Hint: This only works on official deployments)",
+        "reportSent": "Crash report sent. Thank you!",
+        "sendAnonymousReport": "Send anonymous crash report",
+        "messages": "The internet is a wonderful place, but sometimes things go wrong. Try the buttons below.$Computers are mysterious. Reloading might fix the issue.$Strange things happen sometimes. Let’s solve this together — try the buttons below.$The system hit a small bump. A retry might do the trick.$Something didn’t go as planned. Try reloading.$Things might not be working correctly right now. Try reloading.$Oops! Something went wrong. Try reloading."
     }
 }
