@@ -42,7 +42,13 @@
         "noRegistration": "{{host}}に登録情報が見つかりません",
         "completeAccountSetup": "アカウント設定を完了させましょう！",
         "foundIssues": "見つかった問題:",
-        "profileMissing": "プロフィールが存在していません"
+        "profileMissing": "プロフィールが存在していません",
+        "welcome": "コンカレントへようこそ！",
+        "startWithCommunity": "コミュニティベースで始める",
+        "startWithCommunityDesc": "コンカレントを始めたての人向けのコミュニティをフォローした状態で始めます",
+        "startWithAlone": "ひとりで始める",
+        "startWithAloneDesc": "最低限の設定で始めます",
+        "start": "はじめる"
     },
     "app": {
         "updateAvailable": "新しいバージョンが利用可能です",
@@ -656,12 +662,10 @@
         }
     },
     "welcome": {
-        "welcome": "コンカレントへようこそ！",
-        "startWithCommunity": "コミュニティベースで始める",
-        "startWithCommunityDesc": "コンカレントを始めたての人向けのコミュニティをフォローした状態で始めます",
-        "startWithAlone": "ひとりで始める",
-        "startWithAloneDesc": "最低限の設定で始めます",
-        "start": "はじめる",
+        "arrivalTimelineDescription": "ariake.concrnt.netサーバーへようこそ！わからない事があれば、ここで呟いてみましょう。",
+        "devCentralDescription": "開発者の憩い場",
+        "pageTitle": "Concrnt | コンカレント",
+        "metaDescription": "Concrntはあなたの世界をちょっとだけより豊かにする、新しい時代のSNSです",
         "guide": "ユーザーガイド",
         "gettingStarted": "さぁ、はじめよう",
         "import": "ログイン",
@@ -730,10 +734,6 @@
     },
     "registration": {
         "welcome": {
-            "arrivalTimelineDescription": "ariake.concrnt.netサーバーへようこそ！わからない事があれば、ここで呟いてみましょう。",
-            "devCentralDescription": "開発者の憩い場",
-            "pageTitle": "Concrnt | コンカレント",
-            "metaDescription": "Concrntはあなたの世界をちょっとだけより豊かにする、新しい時代のSNSです",
             "title": "Concrntアカウントを作成しましょう！",
             "desc1": "Concrntは分散型SNSの1つです。",
             "desc2": "サーバーを選んで登録します。",

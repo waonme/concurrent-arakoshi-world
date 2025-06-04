@@ -42,7 +42,13 @@
         "noRegistration": "No registration info found for {{host}}",
         "completeAccountSetup": "Let's complete your account setup!",
         "foundIssues": "Found issues:",
-        "profileMissing": "Profile does not exist"
+        "profileMissing": "Profile does not exist",
+        "welcome": "Welcome to Concurrent!",
+        "startWithCommunity": "Start with Community",
+        "startWithCommunityDesc": "Begin your journey by following communities tailored for newcomers to Concurrent.",
+        "startWithAlone": "Start Alone",
+        "startWithAloneDesc": "Begin with a minimal setup.",
+        "start": "Get Started"
     },
     "app": {
         "updateAvailable": "New version available",
@@ -656,12 +662,10 @@
         }
     },
     "welcome": {
-        "welcome": "Welcome to Concurrent!",
-        "startWithCommunity": "Start with Community",
-        "startWithCommunityDesc": "Begin your journey by following communities tailored for newcomers to Concurrent.",
-        "startWithAlone": "Start Alone",
-        "startWithAloneDesc": "Begin with a minimal setup.",
-        "start": "Get Started",
+        "arrivalTimelineDescription": "Welcome to the ariake.concrnt.net server! If you have any questions, feel free to post here.",
+        "devCentralDescription": "A place for developers to relax",
+        "pageTitle": "Concrnt | Concurrent",
+        "metaDescription": "Concrnt is a new era SNS that enriches your world just a little bit.",
         "guide": "User Guide",
         "gettingStarted": "Let's Get Started",
         "import": "Log In",
@@ -730,10 +734,6 @@
     },
     "registration": {
         "welcome": {
-            "arrivalTimelineDescription": "Welcome to the ariake.concrnt.net server! If you have any questions, feel free to post here.",
-            "devCentralDescription": "A place for developers to relax",
-            "pageTitle": "Concrnt | Concurrent",
-            "metaDescription": "Concrnt is a new era SNS that enriches your world just a little bit.",
             "title": "Let's Create Your Concrnt Account!",
             "desc1": "Concrnt is a decentralized SNS.",
             "desc2": "Choose a server to sign up.",
