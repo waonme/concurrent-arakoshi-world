@@ -179,7 +179,7 @@ buildTime: ${buildTime.toLocaleString()}`
                 >
                     {t('hardReset')}
                 </button>
-                <h2 style={{ marginBottom: 0 }}>{t('support')}Support</h2>
+                <h2 style={{ marginBottom: 0 }}>{t('support')}</h2>
                 {t('supportDesc')}
                 <a href="https://discord.gg/M2UbHquT8B">Discord</a>
                 <h2
