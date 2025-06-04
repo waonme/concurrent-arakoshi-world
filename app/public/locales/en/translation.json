@@ -22,13 +22,19 @@
         "followed": "Follows you",
         "addToList": "Add to List",
         "failedToRender": "An error occurred while rendering this element",
+        "communicationFailed": "Communication failed",
         "noDescription": "No description available",
         "ignore": "Ignore",
         "ignored": "Ignored",
         "addToViewer": "Allow",
         "deletedMessage": "This post has been deleted",
         "privateMessage": "This post is private",
-        "developerView": "Developer View"
+        "developerView": "Developer View",
+        "ccidCopied": "CCID copied",
+        "currentAddress": "Current address",
+        "linkCopied": "Link copied",
+        "timelineUnmuted": "Timeline unmuted",
+        "timelineMuted": "Timeline muted"
     },
     "app": {
         "updateAvailable": "New version available",

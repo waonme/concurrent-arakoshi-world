@@ -22,6 +22,7 @@
         "followed": "フォローされています",
         "addToList": "リストに追加",
         "failedToRender": "この要素の描画中に問題が発生しました",
+        "communicationFailed": "通信に失敗しました",
         "updated": "更新しました",
         "update": "更新",
         "noDescription": "説明はありません",
@@ -30,7 +31,12 @@
         "addToViewer": "閲覧ユーザーに追加",
         "deletedMessage": "このカレントは削除されました",
         "privateMessage": "このカレントは非公開です",
-        "developerView": "開発者ビュー"
+        "developerView": "開発者ビュー",
+        "ccidCopied": "CCIDをコピーしました",
+        "currentAddress": "現住所",
+        "linkCopied": "リンクをコピーしました",
+        "timelineUnmuted": "タイムラインのミュートを解除しました",
+        "timelineMuted": "タイムラインをミュートしました"
     },
     "app": {
         "updateAvailable": "新しいバージョンが利用可能です",
