@@ -328,7 +328,7 @@ export function Explorer(): JSX.Element {
                                         if (timelineDraft) createNewTimeline(timelineDraft)
                                     }}
                                 >
-                                    作成
+                                    {t('create')}
                                 </Button>
                             </Box>
                         </CCDrawer>

@@ -1,0 +1,10 @@
+> 06/04 21:21 ~/concrnt/concurrent-world/app/src$ grep -r -P '[^\x00-\x7f]' . | grep -v '//'
+./pages/Authorize.tsx:                                    {app_name || 'No Name'}に{client?.user?.profile?.username || 'Concrntユーザー'}
+./pages/Authorize.tsx:                                    としてログインしますか？
+./pages/Authorize.tsx:                                    <Typography>アプリケーションを認証するには、先にログインが必要です。</Typography>
+./pages/Authorize.tsx:                                        ログイン
+./pages/Authorize.tsx:                                        キャンセル
+./pages/Authorize.tsx:                                    ログインボタンを押すことにより、{app_name || 'このアプリケーション'}
+./pages/Authorize.tsx:                                    にあなたがConcrntユーザー{client?.user?.profile?.username}であることを証明しますが、
+./pages/Authorize.tsx:                                    アプリケーションは、あなたの代わりにConcrntに投稿・閲覧す る権限を持ちません。
+> 06/04 21:21 ~/concrnt/concurrent-world/app/src$

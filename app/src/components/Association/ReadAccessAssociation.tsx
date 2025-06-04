@@ -24,12 +24,23 @@ export const ReadAccessAssociation = (props: ReadAccessAssociationProps): ReactE
         <ContentWithCCAvatar author={props.association.authorUser}>
             <Box display="flex" justifyContent="space-between">
                 <Typography>
-                    <CCLink to={`/${props.association.author}`}>
-                        {props.association.authorUser?.profile?.username}
-                    </CCLink>{' '}
-                    さんが
-                    <TimelineChip timelineFQID={props.association.target + '@' + props.association.owner} />
-                    への読み取りアクセスを希望しています
+                    {/*
+                      t('readAccessRequest', { username, timeline })
+                      username: rendered as a CCLink
+                      timeline: rendered as a TimelineChip
+                    */}
+                    {(() => {
+                        const username = (
+                            <CCLink to={`/${props.association.author}`}>
+                                {props.association.authorUser?.profile?.username}
+                            </CCLink>
+                        )
+                        const timeline = (
+                            <TimelineChip timelineFQID={props.association.target + '@' + props.association.owner} />
+                        )
+                        // @ts-ignore
+                        return t('readAccessRequest', { username, timeline, interpolation: { escapeValue: false } })
+                    })()}
                 </Typography>
 
                 <TimeDiff date={new Date(props.association.cdate)} />
