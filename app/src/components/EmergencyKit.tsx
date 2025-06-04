@@ -86,7 +86,7 @@ branch: ${branch}
 sha: ${sha}
 buildTime: ${buildTime.toLocaleString()}`
 
-    const messages = t('messages').split('$')
+    const messages: string[] = t('messages', { returnObjects: true })
 
     return (
         <div
