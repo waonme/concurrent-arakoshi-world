@@ -112,7 +112,7 @@
         },
         "associations": {
             "title": "Associations",
-            "readAccessRequest": "{{username}} is requesting read access to {{timeline}}",
+            "readAccessRequest": "<username/> is requesting read access to <timeline/>",
             "removeAssociation": "Remove Association"
         },
         "contacts": {
@@ -661,6 +661,7 @@
         }
     },
     "welcome": {
+        "start": "Let's Get Started",
         "arrivalTimelineDescription": "Welcome to the ariake.concrnt.net server! If you have any questions, feel free to post here.",
         "devCentralDescription": "A place for developers to relax",
         "pageTitle": "Concrnt | Concurrent",

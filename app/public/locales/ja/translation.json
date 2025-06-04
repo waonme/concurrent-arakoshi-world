@@ -112,7 +112,7 @@
         },
         "associations": {
             "title": "リアクション",
-            "readAccessRequest": "{{username}} さんが {{timeline}} への読み取りアクセスを希望しています",
+            "readAccessRequest": "<username/> さんが <timeline/> への読み取りアクセスを希望しています",
             "removeAssociation": "関連付けを削除"
         },
         "contacts": {
@@ -661,6 +661,7 @@
         }
     },
     "welcome": {
+        "start": "はじめる",
         "arrivalTimelineDescription": "ariake.concrnt.netサーバーへようこそ！わからない事があれば、ここで呟いてみましょう。",
         "devCentralDescription": "開発者の憩い場",
         "pageTitle": "Concrnt | コンカレント",
