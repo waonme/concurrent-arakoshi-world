@@ -27,7 +27,10 @@
         "noDescription": "説明はありません",
         "ignore": "無視",
         "ignored": "無視しました",
-        "addToViewer": "閲覧ユーザーに追加"
+        "addToViewer": "閲覧ユーザーに追加",
+        "deletedMessage": "このカレントは削除されました",
+        "privateMessage": "このカレントは非公開です",
+        "developerView": "開発者ビュー"
     },
     "app": {
         "updateAvailable": "新しいバージョンが利用可能です",
@@ -224,7 +227,8 @@
         "secret": {
             "clickToReveal": "クリックして表示",
             "warn": "背後に人がないか、画面を配信していないか確認してください。",
-            "copy": "シークレットコードをコピー"
+            "copy": "シークレットコードをコピー",
+            "close": "閉じる"
         },
         "listSettings": {
             "title": "リスト設定",
@@ -290,6 +294,19 @@
             "search": "検索",
             "info": "情報",
             "edit": "編集"
+        },
+        "profileProperties": {
+            "viewTemplate": "テンプレートを見る",
+            "templateTitle": "テンプレート: {{title}}",
+            "searchCharacters": "このテンプレートのキャラクターを検索",
+            "createWithTemplate": "このテンプレートで自分も作成する",
+            "viewSource": "ソースを見る"
+        },
+        "rerouteMessage": {
+            "details": "詳細",
+            "confirmDeleteReroute": "リルートを削除しますか？",
+            "delete": "削除",
+            "deleteReroute": "rerouteを削除"
         }
     },
     "settings": {
@@ -509,6 +526,11 @@
             "title": "ActivityPub",
             "setup": "ActivityPubにおけるIDを設定します。",
             "cantBeChangedOnceRegistered": "一度登録すると変更できません",
+            "registerDescription": "この操作により、ドメイン{{domain}}にActivityPubのユーザーを登録します。",
+            "domainSelectionWarningTitle": "Activitypubアカウントと紐づけるConcrntドメインは、慎重に選択する必要があります。",
+            "domainSelectionWarningDesc1": "Concrntアカウントの引っ越しに伴い、Activitypubアカウントも外部ドメインへ引っ越すことができますが、",
+            "domainSelectionWarningDesc2": "Concrntアカウントは自由に元のドメインに戻すことができる一方、Activitypub連携は仕様上",
+            "domainSelectionWarningDesc3": "引っ越し元へ戻すことはできません",
             "confirming": "確認中…",
             "register": "登録",
             "helperText": "a-z, A-Z, 0-9, _が使用できます",

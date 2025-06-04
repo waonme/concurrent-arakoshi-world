@@ -25,7 +25,10 @@
         "noDescription": "No description available",
         "ignore": "Ignore",
         "ignored": "Ignored",
-        "addToViewer": "Allow"
+        "addToViewer": "Allow",
+        "deletedMessage": "This post has been deleted",
+        "privateMessage": "This post is private",
+        "developerView": "Developer View"
     },
     "app": {
         "updateAvailable": "New version available",
@@ -223,7 +226,8 @@
         "secret": {
             "clickToReveal": "Click to reveal",
             "warn": "Make sure no one is looking at your screen.",
-            "copy": "Copy"
+            "copy": "Copy",
+            "close": "Close"
         },
         "listSettings": {
             "title": "List settings",
@@ -289,6 +293,19 @@
             "search": "Search",
             "info": "Info",
             "edit": "Edit"
+        },
+        "profileProperties": {
+            "viewTemplate": "View Template",
+            "templateTitle": "Template: {{title}}",
+            "searchCharacters": "Search characters with this template",
+            "createWithTemplate": "Create your own with this template",
+            "viewSource": "View Source"
+        },
+        "rerouteMessage": {
+            "details": "Details",
+            "confirmDeleteReroute": "Are you sure you want to delete this reroute?",
+            "delete": "Delete",
+            "deleteReroute": "Delete reroute"
         }
     },
     "settings": {
@@ -506,6 +523,11 @@
             "title": "ActivityPub",
             "setup": "ActivityPub ID setup.",
             "cantBeChangedOnceRegistered": "**Can't be changed once registered.",
+            "registerDescription": "This operation will register an ActivityPub user on domain {{domain}}.",
+            "domainSelectionWarningTitle": "The Concrnt domain to link with your ActivityPub account must be chosen carefully.",
+            "domainSelectionWarningDesc1": "When migrating your Concrnt account, your ActivityPub account can also be migrated to an external domain.",
+            "domainSelectionWarningDesc2": "While Concrnt accounts can freely return to their original domain, ActivityPub integration, due to specifications,",
+            "domainSelectionWarningDesc3": "cannot be moved back to the original domain",
             "confirming": "Confirming...",
             "register": "Register",
             "helperText": "The following charaters can be used: a-z, A-Z, 0-9",
