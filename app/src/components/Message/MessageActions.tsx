@@ -324,7 +324,7 @@ export const MessageActions = (props: MessageActionsProps): JSX.Element => {
                             <ListItemIcon>
                                 <PlaylistRemoveIcon sx={{ color: 'text.primary' }} />
                             </ListItemIcon>
-                            <ListItemText>このStreamから削除</ListItemText>
+                            <ListItemText>{t('removeFromStream')}</ListItemText>
                         </MenuItem>
                     )}
                 */}

@@ -51,6 +51,19 @@
             "document": "ドキュメント",
             "forum": "フォーラム"
         },
+        "concord": {
+            "badges": {
+                "series": "シリーズ",
+                "addNew": "+ 新規",
+                "mint": "発行",
+                "newSeries": "新規シリーズ",
+                "create": "作成",
+                "mintBadge": "バッジ発行"
+            },
+            "assets": {
+                "send": "送る"
+            }
+        },
         "home": {
             "title": "ホーム"
         },
@@ -87,7 +100,8 @@
             "quicklook": "みてみる"
         },
         "devtool": {
-            "title": "開発者ツール"
+            "title": "開発者ツール",
+            "resetTutorial": "チュートリアルをリセット"
         },
         "tutorial": {
             "title": "チュートリアル"
@@ -263,7 +277,8 @@
             "inspect": "詳細",
             "delete": "削除",
             "reallyDelete": "本当にこのメッセージを削除しますか？",
-            "confirmDelete": "削除"
+            "confirmDelete": "削除",
+            "removeFromStream": "このStreamから削除"
         },
         "emoji": {
             "letsAddEmojiPack": "設定から絵文字パッケージを追加しましょう",
@@ -536,7 +551,7 @@
             "domainSelectionWarningTitle": "Activitypubアカウントと紐づけるConcrntドメインは、慎重に選択する必要があります。",
             "domainSelectionWarningDesc1": "Concrntアカウントの引っ越しに伴い、Activitypubアカウントも外部ドメインへ引っ越すことができますが、",
             "domainSelectionWarningDesc2": "Concrntアカウントは自由に元のドメインに戻すことができる一方、Activitypub連携は仕様上",
-            "domainSelectionWarningDesc3": "引っ越し元へ戻すことはできません",
+            "domainSelectionWarningDesc3": "引っ越し元へ戻すことはできません。",
             "confirming": "確認中…",
             "register": "登録",
             "helperText": "a-z, A-Z, 0-9, _が使用できます",
@@ -560,7 +575,8 @@
             "update": "更新",
             "moveOption": "引っ越しオプション",
             "addMoveOrigins": "引っ越し元を追加",
-            "add": "追加"
+            "add": "追加",
+            "notAvailable": "{{host}}では有効化されていません"
         },
         "qr": {
             "title": "ログインQR",
@@ -568,7 +584,8 @@
             "showInstalled": "この端末のキーを表示",
             "tip1": "ここで作成したサブキーの認証情報は、この画面を離れると再度表示されません。使わなかった場合作り直しになってしまう為、必要な時のみ生成して、必要に応じてメモを取るなどしてください。",
             "tip2": "アカウントが持つキーのリストは設定の管理ページから確認できます。",
-            "createNewSubKey": "サブキーを新しく生成する"
+            "createNewSubKey": "サブキーを新しく生成する",
+            "notLoggedInWithSubkey": "この端末はサブキーでログインしていません"
         },
         "importexport": {
             "title": "データ管理",

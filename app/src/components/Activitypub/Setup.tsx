@@ -124,7 +124,7 @@ export const ApSetup = (): JSX.Element => {
                 <AlertTitle>{t('domainSelectionWarningTitle')}</AlertTitle>
                 {t('domainSelectionWarningDesc1')}
                 {t('domainSelectionWarningDesc2')}
-                <b>{t('domainSelectionWarningDesc3')}</b>。
+                <b>{t('domainSelectionWarningDesc3')}</b>
             </Alert>
             <TextField
                 label="UserID"

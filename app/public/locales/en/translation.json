@@ -50,6 +50,19 @@
             "document": "Document",
             "forum": "Forum"
         },
+        "concord": {
+            "badges": {
+                "series": "Series",
+                "addNew": "+ New",
+                "mint": "Mint",
+                "newSeries": "New Series",
+                "create": "Create",
+                "mintBadge": "Mint Badge"
+            },
+            "assets": {
+                "send": "Send"
+            }
+        },
         "home": {
             "title": "Home"
         },
@@ -86,7 +99,8 @@
             "quicklook": "Quick Look"
         },
         "devtool": {
-            "title": "Devtool"
+            "title": "Devtool",
+            "resetTutorial": "Reset Tutorial"
         },
         "tutorial": {
             "title": "Tutorial"
@@ -262,7 +276,8 @@
             "inspect": "Inspect",
             "delete": "Delete",
             "reallyDelete": "Really delete this message?",
-            "confirmDelete": "Confirm"
+            "confirmDelete": "Confirm",
+            "removeFromStream": "Remove from Stream"
         },
         "emoji": {
             "letsAddEmojiPack" : "Let's add an emoji package from settings",
@@ -533,7 +548,7 @@
             "domainSelectionWarningTitle": "The Concrnt domain to link with your ActivityPub account must be chosen carefully.",
             "domainSelectionWarningDesc1": "When migrating your Concrnt account, your ActivityPub account can also be migrated to an external domain.",
             "domainSelectionWarningDesc2": "While Concrnt accounts can freely return to their original domain, ActivityPub integration, due to specifications,",
-            "domainSelectionWarningDesc3": "cannot be moved back to the original domain",
+            "domainSelectionWarningDesc3": "cannot be moved back to the original domain.",
             "confirming": "Confirming...",
             "register": "Register",
             "helperText": "The following charaters can be used: a-z, A-Z, 0-9",
@@ -557,7 +572,8 @@
             "update": "Update",
             "moveOption": "Move Options",
             "addMoveOrigins": "Add Move Origins",
-            "add": "Add"
+            "add": "Add",
+            "notAvailable": "Not available on {{host}}"
         },
         "qr": {
             "title": "Login Code",
@@ -565,7 +581,8 @@
             "showInstalled": "Show installed",
             "tip1": "You can only see generated codes once. Generate a new code only when you need it.",
             "tip2": "You can check created keys in the Settings > Identity page.",
-            "createNewSubKey": "Create New Sub Key"
+            "createNewSubKey": "Create New Sub Key",
+            "notLoggedInWithSubkey": "This device is not logged in with a sub-key"
         },
         "importexport": {
             "title": "Import/Export",
