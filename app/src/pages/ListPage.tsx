@@ -2,7 +2,6 @@ import { Box, Button, Divider, Menu, Tab, Tabs, Typography } from '@mui/material
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, Link as RouterLink, useSearchParams } from 'react-router-dom'
 import { usePreference } from '../context/PreferenceContext'
-import { RealtimeTimeline } from '../components/RealtimeTimeline'
 import { useClient } from '../context/ClientContext'
 import {
     isFulfilled,
@@ -18,7 +17,6 @@ import { ListSettings } from '../components/ListSettings'
 import ListIcon from '@mui/icons-material/List'
 import { CCDrawer } from '../components/ui/CCDrawer'
 import { TimelineHeader } from '../components/TimelineHeader'
-import { type VListHandle } from 'virtua'
 import { useGlobalState } from '../context/GlobalState'
 import { ListItemTimeline } from '../components/ui/ListItemTimeline'
 import { CCPostEditor } from '../components/Editor/CCPostEditor'
@@ -27,6 +25,8 @@ import { type StreamList } from '../model'
 import { Helmet } from 'react-helmet-async'
 import { useGlobalActions } from '../context/GlobalActions'
 import { useTranslation } from 'react-i18next'
+import { useTimeline } from '../context/TimelineProvider'
+import { OutPortal } from 'react-reverse-portal'
 
 export function ListPage(): JSX.Element {
     const { client } = useClient()
@@ -39,6 +39,9 @@ export function ListPage(): JSX.Element {
     const [lists, _setLists] = usePreference('lists')
     const [showEditorOnTop] = usePreference('showEditorOnTop')
     const [showEditorOnTopMobile] = usePreference('showEditorOnTopMobile')
+
+    const { timelinePortal, setTimelines, timelineRef } = useTimeline()
+    console.log(timelineRef.current)
 
     const tab = path.hash.replace('#', '')
     const id = lists[tab] ? tab : Object.keys(lists)[0]
@@ -53,9 +56,11 @@ export function ListPage(): JSX.Element {
 
     const [listSettingsOpen, setListSettingsOpen] = useState<boolean>(false)
 
-    const timelineRef = useRef<VListHandle>(null)
-
     const timelines = useMemo(() => subscription?.items.map((e) => e.id) ?? [], [subscription])
+    useEffect(() => {
+        if (!subscription) return
+        setTimelines(subscription.items.map((e) => e.id))
+    }, [setTimelines, subscription])
 
     const [updater, setUpdater] = useState<number>(0)
 
@@ -284,35 +289,36 @@ export function ListPage(): JSX.Element {
                 {subscription ? (
                     <>
                         {timelines.length > 0 ? (
-                            <RealtimeTimeline
-                                header={
-                                    <>
-                                        <Box
-                                            sx={{
-                                                display: {
-                                                    xs: showEditorOnTopMobile ? 'block' : 'none',
-                                                    sm: showEditorOnTop ? 'block' : 'none'
-                                                }
-                                            }}
-                                        >
-                                            <CCPostEditor
-                                                minRows={3}
-                                                maxRows={7}
-                                                subprofile={list.defaultProfile}
-                                                streamPickerOptions={allKnownTimelines}
-                                                streamPickerInitial={postTimelines}
-                                                defaultPostHome={defaultPostHome}
+                            <>
+                                <OutPortal
+                                    node={timelinePortal}
+                                    header={
+                                        <>
+                                            <Box
                                                 sx={{
-                                                    p: { xs: 0.5, sm: 1 }
+                                                    display: {
+                                                        xs: showEditorOnTopMobile ? 'block' : 'none',
+                                                        sm: showEditorOnTop ? 'block' : 'none'
+                                                    }
                                                 }}
-                                            />
-                                            <Divider sx={{ mx: { xs: 0.5, sm: 1, md: 1 } }} />
-                                        </Box>
-                                    </>
-                                }
-                                timelineFQIDs={timelines}
-                                ref={timelineRef}
-                            />
+                                            >
+                                                <CCPostEditor
+                                                    minRows={3}
+                                                    maxRows={7}
+                                                    subprofile={list.defaultProfile}
+                                                    streamPickerOptions={allKnownTimelines}
+                                                    streamPickerInitial={postTimelines}
+                                                    defaultPostHome={defaultPostHome}
+                                                    sx={{
+                                                        p: { xs: 0.5, sm: 1 }
+                                                    }}
+                                                />
+                                                <Divider sx={{ mx: { xs: 0.5, sm: 1, md: 1 } }} />
+                                            </Box>
+                                        </>
+                                    }
+                                />
+                            </>
                         ) : (
                             <Box
                                 sx={{
