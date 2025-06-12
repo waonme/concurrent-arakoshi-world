@@ -41,7 +41,6 @@ export function ListPage(): JSX.Element {
     const [showEditorOnTopMobile] = usePreference('showEditorOnTopMobile')
 
     const { timelinePortal, setTimelines, timelineRef } = useTimeline()
-    console.log(timelineRef.current)
 
     const tab = path.hash.replace('#', '')
     const id = lists[tab] ? tab : Object.keys(lists)[0]
