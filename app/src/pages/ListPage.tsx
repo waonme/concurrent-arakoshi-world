@@ -98,7 +98,7 @@ export function ListPage(): JSX.Element {
         registerHomeButtonCallBack(() => {
             // タイムラインがスクロールされてたら一番上に戻す
             if (timelineRef.current?.scrollOffset !== 0) {
-                timelineRef.current?.scrollToIndex(0, { align: 'start', smooth: true })
+                timelineRef.current?.scrollToIndex(0, { align: 'start' })
                 // preventDefault用
                 return true
             } else {

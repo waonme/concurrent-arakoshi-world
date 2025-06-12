@@ -16,6 +16,7 @@ import { useGlobalState } from './GlobalState'
 import GroupsIcon from '@mui/icons-material/Groups'
 import HikingIcon from '@mui/icons-material/Hiking'
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
 
 export interface GlobalActionsState {
     openMobileMenu: (open?: boolean) => void
@@ -52,6 +53,7 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
     const theme = useTheme()
     const { t } = useTranslation('', { keyPrefix: 'globalActions' })
 
+    const location = useLocation()
     const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false)
 
     const [emojiPack, setEmojiPack] = useState<EmojiPackage>()
@@ -117,11 +119,11 @@ export const GlobalActionsProvider = (props: GlobalActionsProps): JSX.Element =>
     const [onHomeButtonClickCallBack, setOnHomeButtonClickCallBack] = useState<() => boolean>(() => () => false)
 
     const onHomeButtonClick = useCallback(() => {
-        if (onHomeButtonClickCallBack) {
+        if (onHomeButtonClickCallBack && location.pathname === '/') {
             return onHomeButtonClickCallBack()
         }
         return false
-    }, [onHomeButtonClickCallBack])
+    }, [onHomeButtonClickCallBack, location.pathname])
 
     const registerHomeButtonCallBack = useCallback((callback: () => boolean) => {
         setOnHomeButtonClickCallBack(() => callback)

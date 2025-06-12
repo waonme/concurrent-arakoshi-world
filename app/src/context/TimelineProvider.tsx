@@ -38,8 +38,6 @@ export const TimelineProvider = (props: TimelineProviderProps): JSX.Element => {
                 }
             }
 
-            console.log('Setting new timelines:', newTimelines)
-
             setTimelines_internal(newTimelines)
         },
         [timelines]
