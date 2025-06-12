@@ -42,6 +42,7 @@ import { SearchDrawerProvider } from './context/SearchDrawer'
 import { CommandPaletteProvider } from './context/CommandPalette'
 import { ApUserPage } from './pages/ApUser'
 import { DeckPage } from './pages/Deck'
+import { TimelineProvider } from './context/TimelineProvider'
 
 const SwitchMasterToSub = lazy(() => import('./components/SwitchMasterToSub'))
 
@@ -341,9 +342,11 @@ function App(): JSX.Element {
                                             <UserDrawerProvider>
                                                 <SearchDrawerProvider>
                                                     <ConfirmProvider>
-                                                        <CommandPaletteProvider>
-                                                            <GlobalActionsProvider>{childs}</GlobalActionsProvider>
-                                                        </CommandPaletteProvider>
+                                                        <TimelineProvider>
+                                                            <CommandPaletteProvider>
+                                                                <GlobalActionsProvider>{childs}</GlobalActionsProvider>
+                                                            </CommandPaletteProvider>
+                                                        </TimelineProvider>
                                                     </ConfirmProvider>
                                                 </SearchDrawerProvider>
                                             </UserDrawerProvider>
