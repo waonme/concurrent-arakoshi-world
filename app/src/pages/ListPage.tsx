@@ -188,7 +188,7 @@ export function ListPage(): JSX.Element {
                 clearTimeout(longtap.current)
                 longtap.current = null
                 if (subid === tab) {
-                    timelineRef.current?.scrollToIndex(0, { align: 'start', smooth: true })
+                    timelineRef.current?.scrollToIndex(0, { align: 'start' })
                 } else {
                     navigate(`#${subid}`)
                 }
@@ -232,7 +232,7 @@ export function ListPage(): JSX.Element {
                         setListSettingsOpen(true)
                     }}
                     onTitleClick={() => {
-                        timelineRef.current?.scrollToIndex(0, { align: 'start', smooth: true })
+                        timelineRef.current?.scrollToIndex(0, { align: 'start' })
                     }}
                 />
                 <Tabs
