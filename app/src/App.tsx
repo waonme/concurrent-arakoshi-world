@@ -43,6 +43,7 @@ import { CommandPaletteProvider } from './context/CommandPalette'
 import { ApUserPage } from './pages/ApUser'
 import { DeckPage } from './pages/Deck'
 import { TimelineProvider } from './context/TimelineProvider'
+import { InspectorProvider } from './context/Inspector'
 
 const SwitchMasterToSub = lazy(() => import('./components/SwitchMasterToSub'))
 
@@ -342,11 +343,15 @@ function App(): JSX.Element {
                                             <UserDrawerProvider>
                                                 <SearchDrawerProvider>
                                                     <ConfirmProvider>
-                                                        <TimelineProvider>
-                                                            <CommandPaletteProvider>
-                                                                <GlobalActionsProvider>{childs}</GlobalActionsProvider>
-                                                            </CommandPaletteProvider>
-                                                        </TimelineProvider>
+                                                        <InspectorProvider>
+                                                            <TimelineProvider>
+                                                                <CommandPaletteProvider>
+                                                                    <GlobalActionsProvider>
+                                                                        {childs}
+                                                                    </GlobalActionsProvider>
+                                                                </CommandPaletteProvider>
+                                                            </TimelineProvider>
+                                                        </InspectorProvider>
                                                     </ConfirmProvider>
                                                 </SearchDrawerProvider>
                                             </UserDrawerProvider>
