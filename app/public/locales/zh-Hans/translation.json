@@ -148,7 +148,7 @@
                 "moreInfo": "更多信息",
                 "twoPasswords": "Concrnt 有两种密码类型：'主密钥'和'子密钥'。",
                 "sealAnalogy": "这就像公章和私章之间的关系。",
-                "digitalSeal": "在 Concrnt 中，您用印章标记您的帖子以证明它们是您的。",
+                "digitalSeal": "在 Concrnt 中，您用'数字印章'标记您的帖子以证明它们是您的。",
                 "realSeal": "公章用于合同或从银行取款，但您不会用它来接收包裹。",
                 "masterSubUsage": "同样，在 Concrnt 中，主密钥用于重要操作如迁移或账户删除，而子密钥用于日常操作如发帖或跟随。",
                 "masterKeyWarning": "如果主密钥泄露，一切就都结束了，但您可以随时撤销子密钥。"
