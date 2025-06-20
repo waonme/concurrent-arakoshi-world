@@ -799,7 +799,12 @@
         "createAccount": "Create an Account",
         "masterKeyDesc": "Enter the master key as 12 words separated by spaces",
         "privLogin": "Log in with Privileged Mode",
-        "normalLogin": "Log in with Normal Mode"
+        "normalLogin": "Log in with Normal Mode",
+        "passkeyNoticeTitle": "Passkey login is now available 🎉",
+"passkeyNoticeBody": "After logging in with your master key using privileged login, you can register a passkey from the subkey management screen.",
+"passkeyWarnTitle": "Passkey login is currently in beta",
+"passkeyWarnBody": "Due to potential spec changes, registered passkeys may become unusable in the future.<br/>Additionally, concrnt.world relies on passkey extensions that are still in the process of being adopted globally. Some browsers may not support them yet, and even when they do, there may be limitations—such as lack of cross-platform login support.<br/><br/>Currently confirmed compatibility:<br/>iCloud Keychain (Safari): Supported<br/>1Password: Direct usage supported. Remote authentication via QR code is not supported<br/>Google Chrome: Not supported"
+
     },
     "tutorial": {
         "title": "Tutorial",

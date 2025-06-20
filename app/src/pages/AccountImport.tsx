@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Divider, Paper, Typography } from '@mui/material'
+import { Alert, AlertTitle, Box, Button, Divider, Paper, Typography } from '@mui/material'
 import { GuestBase } from '../components/GuestBase'
 import { ImportMasterKey } from '../components/Importer/ImportMasterkey'
 import { Link } from 'react-router-dom'
@@ -7,7 +7,7 @@ import { ImportSubkey } from '../components/Importer/ImportSubkey'
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner'
 import PasswordIcon from '@mui/icons-material/Password'
 import { IconButtonWithLabel } from '../components/ui/IconButtonWithLabel'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { Client } from '@concrnt/worldlib'
 import { Helmet } from 'react-helmet-async'
@@ -181,6 +181,19 @@ export default function AccountImport(): JSX.Element {
                         <ImportMasterKey />
                         <Divider>{t('or')}</Divider>
                         <ImportSubkey />
+                    </>
+                )}
+                {importMode === 'none' && (
+                    <>
+                        <Alert severity="info">
+                            <AlertTitle>{t('passkeyNoticeTitle')}</AlertTitle>
+                            {t('passkeyNoticeBody')}
+                        </Alert>
+
+                        <Alert severity="warning">
+                            <AlertTitle>{t('passkeyWarnTitle')}</AlertTitle>
+                            <Trans i18nKey="import.passkeyWarnBody" />
+                        </Alert>
                     </>
                 )}
             </Paper>
