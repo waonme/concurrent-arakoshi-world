@@ -13,6 +13,7 @@ import { Client } from '@concrnt/worldlib'
 import { Helmet } from 'react-helmet-async'
 import { DeriveIdentity, LoadSubKey } from '@concrnt/client'
 import { string2Uint8Array } from '../util'
+import { enqueueSnackbar } from 'notistack'
 
 const QRCodeReader = lazy(() => import('../components/ui/QRCodeReader'))
 
@@ -50,6 +51,7 @@ export default function AccountImport(): JSX.Element {
             console.log('cred', cred)
             if (!cred) {
                 console.error('Failed to get passkey')
+                enqueueSnackbar('Failed to get passkey.', { variant: 'error' })
                 return
             }
 
@@ -57,6 +59,7 @@ export default function AccountImport(): JSX.Element {
             const userHandle = cred.response?.userHandle
             if (!userHandle) {
                 console.error('No user handle found in passkey response')
+                enqueueSnackbar('No user handle found in passkey response.', { variant: 'error' })
                 return
             }
 
@@ -79,13 +82,24 @@ export default function AccountImport(): JSX.Element {
 
                 if (!dummySubkey) {
                     console.error('Failed to load dummy subkey')
-                    alert(t('invalidSubkey'))
+                    enqueueSnackbar('Failed to load dummy subkey.', { variant: 'error' })
                     return
                 }
 
-                const res = await fetch(`https://${domain}/api/v1/key/${dummySubkey.ckid}`, {}).then((response) =>
-                    response.json()
-                )
+                const res = await fetch(`https://${domain}/api/v1/key/${dummySubkey.ckid}`, {})
+                    .then((response) => response.json())
+                    .catch((error) => {
+                        console.error('Failed to fetch key:', error)
+                        enqueueSnackbar('Failed to fetch key.', { variant: 'error' })
+                        return null
+                    })
+
+                if (!res || !res.content || res.content.length === 0) {
+                    console.error('Invalid response from server:', res)
+                    enqueueSnackbar('Account not found.', { variant: 'error' })
+                    return
+                }
+
                 const ccid = res.content[0].root
                 const subkeyStr = `concurrent-subkey ${identity.privateKey} ${ccid}@${domain} -`
 
@@ -94,7 +108,7 @@ export default function AccountImport(): JSX.Element {
                 window.location.href = '/'
             } else {
                 console.error('No PRF first result found')
-                alert(t('invalidSubkey'))
+                enqueueSnackbar('Provided passkey is not supported.', { variant: 'error' })
                 return
             }
         }

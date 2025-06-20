@@ -70,6 +70,7 @@ export default function SwitchMasterToPasskey(): JSX.Element {
                 })
                 .catch((e) => {
                     console.error('error: ', e)
+                    setSuccess(false)
                 })
         } else {
             console.error('PRF First not available')
