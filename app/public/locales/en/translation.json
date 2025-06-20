@@ -550,6 +550,17 @@
                 "switchToNormalMode": "Switch to Normal Mode",
                 "exitPrivilegedMode": "Exit Privileged Mode",
                 "privilegeModeDesc": "Privileged Mode allows for critical actions such as account deletion."
+            },
+            "passkey": {
+                "register": "Register a passkey",
+                "completed": "Passkey registered 🎉",
+                "completedDesc": "You can now log in to Concrnt using your passkey. Registering a new passkey will still require your master key. Please keep your master key stored in a safe place.",
+                "clickToFinish": "Click to finish",
+                "failed": "Your passkey does not support required extensions 😭",
+                "failedDesc": "Please try another passkey, or wait until your current passkey supports the required extensions. Unfortunately, you will need to delete the created passkey manually.",
+                "warnTitle": "Passkey registration is only supported by limited applications",
+                "warnDesc": "Concrnt uses advanced passkey extensions, which are not yet supported by all passkey providers. Currently, iCloud Passwords (Safari) and 1Password have been confirmed to work. However, passkeys managed by Chrome are not yet supported. Since this is a globally developing feature, there is no way to know whether a given passkey is supported until registration is attempted. If the passkey turns out to be unsupported, you will need to manually discard it.",
+                "desc": "Registering a passkey allows for easier login to Concrnt. If you lose your passkey, you will need your master key to recover access. Please make sure to keep your master key securely stored."
             }
         },
         "theme": {
