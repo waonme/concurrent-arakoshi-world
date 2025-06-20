@@ -143,19 +143,7 @@
             "resetTutorial": "Reset Tutorial"
         },
         "tutorial": {
-            "title": "Tutorial",
-            "details": {
-                "moreInfo": "More information",
-                "twoPasswords": "Concrnt has two types of passwords: a 'Master Key' and a 'Sub Key'.",
-                "sealAnalogy": "This is like the relationship between a registered seal and a self-inking seal.",
-                "digitalSeal": "In Concrnt, you stamp your posts with a digital seal to prove they are yours.",
-                "realSeal": "A registered seal is used for contracts or withdrawing money from a bank, but you wouldn't use it to receive a package.",
-                "masterSubUsage": "Similarly, in Concrnt, the Master Key is used for important actions like migration or account deletion, while the Sub Key is used for everyday actions like posting or following.",
-                "masterKeyWarning": "If your Master Key is ever leaked, it's over, but you can always revoke a Sub Key."
-            },
-            "community": {
-                "timelineDescription": "Welcome to Concrnt! This is the main timeline for beginners to find their community. If you're unsure, try adding this timeline to your list."
-            }
+            "title": "Tutorial"
         },
         "settings": {
             "title": "Settings",
@@ -890,6 +878,18 @@
             "showTutorial": "Show tutorial in the menu",
             "hideTutorial": "Hide tutorial from the menu",
             "otherTips": "## Additional Tips\n\n### For Password Manager Users & Frequent Logins\n\nIf you're using a password manager to log in to , it's recommended to use a Sub Key instead of the Master Key.\nThis is because:\n1. Some password managers struggle with handling Japanese characters as passwords.\n2. Logging in with the Master Key creates a new session.\n\nYou can copy your Sub Key from Settings > ID Management while logged in under normal mode. Sub Key login works via the same login screen as the Master Key, with a dedicated input field.\n\n## Other Features\n\n### Sub-Profiles\nConcrnt lets you create multiple profiles. You can choose which profile to use when posting.\n\n### ActivityPub Integration\nBy enabling ActivityPub integration, you can interact with other ActivityPub-compatible platforms (Mastodon, Misskey, Pleroma, etc.).\n\n### Data Management & Migration\nConcrnt is a decentralized SNS, allowing you to manage your own data.\nTo safeguard against server shutdowns, regularly export your data from Settings > Data Management and keep it securely.\nYou can also migrate to a different server if your current one shuts down."
+        },
+        "details": {
+            "moreInfo": "More information",
+            "twoPasswords": "Concrnt has two types of passwords: a 'Master Key' and a 'Sub Key'.",
+            "sealAnalogy": "This is like the relationship between a registered seal and a self-inking seal.",
+            "digitalSeal": "In Concrnt, you stamp your posts with a digital seal to prove they are yours.",
+            "realSeal": "A registered seal is used for contracts or withdrawing money from a bank, but you wouldn't use it to receive a package.",
+            "masterSubUsage": "Similarly, in Concrnt, the Master Key is used for important actions like migration or account deletion, while the Sub Key is used for everyday actions like posting or following.",
+            "masterKeyWarning": "If your Master Key is ever leaked, it's over, but you can always revoke a Sub Key."
+        },
+        "community": {
+            "timelineDescription": "Welcome to Concrnt! This is the main timeline for beginners to find their community. If you're unsure, try adding this timeline to your list."
         }
     },
     "emergency": {
