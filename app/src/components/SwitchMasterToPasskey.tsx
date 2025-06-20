@@ -12,7 +12,6 @@ export default function SwitchMasterToPasskey(): JSX.Element {
     const { t } = useTranslation('', { keyPrefix: 'settings.identity.passkey' })
 
     const registerPasskey = async () => {
-        const saltBuf = new Uint8Array(32)
         const challenge = new Uint8Array(32)
         crypto.getRandomValues(challenge)
         const cred = await navigator.credentials.create({
@@ -29,13 +28,13 @@ export default function SwitchMasterToPasskey(): JSX.Element {
                     displayName: client.user?.profile?.username || 'anonymous'
                 },
                 authenticatorSelection: {
-                    userVerification: 'discouraged',
+                    userVerification: 'required',
                     residentKey: 'required'
                 },
                 extensions: {
                     prf: {
                         eval: {
-                            first: saltBuf.buffer
+                            first: string2Uint8Array('concrnt-world-passkey')
                         }
                     }
                 }

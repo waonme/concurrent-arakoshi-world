@@ -12,8 +12,15 @@ import { Suspense, lazy, useEffect, useState } from 'react'
 import { Client } from '@concrnt/worldlib'
 import { Helmet } from 'react-helmet-async'
 import { DeriveIdentity, LoadSubKey } from '@concrnt/client'
+import { string2Uint8Array } from '../util'
 
 const QRCodeReader = lazy(() => import('../components/ui/QRCodeReader'))
+
+function bufToHex(ab: ArrayBuffer): string {
+    return Array.from(new Uint8Array(ab))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('')
+}
 
 export default function AccountImport(): JSX.Element {
     const { t } = useTranslation('', { keyPrefix: 'import' })
@@ -23,14 +30,20 @@ export default function AccountImport(): JSX.Element {
     useEffect(() => {
         // receive passkey
         const run = async () => {
-            const saltBuf = new Uint8Array(32)
             const challenge = new Uint8Array(32)
             crypto.getRandomValues(challenge)
             const cred = await navigator.credentials.get({
                 publicKey: {
                     challenge: challenge,
-                    userVerification: 'discouraged',
-                    extensions: { prf: { eval: { first: saltBuf.buffer } } }
+                    rpId: window.location.hostname,
+                    userVerification: 'required',
+                    extensions: {
+                        prf: {
+                            eval: {
+                                first: string2Uint8Array('concrnt-world-passkey')
+                            }
+                        }
+                    }
                 }
             })
 
@@ -56,7 +69,10 @@ export default function AccountImport(): JSX.Element {
             if (prfRes?.first) {
                 console.log('PRF First:', prfRes.first)
                 const firstBuf = new Uint8Array(prfRes.first)
+                console.log('source:', bufToHex(prfRes.first))
+
                 const identity = DeriveIdentity(firstBuf)
+                console.log('Derived Identity:', identity)
 
                 const dummySubkeyStr = `concurrent-subkey ${identity.privateKey} -@${domain} -`
                 const dummySubkey = LoadSubKey(dummySubkeyStr)
