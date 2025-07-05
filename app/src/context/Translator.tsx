@@ -6,12 +6,16 @@ export interface TranslatorState {
     translate: () => void
     undo: () => void
     translatedText?: string
+    isAvailable: boolean
+    processing?: boolean
 }
 
 const TranslatorContext = createContext<TranslatorState>({
     translate: () => {},
     undo: () => {},
-    translatedText: undefined
+    translatedText: undefined,
+    isAvailable: false,
+    processing: false
 })
 
 interface TranslatorProps {
@@ -21,20 +25,20 @@ interface TranslatorProps {
 
 export const TranslatorProvider = (props: TranslatorProps): JSX.Element => {
     const [translatedText, setTranslatedText] = useState<string>()
+    const [processing, setProcessing] = useState<boolean>(false)
     const { i18n } = useTranslation()
 
+    const isAvailable = !!LanguageDetector && !!Translator
+
     const translate = async () => {
-        // @ts-ignore
+        setProcessing(true)
         const detector = await LanguageDetector.create({
-            // @ts-ignore
             monitor(m) {
-                // @ts-ignore
                 m.addEventListener('downloadprogress', (e) => {
                     console.log(`Downloaded ${e.loaded * 100}%`)
                 })
             }
         })
-        await detector.ready
 
         const languages = await detector.detect(props.originalText)
         console.log('Detected languages:', languages)
@@ -42,13 +46,15 @@ export const TranslatorProvider = (props: TranslatorProps): JSX.Element => {
         const sourceLang = languages[0].detectedLanguage
         const targetLang = convertToGoogleTranslateCode(i18n.language)
 
-        // @ts-ignore
+        if (!sourceLang || !targetLang) {
+            console.error('Source or target language is not defined')
+            return
+        }
+
         const translator = await Translator.create({
             sourceLanguage: sourceLang,
             targetLanguage: targetLang,
-            // @ts-ignore
             monitor(m) {
-                // @ts-ignore
                 m.addEventListener('downloadprogress', (e) => {
                     console.log(`Downloaded ${e.loaded * 100}%`)
                 })
@@ -58,6 +64,7 @@ export const TranslatorProvider = (props: TranslatorProps): JSX.Element => {
         const translaged = await translator.translate(props.originalText)
         console.log('Translation result:', translaged)
         setTranslatedText(translaged)
+        setProcessing(false)
     }
 
     const undo = () => {
@@ -69,7 +76,9 @@ export const TranslatorProvider = (props: TranslatorProps): JSX.Element => {
             value={{
                 translate,
                 undo,
-                translatedText
+                translatedText,
+                isAvailable,
+                processing
             }}
         >
             {props.children}
