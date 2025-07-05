@@ -37,7 +37,8 @@
         "linkCopied": "リンクをコピーしました",
         "timelineUnmuted": "タイムラインのミュートを解除しました",
         "timelineMuted": "タイムラインをミュートしました",
-        "translatedByChromeLLM": "Chrome内臓の翻訳LLMを使用して翻訳されました"
+        "translatedByChromeLLM": "Chrome内臓の翻訳LLMを使用して翻訳されました",
+        "showMore": "もっと見る"
     },
     "globalActions": {
         "noRegistration": "{{host}}に登録情報が見つかりません",

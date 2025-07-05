@@ -132,7 +132,7 @@ export const MessageViewBase = (props: MessageViewProps): JSX.Element => {
                                 setExpanded(true)
                             }}
                         >
-                            Show more
+                            {t('showMore')}
                         </Button>
                     </Box>
                     <Box itemProp="articleBody">{props.children}</Box>

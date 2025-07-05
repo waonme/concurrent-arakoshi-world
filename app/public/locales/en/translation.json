@@ -38,7 +38,8 @@
         "timelineUnmuted": "Timeline unmuted",
         "timelineMuted": "Timeline muted",
         "translate": "Translate",
-        "translatedByChromeLLM": "Translated by Chrome Local LLM Translator"
+        "translatedByChromeLLM": "Translated by Chrome Local LLM Translator",
+        "showMore": "Show more"
     },
     "globalActions": {
         "noRegistration": "No registration info found for {{host}}",
