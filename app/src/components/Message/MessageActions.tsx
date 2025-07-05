@@ -37,6 +37,7 @@ import { useTranslation } from 'react-i18next'
 import { convertToGoogleTranslateCode } from '../../util'
 import { useGlobalState } from '../../context/GlobalState'
 import { MarkdownMessageView } from './MarkdownMessageView'
+import { useTranslator } from '../../context/Translator'
 
 export interface MessageActionsProps {
     message: Message<MarkdownMessageSchema | ReplyMessageSchema>
@@ -72,6 +73,7 @@ export const MessageActions = (props: MessageActionsProps): JSX.Element => {
     }
 
     const { t, i18n } = useTranslation('', { keyPrefix: 'ui.messageActions' })
+    const { translate } = useTranslator()
 
     return (
         <>
@@ -279,12 +281,15 @@ export const MessageActions = (props: MessageActionsProps): JSX.Element => {
                 )}
                 <MenuItem
                     component={Link}
+                    /*
                     href={`https://translate.google.com/?sl=auto&tl=${convertToGoogleTranslateCode(
                         i18n.language
                     )}&text=${props.message.document.body.body}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    */
                     onClick={(e) => {
+                        translate()
                         setMenuAnchor(null)
                     }}
                 >
