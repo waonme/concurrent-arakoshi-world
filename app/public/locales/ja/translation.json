@@ -38,6 +38,7 @@
         "timelineUnmuted": "タイムラインのミュートを解除しました",
         "timelineMuted": "タイムラインをミュートしました",
         "translatedByChromeLLM": "Chrome内臓の翻訳LLMを使用して翻訳されました",
+        "translating": "翻訳中...",
         "showMore": "もっと見る"
     },
     "globalActions": {

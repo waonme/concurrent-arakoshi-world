@@ -7,7 +7,7 @@ export interface TranslatorState {
     undo: () => void
     translatedText?: string
     isAvailable: boolean
-    processing?: boolean
+    processing: boolean
 }
 
 const TranslatorContext = createContext<TranslatorState>({
@@ -32,38 +32,43 @@ export const TranslatorProvider = (props: TranslatorProps): JSX.Element => {
 
     const translate = async () => {
         setProcessing(true)
-        const detector = await LanguageDetector.create({
-            monitor(m) {
-                m.addEventListener('downloadprogress', (e) => {
-                    console.log(`Downloaded ${e.loaded * 100}%`)
-                })
+        try {
+            const detector = await LanguageDetector.create({
+                monitor(m) {
+                    m.addEventListener('downloadprogress', (e) => {
+                        console.log(`Downloaded ${e.loaded * 100}%`)
+                    })
+                }
+            })
+
+            const languages = await detector.detect(props.originalText)
+
+            const sourceLang = languages[0].detectedLanguage
+            const targetLang = convertToGoogleTranslateCode(i18n.language)
+
+            if (!sourceLang || !targetLang) {
+                console.error('Source or target language is not defined')
+                setTranslatedText('Translation not available')
+                return
             }
-        })
 
-        const languages = await detector.detect(props.originalText)
-        console.log('Detected languages:', languages)
+            const translator = await Translator.create({
+                sourceLanguage: sourceLang,
+                targetLanguage: targetLang,
+                monitor(m) {
+                    m.addEventListener('downloadprogress', (e) => {
+                        console.log(`Downloaded ${e.loaded * 100}%`)
+                    })
+                }
+            })
 
-        const sourceLang = languages[0].detectedLanguage
-        const targetLang = convertToGoogleTranslateCode(i18n.language)
-
-        if (!sourceLang || !targetLang) {
-            console.error('Source or target language is not defined')
-            return
+            const translaged = await translator.translate(props.originalText)
+            console.log('Translation result:', translaged)
+            setTranslatedText(translaged)
+        } catch (error: any) {
+            console.error('Translation error:', error)
+            setTranslatedText(`Translation failed: ${error.message}`)
         }
-
-        const translator = await Translator.create({
-            sourceLanguage: sourceLang,
-            targetLanguage: targetLang,
-            monitor(m) {
-                m.addEventListener('downloadprogress', (e) => {
-                    console.log(`Downloaded ${e.loaded * 100}%`)
-                })
-            }
-        })
-
-        const translaged = await translator.translate(props.originalText)
-        console.log('Translation result:', translaged)
-        setTranslatedText(translaged)
         setProcessing(false)
     }
 

@@ -37,7 +37,7 @@ export const MessageViewBase = (props: MessageViewProps): JSX.Element => {
 
     const { client } = useClient()
     const { t } = useTranslation('', { keyPrefix: 'common' })
-    const { translatedText } = useTranslator()
+    const { translatedText, processing } = useTranslator()
 
     const [characterOverride, setProfileOverride] = useState<Profile<any> | undefined>(undefined)
 
@@ -138,9 +138,16 @@ export const MessageViewBase = (props: MessageViewProps): JSX.Element => {
                     <Box itemProp="articleBody">{props.children}</Box>
                 </Box>
                 <>
+                    {processing && (
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            {t('translating')}
+                        </Typography>
+                    )}
                     {translatedText && (
                         <>
-                            <Typography variant="caption">{t('translatedByChromeLLM')}</Typography>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                {t('translatedByChromeLLM')}
+                            </Typography>
                             <Typography>{translatedText}</Typography>
                         </>
                     )}
