@@ -84,13 +84,6 @@ export default defineConfig({
             },
             strategies: 'injectManifest',
             injectManifest: {
-                globPatterns: [
-                    '**/*.{html,js,css}',
-                    '**/*.{png,jpg,jpeg,svg,gif,webp}',
-                    '**/*.{woff,woff2,eot,ttf,otf}',
-                    '**/*.{mp3}',
-                    'locales/**/*.json'
-                ],
                 maximumFileSizeToCacheInBytes: 10 * 1024 ** 2
             }
         }),
