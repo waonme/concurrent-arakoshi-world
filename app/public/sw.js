@@ -25,13 +25,6 @@ const getMessage = async (id, owner) => {
     return document
 }
 
-self.addEventListener('message', (event) => {
-    console.log('SW Received Message: ', event.data)
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting()
-    }
-})
-
 self.addEventListener('push', (event) => {
     console.log(`[Service Worker] Push had this data: "${event.data.text()}"`)
     const notify = async () => {
@@ -206,5 +199,13 @@ const Schemas = {
 
     listSubscription: 'https://schema.concrnt.world/s/list.json'
 }
+
+self.addEventListener('message', (event) => {
+    console.log('SW Received Message: ', event.data)
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        cleanupOutdatedCaches()
+        self.skipWaiting()
+    }
+})
 
 precacheAndRoute(self.__WB_MANIFEST)

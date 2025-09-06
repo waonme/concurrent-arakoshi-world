@@ -84,62 +84,14 @@ export default defineConfig({
             },
             strategies: 'injectManifest',
             injectManifest: {
+                globPatterns: [
+                    '**/*.{html,js,css}',
+                    '**/*.{png,jpg,jpeg,svg,gif,webp}',
+                    '**/*.{woff,woff2,eot,ttf,otf}',
+                    '**/*.{mp3}',
+                    'locales/**/*.json'
+                ],
                 maximumFileSizeToCacheInBytes: 10 * 1024 ** 2
-            },
-            workbox: {
-                cleanupOutdatedCaches: true,
-                skipWaiting: true,
-                clientsClaim: true,
-                globDirectory: 'dist',
-                globPatterns: ['**/*.{js,css,png,jpg,jpeg,svg,gif,woff,woff2,eot,ttf,otf,mp3}'],
-                // 10MB
-                maximumFileSizeToCacheInBytes: 10 * 1024 ** 2,
-                runtimeCaching: [
-                    {
-                        urlPattern: /.*\.(?:png|jpg|jpeg|svg|gif)$/,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'image-cache',
-                            expiration: {
-                                maxEntries: 60,
-                                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
-                            }
-                        }
-                    },
-                    {
-                        urlPattern: /.*\.(?:js|css)$/,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'static-cache',
-                            expiration: {
-                                maxEntries: 60,
-                                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
-                            }
-                        }
-                    },
-                    {
-                        urlPattern: /.*\.(?:woff|woff2|eot|ttf|otf)$/,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'font-cache',
-                            expiration: {
-                                maxEntries: 60,
-                                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
-                            }
-                        }
-                    },
-                    {
-                        urlPattern: /.*\.(?:mp3)$/,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'audio-cache',
-                            expiration: {
-                                maxEntries: 60,
-                                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
-                            }
-                        }
-                    }
-                ]
             }
         }),
         Info(),
