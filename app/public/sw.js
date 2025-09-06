@@ -1,4 +1,4 @@
-import { precacheAndRoute } from 'workbox-precaching'
+import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
 
 const seed = 'ariake.concrnt.net' // TODO: find a way to sync with the main app
 
