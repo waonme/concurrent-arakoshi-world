@@ -113,6 +113,7 @@ const timeline = forwardRef((props: RealtimeTimelineProps, ref: ForwardedRef<VLi
                     }
                     t.onNewItem = (item) => {
                         if (!t.haltUpdate) return
+                        if (item.resourceID[0] !== 'm') return // only show message
                         setNewArrivals((prev) => {
                             return [...prev, item]
                         })
