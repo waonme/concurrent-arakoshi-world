@@ -23,6 +23,8 @@ export default defineConfig({
         VitePWA({
             registerType: 'autoUpdate',
             includeAssets: ['offline.html', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+            srcDir: 'src',
+            filename: 'sw.js',
             manifest: {
                 theme_color: '#0476d9',
                 background_color: '#0476d9',
