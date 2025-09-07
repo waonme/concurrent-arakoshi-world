@@ -104,6 +104,7 @@ const timeline = forwardRef((props: RealtimeTimelineProps, ref: ForwardedRef<VLi
                 .then((t) => {
                     if (isCancelled) return
                     timeline.current = t
+                    t.haltUpdate = false
                     t.onUpdate = () => {
                         timelineChanged()
                     }
