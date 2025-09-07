@@ -1,4 +1,8 @@
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
+import { registerRoute } from 'workbox-routing'
+import { CacheFirst } from 'workbox-strategies'
+import { ExpirationPlugin } from 'workbox-expiration'
+import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 
 const seed = 'ariake.concrnt.net' // TODO: find a way to sync with the main app
 
@@ -209,3 +213,28 @@ self.addEventListener('message', (event) => {
 })
 
 precacheAndRoute(self.__WB_MANIFEST)
+
+const APP_VERSION = self.__APP_VERSION__ || '0'
+const appAssetsCache = `app-assets-v${APP_VERSION}`
+
+const sameOriginAsset = (url) => {
+    const match =
+        url.origin === self.location.origin &&
+        /\.(?:js|css|woff2?|ttf|json|png|jpg|jpeg|gif|webp|svg|ico|mp3|mp4|webm|wasm)$/.test(url.pathname)
+    if (match) console.log('cacheable asset', url.href)
+    return match
+}
+
+registerRoute(
+    ({ url }) => sameOriginAsset(url),
+    new CacheFirst({
+        cacheName: appAssetsCache,
+        plugins: [
+            new CacheableResponsePlugin({ statuses: [0, 200] }),
+            new ExpirationPlugin({
+                maxEntries: 500,
+                purgeOnQuotaError: true
+            })
+        ]
+    })
+)

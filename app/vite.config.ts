@@ -84,7 +84,8 @@ export default defineConfig({
             },
             strategies: 'injectManifest',
             injectManifest: {
-                maximumFileSizeToCacheInBytes: 10 * 1024 ** 2
+                maximumFileSizeToCacheInBytes: 10 * 1024 ** 2,
+                globPatterns: ['**/*.{css,html}', '**/index*.js']
             }
         }),
         Info(),
