@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@concrnt/client':
-        specifier: ^0.0.21
-        version: 0.0.21
+        specifier: ^0.0.23
+        version: 0.0.23
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.2.0
@@ -2034,14 +2034,14 @@ packages:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  /@concrnt/client@0.0.21:
-    resolution: {integrity: sha512-xuMYUP+9ouze9lWLx6kondOYbyWTr2MThNFEnBjdZFxmFfhOwS1WjL2enCFINxD9LUT/4nJOc5/jx6A4oEwtjQ==}
+  /@concrnt/client@0.0.23:
+    resolution: {integrity: sha512-W1gafWT2UKjtJc8RKXW6Kxo2PhfXQ2AIzBmUNzAsL9cteZgBQMOkAxtYrcPuU/3ievYKmaofb/2PV8PxcU+06Q==}
     dependencies:
       '@cosmjs/amino': 0.33.1
       '@cosmjs/crypto': 0.33.1
       '@cosmjs/encoding': 0.33.1
       elliptic: 6.6.1
-      ethers: 6.13.5
+      ethers: 6.15.0
       uuid: 11.1.0
     transitivePeerDependencies:
       - bufferutil
@@ -5994,8 +5994,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /ethers@6.13.5:
-    resolution: {integrity: sha512-+knKNieu5EKRThQJWwqaJ10a6HE9sSehGeqWN65//wE7j47ZpFhKAnHB/JJFibwwg61I/koxaPsXbXpD/skNOQ==}
+  /ethers@6.15.0:
+    resolution: {integrity: sha512-Kf/3ZW54L4UT0pZtsY/rf+EkBU7Qi5nnhonjUb8yTXcxH3cdcWrV2cRyk0Xk/4jK6OoHhxxZHriyhje20If2hQ==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@adraffy/ens-normalize': 1.10.1
