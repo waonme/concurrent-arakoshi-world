@@ -82,6 +82,7 @@ const timeline = forwardRef((props: RealtimeTimelineProps, ref: ForwardedRef<VLi
 
     useEffect(() => {
         let isCancelled = false
+        setNewArrivals([])
         const request = async () => {
             if (props.timelineFQIDs.length === 0) return
             setTimelineLoading(true)
