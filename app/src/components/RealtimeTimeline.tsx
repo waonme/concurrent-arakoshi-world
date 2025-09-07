@@ -106,14 +106,17 @@ const timeline = forwardRef((props: RealtimeTimelineProps, ref: ForwardedRef<VLi
                     timeline.current = t
                     t.haltUpdate = false
                     t.onUpdate = () => {
+                        if (isCancelled) return
                         timelineChanged()
                     }
                     t.onRealtimeEvent = (event) => {
+                        if (isCancelled) return
                         if (event.parsedDoc?.type === 'message') {
                             playBubbleRef.current()
                         }
                     }
                     t.onNewItem = (item) => {
+                        if (isCancelled) return
                         if (!t.haltUpdate) return
                         if (item.resourceID[0] !== 'm') return // only show message
                         setNewArrivals((prev) => {
@@ -123,9 +126,11 @@ const timeline = forwardRef((props: RealtimeTimelineProps, ref: ForwardedRef<VLi
                     timeline.current
                         .listen(props.timelineFQIDs)
                         .then((hasMore) => {
+                            if (isCancelled) return
                             setHasMoreData(hasMore)
                         })
                         .finally(() => {
+                            if (isCancelled) return
                             setTimelineLoading(false)
                         })
                     return t
