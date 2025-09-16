@@ -6,11 +6,11 @@ import {
     type User,
     type ProfileOverride
 } from '@concrnt/worldlib'
-import { Box, IconButton, ListItem, Paper, type SxProps, Tooltip } from '@mui/material'
-import { UserProfileCard } from './UserProfileCard'
+import { Box, IconButton, ListItem, type SxProps } from '@mui/material'
 import { Link as routerLink, useNavigate, useLocation } from 'react-router-dom'
 import { CCAvatar } from './ui/CCAvatar'
-import { useState } from 'react'
+import { useRef } from 'react'
+import { useProfile } from '../context/ProfileContext'
 
 export interface ContentWithCCAvatarProps {
     message?: Message<MarkdownMessageSchema | ReplyMessageSchema>
@@ -28,10 +28,11 @@ export const ContentWithCCAvatar = (props: ContentWithCCAvatarProps): JSX.Elemen
     const navigate = useNavigate()
     const location = useLocation()
 
-    const [openTooltip, setOpenTooltip] = useState(false)
-
     const navigateTo = props.linkTo ?? `/${props.message?.author}/${props.message?.id}`
     const apLink = props.apId ? `/ap/${props.apId}` : undefined
+    const buttonEl = useRef<HTMLElement>(null)
+
+    const profile = useProfile()
 
     return (
         <>
@@ -67,67 +68,42 @@ export const ContentWithCCAvatar = (props: ContentWithCCAvatarProps): JSX.Elemen
                     disablePadding
                 >
                     <Box
+                        ref={buttonEl}
                         onClick={(e) => {
                             e.stopPropagation() // prevent to navigate other page
                         }}
                     >
-                        <Tooltip
-                            enterDelay={500}
-                            enterNextDelay={500}
-                            leaveDelay={300}
-                            placement="top"
-                            open={openTooltip}
-                            onOpen={() => setOpenTooltip(true)}
-                            onClose={() => setOpenTooltip(false)}
-                            components={{
-                                Tooltip: Paper
+                        <IconButton
+                            sx={{
+                                width: { xs: '38px', sm: '48px' },
+                                height: { xs: '38px', sm: '48px' },
+                                mt: { xs: '3px', sm: '5px' }
                             }}
-                            componentsProps={{
-                                tooltip: {
-                                    sx: {
-                                        m: 1,
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        minWidth: '300px'
-                                    }
-                                }
-                            }}
-                            title={
-                                <UserProfileCard
-                                    user={props.author}
-                                    subProfileID={props.profileOverride?.profileID}
-                                    profileOverride={props.characterOverride}
-                                />
+                            component={routerLink}
+                            to={
+                                apLink ??
+                                '/' +
+                                    (props.author?.ccid ?? '') +
+                                    (props.profileOverride?.profileID ? '#' + props.profileOverride.profileID : '')
                             }
+                            onPointerOver={() =>
+                                profile.activate(buttonEl.current!, {
+                                    user: props.author!,
+                                    profileOverride: props.profileOverride
+                                })
+                            }
+                            onPointerDown={() => profile.forceClose()} // prevent to stick showing when clicking
                         >
-                            <IconButton
+                            <CCAvatar
+                                avatarURL={props.author?.profile?.avatar}
+                                avatarOverride={props.avatarOverride || props.profileOverride?.avatar}
+                                identiconSource={props.author?.ccid ?? ''}
                                 sx={{
                                     width: { xs: '38px', sm: '48px' },
-                                    height: { xs: '38px', sm: '48px' },
-                                    mt: { xs: '3px', sm: '5px' }
+                                    height: { xs: '38px', sm: '48px' }
                                 }}
-                                component={routerLink}
-                                to={
-                                    apLink ??
-                                    '/' +
-                                        (props.author?.ccid ?? '') +
-                                        (props.profileOverride?.profileID ? '#' + props.profileOverride.profileID : '')
-                                }
-                                onClick={() => {
-                                    setOpenTooltip(false)
-                                }}
-                            >
-                                <CCAvatar
-                                    avatarURL={props.author?.profile?.avatar}
-                                    avatarOverride={props.avatarOverride || props.profileOverride?.avatar}
-                                    identiconSource={props.author?.ccid ?? ''}
-                                    sx={{
-                                        width: { xs: '38px', sm: '48px' },
-                                        height: { xs: '38px', sm: '48px' }
-                                    }}
-                                />
-                            </IconButton>
-                        </Tooltip>
+                            />
+                        </IconButton>
                     </Box>
                     <Box
                         sx={{

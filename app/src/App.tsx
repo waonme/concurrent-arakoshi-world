@@ -44,6 +44,7 @@ import { ApUserPage } from './pages/ApUser'
 import { DeckPage } from './pages/Deck'
 import { TimelineProvider } from './context/TimelineProvider'
 import { InspectorProvider } from './context/Inspector'
+import { ProfileProvider } from './context/ProfileContext'
 
 const SwitchMasterToSub = lazy(() => import('./components/SwitchMasterToSub'))
 
@@ -341,19 +342,21 @@ function App(): JSX.Element {
                                     <EditorModalProvider>
                                         <TimelineDrawerProvider>
                                             <UserDrawerProvider>
-                                                <SearchDrawerProvider>
-                                                    <ConfirmProvider>
-                                                        <InspectorProvider>
-                                                                    <GlobalActionsProvider>
-                                                            <TimelineProvider>
-                                                                <CommandPaletteProvider>
-                                                                        {childs}
-                                                                </CommandPaletteProvider>
-                                                            </TimelineProvider>
-                                                                    </GlobalActionsProvider>
-                                                        </InspectorProvider>
-                                                    </ConfirmProvider>
-                                                </SearchDrawerProvider>
+                                                <ProfileProvider>
+                                                    <SearchDrawerProvider>
+                                                        <ConfirmProvider>
+                                                            <InspectorProvider>
+                                                                <GlobalActionsProvider>
+                                                                    <TimelineProvider>
+                                                                        <CommandPaletteProvider>
+                                                                            {childs}
+                                                                        </CommandPaletteProvider>
+                                                                    </TimelineProvider>
+                                                                </GlobalActionsProvider>
+                                                            </InspectorProvider>
+                                                        </ConfirmProvider>
+                                                    </SearchDrawerProvider>
+                                                </ProfileProvider>
                                             </UserDrawerProvider>
                                         </TimelineDrawerProvider>
                                     </EditorModalProvider>
