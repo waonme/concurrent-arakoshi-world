@@ -125,6 +125,33 @@ export const AutoSummaryProvider = (props: AutoSummaryProviderProps): JSX.Elemen
                         )
                     }
 
+                    const matchAppleMusicLink = url?.match(/https:\/\/music\.apple\.com\/([^\s]+)/)
+                    if (matchAppleMusicLink) {
+                        return (
+                            <Box
+                                component="span"
+                                sx={{
+                                    display: 'block',
+                                    overflow: 'hidden',
+                                    width: '100%',
+                                    height: '152px',
+                                    borderRadius: 1
+                                }}
+                            >
+                                <iframe
+                                    allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+                                    sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                                    src={`https://embed.music.apple.com/${matchAppleMusicLink[1]}`}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        border: 'none'
+                                    }}
+                                />
+                            </Box>
+                        )
+                    }
+
                     return <UrlSummaryCard key={i} url={url} />
                 })}
             </Box>
