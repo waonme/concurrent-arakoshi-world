@@ -10,7 +10,7 @@ import { Box, IconButton, ListItem, type SxProps } from '@mui/material'
 import { Link as routerLink, useNavigate, useLocation } from 'react-router-dom'
 import { CCAvatar } from './ui/CCAvatar'
 import { useRef } from 'react'
-import { useProfile } from '../context/ProfileContext'
+import { ProfileTooltip, useProfile } from '../context/ProfileContext'
 
 export interface ContentWithCCAvatarProps {
     message?: Message<MarkdownMessageSchema | ReplyMessageSchema>
@@ -73,37 +73,37 @@ export const ContentWithCCAvatar = (props: ContentWithCCAvatarProps): JSX.Elemen
                             e.stopPropagation() // prevent to navigate other page
                         }}
                     >
-                        <IconButton
-                            sx={{
-                                width: { xs: '38px', sm: '48px' },
-                                height: { xs: '38px', sm: '48px' },
-                                mt: { xs: '3px', sm: '5px' }
-                            }}
-                            component={routerLink}
-                            to={
-                                apLink ??
-                                '/' +
-                                    (props.author?.ccid ?? '') +
-                                    (props.profileOverride?.profileID ? '#' + props.profileOverride.profileID : '')
-                            }
-                            onPointerOver={() =>
-                                profile.activate(buttonEl.current!, {
-                                    user: props.author!,
-                                    profileOverride: props.profileOverride
-                                })
-                            }
-                            onPointerDown={() => profile.forceClose()} // prevent to stick showing when clicking
+                        <ProfileTooltip
+                            user={props.author}
+                            subProfileID={props.profileOverride?.profileID}
+                            profileOverride={props.profileOverride}
                         >
-                            <CCAvatar
-                                avatarURL={props.author?.profile?.avatar}
-                                avatarOverride={props.avatarOverride || props.profileOverride?.avatar}
-                                identiconSource={props.author?.ccid ?? ''}
+                            <IconButton
                                 sx={{
                                     width: { xs: '38px', sm: '48px' },
-                                    height: { xs: '38px', sm: '48px' }
+                                    height: { xs: '38px', sm: '48px' },
+                                    mt: { xs: '3px', sm: '5px' }
                                 }}
-                            />
-                        </IconButton>
+                                component={routerLink}
+                                to={
+                                    apLink ??
+                                    '/' +
+                                        (props.author?.ccid ?? '') +
+                                        (props.profileOverride?.profileID ? '#' + props.profileOverride.profileID : '')
+                                }
+                                onPointerDown={() => profile.forceClose()} // prevent to stick showing when clicking
+                            >
+                                <CCAvatar
+                                    avatarURL={props.author?.profile?.avatar}
+                                    avatarOverride={props.avatarOverride || props.profileOverride?.avatar}
+                                    identiconSource={props.author?.ccid ?? ''}
+                                    sx={{
+                                        width: { xs: '38px', sm: '48px' },
+                                        height: { xs: '38px', sm: '48px' }
+                                    }}
+                                />
+                            </IconButton>
+                        </ProfileTooltip>
                     </Box>
                     <Box
                         sx={{

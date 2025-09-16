@@ -1,4 +1,4 @@
-import { Paper, Popper } from '@mui/material'
+import { Box, Fade, Paper, Popper, Zoom } from '@mui/material'
 import { UserProfileCard, UserProfileCardProps } from '../components/UserProfileCard'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -53,7 +53,7 @@ export const ProfileProvider = (props: ProfileProps) => {
                 requestAnimationFrame(() => {
                     // force close if anchorEl is removed from DOM
                     if (!anchorEl.isConnected) {
-                        setState({ anchorEl: undefined, props: null })
+                        setState({ anchorEl: undefined, props: props })
                         return
                     }
 
@@ -68,7 +68,7 @@ export const ProfileProvider = (props: ProfileProps) => {
                         : false
                     // if not over either, close
                     if (!overAnchor && !overPopper) {
-                        setState({ anchorEl: undefined, props: null })
+                        setState({ anchorEl: undefined, props: props })
                         return
                     }
 
@@ -88,21 +88,31 @@ export const ProfileProvider = (props: ProfileProps) => {
 
     return (
         <ProfileContext.Provider value={useMemo(() => ({ activate, forceClose }), [])}>
-            <Popper ref={popperRef} placement="top" open={!!state.anchorEl} anchorEl={state.anchorEl}>
-                <Paper
-                    sx={{
-                        m: 1,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        minWidth: '300px',
-                        maxWidth: '400px',
-                        pointerEvents: 'auto'
-                    }}
-                    elevation={4}
-                    onPointerMove={() => {}}
-                >
-                    <UserProfileCard {...state.props} />
-                </Paper>
+            <Popper transition ref={popperRef} placement="top" open={!!state.anchorEl} anchorEl={state.anchorEl}>
+                {({ TransitionProps }) => (
+                    <Fade
+                        {...TransitionProps}
+                        timeout={{
+                            enter: 200,
+                            exit: 100
+                        }}
+                    >
+                        <Paper
+                            sx={{
+                                m: 1,
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                minWidth: '300px',
+                                maxWidth: '400px',
+                                pointerEvents: 'auto'
+                            }}
+                            elevation={4}
+                            onPointerMove={() => {}}
+                        >
+                            <UserProfileCard {...state.props} />
+                        </Paper>
+                    </Fade>
+                )}
             </Popper>
             {props.children}
         </ProfileContext.Provider>
@@ -111,4 +121,22 @@ export const ProfileProvider = (props: ProfileProps) => {
 
 export const useProfile = (): ProfileState => {
     return useContext(ProfileContext)
+}
+
+export interface ProfileTooltipProps extends UserProfileCardProps {
+    children?: JSX.Element | Array<JSX.Element | undefined>
+}
+
+export const ProfileTooltip = (props: ProfileTooltipProps) => {
+    const profile = useProfile()
+
+    return (
+        <Box
+            onPointerOver={(e) => {
+                profile.activate(e.currentTarget, props)
+            }}
+        >
+            {props.children}
+        </Box>
+    )
 }
