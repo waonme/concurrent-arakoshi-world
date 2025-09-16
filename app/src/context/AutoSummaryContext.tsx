@@ -93,6 +93,38 @@ export const AutoSummaryProvider = (props: AutoSummaryProviderProps): JSX.Elemen
                             </Box>
                         )
                     }
+
+                    const matchSpotifyLink = url?.match(
+                        /https:\/\/open\.spotify\.com\/([-a-zA-Z0-9]+\/)?(track|album|playlist)\/([a-zA-Z0-9]+)/
+                    )
+                    if (matchSpotifyLink) {
+                        const type = matchSpotifyLink[2]
+                        const id = matchSpotifyLink[3]
+                        return (
+                            <Box
+                                component="span"
+                                sx={{
+                                    display: 'block',
+                                    overflow: 'hidden',
+                                    width: '100%',
+                                    height: '152px',
+                                    borderRadius: 1
+                                }}
+                            >
+                                <iframe
+                                    allowFullScreen
+                                    src={`https://open.spotify.com/embed/${type}/${id}`}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        border: 'none'
+                                    }}
+                                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                />
+                            </Box>
+                        )
+                    }
+
                     return <UrlSummaryCard key={i} url={url} />
                 })}
             </Box>
