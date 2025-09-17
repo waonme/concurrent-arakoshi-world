@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, Paper, Typography } from '@mui/material'
 import { useMemo } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { usePreference } from '../context/PreferenceContext'
@@ -50,15 +50,13 @@ export function Deck(props: DeckProps): JSX.Element {
     const timelines = useMemo(() => props.subscription?.items.map((e) => e.id) ?? [], [props.subscription])
 
     return (
-        <Box
+        <Paper
             sx={{
                 width: '100%',
                 minWidth: '400px',
                 minHeight: '100%',
-                backgroundColor: 'background.paper',
                 display: 'flex',
                 flexDirection: 'column',
-                borderRadius: 2,
                 overflow: 'hidden'
             }}
         >
@@ -112,6 +110,6 @@ export function Deck(props: DeckProps): JSX.Element {
                     </Box>
                 )}
             </>
-        </Box>
+        </Paper>
     )
 }

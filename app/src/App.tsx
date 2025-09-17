@@ -490,6 +490,7 @@ function App(): JSX.Element {
                         }}
                     >
                         <Paper
+                            elevation={isDeckPage ? 0 : 3}
                             sx={{
                                 flexGrow: '1',
                                 margin: { xs: 0.5, sm: 1 },
