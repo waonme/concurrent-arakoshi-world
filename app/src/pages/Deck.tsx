@@ -57,7 +57,9 @@ export function Deck(props: DeckProps): JSX.Element {
                 minHeight: '100%',
                 backgroundColor: 'background.paper',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                borderRadius: 2,
+                overflow: 'hidden'
             }}
         >
             <TimelineHeader
