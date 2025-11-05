@@ -138,7 +138,7 @@ export const MessageActions = (props: MessageActionsProps): JSX.Element => {
                                     component={RouterLink}
                                     to={
                                         fav.document.meta?.apActorId
-                                            ? `/ap${fav.document.meta.apActorId}`
+                                            ? `/ap/${fav.document.meta.apActorId}`
                                             : `/${fav.author}`
                                     }
                                     onClick={(e) => {
