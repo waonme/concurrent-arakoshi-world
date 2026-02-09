@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@concrnt/client':
-        specifier: ^0.0.23
-        version: 0.0.23
+        specifier: ^0.0.25
+        version: 0.0.25
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.2.0
@@ -2046,8 +2046,8 @@ packages:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  /@concrnt/client@0.0.23:
-    resolution: {integrity: sha512-W1gafWT2UKjtJc8RKXW6Kxo2PhfXQ2AIzBmUNzAsL9cteZgBQMOkAxtYrcPuU/3ievYKmaofb/2PV8PxcU+06Q==}
+  /@concrnt/client@0.0.25:
+    resolution: {integrity: sha512-VFUxbLq2/Pq7v2ErG0SR94DUzzDWWERatLL4Pd5vdW6TRqbaACyWZTFQEpXasB63ZbnI87R8VBY+0gJb1orQwg==}
     dependencies:
       '@cosmjs/amino': 0.33.1
       '@cosmjs/crypto': 0.33.1
@@ -2100,6 +2100,7 @@ packages:
 
   /@cosmjs/crypto@0.33.1:
     resolution: {integrity: sha512-U4kGIj/SNBzlb2FGgA0sMR0MapVgJUg8N+oIAiN5+vl4GZ3aefmoL1RDyTrFS/7HrB+M+MtHsxC0tvEu4ic/zA==}
+    deprecated: This uses elliptic for cryptographic operations, which contains several security-relevant bugs. To what degree this affects your application is something you need to carefully investigate. See https://github.com/cosmos/cosmjs/issues/1708 for further pointers. Starting with version 0.34.0 the cryptographic library has been replaced. However, private keys might still be at risk.
     dependencies:
       '@cosmjs/encoding': 0.33.1
       '@cosmjs/math': 0.33.1
@@ -6316,7 +6317,7 @@ packages:
 
   /glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     dependencies:
       fs.realpath: 1.0.0
       inflight: 1.0.6
