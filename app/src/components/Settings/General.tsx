@@ -45,6 +45,7 @@ export const GeneralSettings = (): JSX.Element => {
     const [showEditorOnTop, setShowEditorOnTop] = usePreference('showEditorOnTop')
     const [stripExif, setStripExif] = usePreference('stripExif')
     const [postEditorVariant, setPostEditorVariant] = usePreference('postEditorVariant')
+    const [draftCommunity, setDraftCommunity] = usePreference('draftCommunity')
     const [showEditorOnTopMobile, setShowEditorOnTopMobile] = usePreference('showEditorOnTopMobile')
     const [muteWords, setMuteWords] = usePreference('muteWords')
     const [muteTimelines, setMuteTimelines] = usePreference('muteTimelines')
@@ -188,6 +189,25 @@ export const GeneralSettings = (): JSX.Element => {
                             <MenuItem value="arakoshi">Arakoshi</MenuItem>
                             <MenuItem value="original">Original</MenuItem>
                         </Select>
+                    </Box>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 0.5,
+                            my: 1
+                        }}
+                    >
+                        <Typography variant="body1">Draft Community (timeline ID):</Typography>
+                        <TextField
+                            size="small"
+                            value={draftCommunity ?? ''}
+                            onChange={(e) => {
+                                setDraftCommunity(e.target.value || undefined)
+                            }}
+                            placeholder="e.g. t-xxxxxxxx@example.com"
+                            helperText="Optional: timeline ID for draft community metadata. Does not subscribe."
+                        />
                     </Box>
                     <FormControlLabel
                         control={

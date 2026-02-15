@@ -115,6 +115,39 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
         setDestTimelines(props.streamPickerInitial)
     }, [props.streamPickerInitial])
 
+    // Restore destination timelines from stored draft destination on mount
+    useEffect(() => {
+        if (!props.draftKey) return
+        const destKey = `concurrent-arakoshi-draftDest:${props.draftKey}`
+        const stored = localStorage.getItem(destKey)
+        if (!stored) return
+        try {
+            const timelineIDs: string[] = JSON.parse(stored)
+            if (!Array.isArray(timelineIDs) || timelineIDs.length === 0) return
+            Promise.allSettled(
+                timelineIDs.map((id) => client.getTimeline<CommunityTimelineSchema>(id))
+            ).then((results) => {
+                const resolved = results
+                    .filter((r): r is PromiseFulfilledResult<Timeline<CommunityTimelineSchema> | null> => r.status === 'fulfilled')
+                    .map((r) => r.value)
+                    .filter((v): v is Timeline<CommunityTimelineSchema> => v !== null)
+                if (resolved.length > 0) {
+                    setDestTimelines(resolved)
+                }
+            })
+        } catch {
+            // ignore parse errors
+        }
+    }, [props.draftKey])
+
+    // Persist destination timelines when draftKey is set
+    useEffect(() => {
+        if (!props.draftKey) return
+        const destKey = `concurrent-arakoshi-draftDest:${props.draftKey}`
+        const timelineIDs = destTimelines.map((t) => t.fqid).filter((e) => e)
+        localStorage.setItem(destKey, JSON.stringify(timelineIDs))
+    }, [props.draftKey, destTimelines])
+
     const [postHomeButton, setPostHomeButton] = useState<boolean>(props.defaultPostHome ?? true)
     const [holdCtrlShift, setHoldCtrlShift] = useState<boolean>(false)
     const postHome = postHomeButton && !holdCtrlShift

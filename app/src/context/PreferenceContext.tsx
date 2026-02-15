@@ -34,6 +34,7 @@ export interface Preference {
     stripExif: boolean
     lastSeenNotification: number
     postEditorVariant: 'original' | 'arakoshi'
+    draftCommunity?: string
 }
 
 export const defaultPreference: Preference = {
@@ -69,7 +70,8 @@ export const defaultPreference: Preference = {
     muteTimelines: [],
     stripExif: true,
     lastSeenNotification: 0,
-    postEditorVariant: 'arakoshi'
+    postEditorVariant: 'arakoshi',
+    draftCommunity: undefined
 }
 
 interface PreferenceState {

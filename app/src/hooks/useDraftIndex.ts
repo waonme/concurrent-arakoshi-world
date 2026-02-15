@@ -7,17 +7,20 @@ export interface DraftMeta {
     createdAt: number
     updatedAt: number
     pinned: boolean
+    destination?: { timelineIDs: string[] }
 }
 
 export function draftStorageKeys(draftKey: string): {
     draft: string
     draftEmojis: string
     draftMedias: string
+    destination: string
 } {
     return {
         draft: `concurrent-arakoshi-draft:${draftKey}`,
         draftEmojis: `concurrent-arakoshi-draftEmojis:${draftKey}`,
-        draftMedias: `concurrent-arakoshi-draftMedias:${draftKey}`
+        draftMedias: `concurrent-arakoshi-draftMedias:${draftKey}`,
+        destination: `concurrent-arakoshi-draftDest:${draftKey}`
     }
 }
 
@@ -65,6 +68,7 @@ export function useDraftIndex(): {
             localStorage.removeItem(keys.draft)
             localStorage.removeItem(keys.draftEmojis)
             localStorage.removeItem(keys.draftMedias)
+            localStorage.removeItem(keys.destination)
             setDrafts((prev) => prev.filter((d) => d.id !== id))
         },
         [setDrafts]

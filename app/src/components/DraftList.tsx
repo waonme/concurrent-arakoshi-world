@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Box, IconButton, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { Box, Chip, IconButton, List, ListItem, ListItemText, Typography } from '@mui/material'
 import { useDraftIndex, draftStorageKeys } from '../hooks/useDraftIndex'
 import { useEditorModal } from './EditorModal'
 
@@ -84,7 +84,23 @@ export const DraftList = (): JSX.Element => {
                 >
                     <ListItemText
                         primary={draft.title || getPreview(draft.id)}
-                        secondary={formatDate(draft.updatedAt)}
+                        secondary={
+                            <Box component="span" sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                <span>{formatDate(draft.updatedAt)}</span>
+                                {draft.destination && draft.destination.timelineIDs.length > 0 && (
+                                    <Box component="span" sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                                        {draft.destination.timelineIDs.map((id) => (
+                                            <Chip
+                                                key={id}
+                                                label={id.length > 30 ? id.slice(0, 30) + '...' : id}
+                                                size="small"
+                                                variant="outlined"
+                                            />
+                                        ))}
+                                    </Box>
+                                )}
+                            </Box>
+                        }
                         primaryTypographyProps={{
                             noWrap: true,
                             sx: { maxWidth: '60%' }
