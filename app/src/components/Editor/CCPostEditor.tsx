@@ -89,6 +89,7 @@ export interface CCPostEditorProps {
     minRows?: number
     maxRows?: number
     onPost?: () => void
+    draftKey?: string
 }
 
 export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): JSX.Element => {
@@ -134,7 +135,10 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
     }, [props.subprofile])
 
     // draft handling
-    const [draft, setDraft] = usePersistent<string>('draft', '')
+    const [draft, setDraft] = usePersistent<string>(
+        props.draftKey ? `concurrent-arakoshi-draft:${props.draftKey}` : 'draft',
+        ''
+    )
 
     useEffect(() => {
         if (props.value && props.value !== '') {
@@ -144,7 +148,10 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
     }, [props.value])
 
     // emoji
-    const [emojiDict, setEmojiDict] = usePersistent<Record<string, EmojiLite>>('draftEmojis', {})
+    const [emojiDict, setEmojiDict] = usePersistent<Record<string, EmojiLite>>(
+        props.draftKey ? `concurrent-arakoshi-draftEmojis:${props.draftKey}` : 'draftEmojis',
+        {}
+    )
 
     const insertEmoji = (emoji: Emoji): void => {
         const newDraft =
@@ -157,7 +164,7 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
 
     // media
     const [medias, setMedias] = usePersistent<Array<{ key: string; progress: number; media: WorldMedia }>>(
-        'draftMedias',
+        props.draftKey ? `concurrent-arakoshi-draftMedias:${props.draftKey}` : 'draftMedias',
         []
     )
     const uploading = medias.some((media) => media.media.mediaURL === '')
