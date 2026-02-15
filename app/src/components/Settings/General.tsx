@@ -44,6 +44,7 @@ export const GeneralSettings = (): JSX.Element => {
 
     const [showEditorOnTop, setShowEditorOnTop] = usePreference('showEditorOnTop')
     const [stripExif, setStripExif] = usePreference('stripExif')
+    const [postEditorVariant, setPostEditorVariant] = usePreference('postEditorVariant')
     const [showEditorOnTopMobile, setShowEditorOnTopMobile] = usePreference('showEditorOnTopMobile')
     const [muteWords, setMuteWords] = usePreference('muteWords')
     const [muteTimelines, setMuteTimelines] = usePreference('muteTimelines')
@@ -168,6 +169,26 @@ export const GeneralSettings = (): JSX.Element => {
                         }
                         label={t('stripExif')}
                     />
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            my: 1
+                        }}
+                    >
+                        <Typography variant="body1">Post Editor:</Typography>
+                        <Select
+                            size="small"
+                            value={postEditorVariant}
+                            onChange={(e) => {
+                                setPostEditorVariant(e.target.value as 'original' | 'arakoshi')
+                            }}
+                        >
+                            <MenuItem value="arakoshi">Arakoshi</MenuItem>
+                            <MenuItem value="original">Original</MenuItem>
+                        </Select>
+                    </Box>
                     <FormControlLabel
                         control={
                             <Switch

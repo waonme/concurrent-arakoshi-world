@@ -1,5 +1,6 @@
 import { Box, Button, Divider, Modal, Paper } from '@mui/material'
-import { CCPostEditor, type CCPostEditorProps, type EditorMode } from './Editor/CCPostEditor'
+import { type CCPostEditorProps, type EditorMode } from './Editor/CCPostEditor'
+import { PostEditorSwitch } from './Editor/PostEditorSwitch'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useGlobalState } from '../context/GlobalState'
 import { usePreference } from '../context/PreferenceContext'
@@ -190,7 +191,7 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
                                         </Box>
                                     )}
 
-                                    <CCPostEditor
+                                    <PostEditorSwitch
                                         autoFocus
                                         minRows={3}
                                         maxRows={7}
@@ -256,7 +257,7 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
                                             </>
                                         )}
                                         <Divider />
-                                        <CCPostEditor mobile autoFocus {...postProps} />
+                                        <PostEditorSwitch mobile autoFocus {...postProps} />
                                     </Paper>
                                 </Box>
                             )}
