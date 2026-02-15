@@ -22,6 +22,7 @@ const EditorModalContext = createContext<EditorModalState>({
 
 export interface OpenOptions {
     draft?: string
+    draftKey?: string
     mode?: EditorMode
     target?: Message<any>
     streamPickerInitial?: Array<Timeline<CommunityTimelineSchema>>
@@ -118,7 +119,8 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
                 onPost: () => {
                     setPostProps(null)
                 },
-                value: openOpts?.draft
+                value: openOpts?.draft,
+                draftKey: openOpts?.draftKey
             })
         },
         [home, allKnownTimelines, homePostTimelines, isMobileSize]
@@ -192,6 +194,7 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
                                     )}
 
                                     <PostEditorSwitch
+                                        key={postProps.draftKey ?? 'modal-default'}
                                         autoFocus
                                         minRows={3}
                                         maxRows={7}
@@ -257,7 +260,12 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
                                             </>
                                         )}
                                         <Divider />
-                                        <PostEditorSwitch mobile autoFocus {...postProps} />
+                                        <PostEditorSwitch
+                                            key={postProps.draftKey ?? 'modal-default'}
+                                            mobile
+                                            autoFocus
+                                            {...postProps}
+                                        />
                                     </Paper>
                                 </Box>
                             )}
