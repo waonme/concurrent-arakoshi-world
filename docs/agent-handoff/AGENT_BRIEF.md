@@ -44,11 +44,78 @@
 - Keep/Unkeep スナックバー文言は全て `ui.messageActions` 配下の i18n キーで管理する（6 言語対応済み）
 - ハードコード文字列は残さない
 
+## 上流衝突回避ルール（本家再導入時）
+
+- 追加・変更は「分離層」と「フォーク固有層」を明確に分ける
+- 既定機能は本家 https://github.com/concrnt/concrnt-world に近い状態を維持し、フォーク固有変更は最小差分で追加する
+- フィーチャートグル（設定/フラグ）で挙動分岐し、将来の差し戻しを容易にする
+- 差分の衝突が懸念される場合は、`app/src` より `docs` で承認フローを明文化してから作業する
+
 ## Phase 11 完了条件
 
 - watchSubs → watchTargets マイグレーションが起動時に再現的にログ出力される
 - 主要シナリオで二重購読・欠損購読がないこと（manual-acceptance 20 項目 Pass）
 - `world.concurrent.arakoshi.*` namespace 以外への KV 書き込みがないこと
+
+## 下書き・投稿エディタ方針（再整理）
+
+- 投稿エディタは「original」と「arakoshi」の2系統を切替可能にし、デフォルトは arakoshi 現状の挙動を維持する
+- 下書きは、ホーム/リストの「その場編集」導線と投稿モーダル導線を両立させる
+  - `/drafts` から編集しても `postModal` 経由で同一編集体験を使う
+  - ホーム画面から投稿モーダル経由で下書き呼び出しできることを優先する
+  - インライン一覧では保存済み下書きを即時開けること
+- 下書きには「宛先（コミュニティ）」メタを保持する
+  - 下書き保存時に投稿先コミュニティを保持し、表示時に見えるようにする
+  - 設定モード（草稿コミュニティ）であっても本番コミュニティに直接紐づけない
+  - 実投稿時のみ本来の投稿先を解決して送信する
+- 既存公開ルートと衝突しないように、`draftKey`・`draftDestination` は `concurrent-arakoshi` 名前空間で管理
+- 下書きコミュニティは任意で作成/選択できるが、保存・表示・送信パラメータ拡張を明示的に分離する
+
+## 実装済みコンポーネント
+
+### `postEditorVariant` 設定と `PostEditorSwitch`
+
+- `Preference.postEditorVariant`: `'original' | 'arakoshi'`（デフォルト: `'arakoshi'`）
+- Settings > Basic に Select UI を追加済み
+- `app/src/components/Editor/PostEditorSwitch.tsx`: variant を読み取り CCPostEditor を描画するラッパー
+- `EditorModal` は `PostEditorSwitch` 経由でエディタを表示（desktop/mobile 両方）
+
+### 下書きシステム: `DraftMeta` / `useDraftIndex()`
+
+- `app/src/hooks/useDraftIndex.ts`:
+  - `DraftMeta` 型: `{ id, title, createdAt, updatedAt, pinned, destination?: { timelineIDs } }`
+  - `draftStorageKeys(draftKey)`: prefixed key 名を返す（draft / draftEmojis / draftMedias / destination）
+  - `useDraftIndex()`: CRUD フック（`createDraft`, `updateDraft`, `deleteDraft`）
+  - `generateDraftId()`: `Date.now()-<random>` 形式
+- localStorage キー:
+  - `concurrent-arakoshi-drafts-index` — DraftMeta[] インデックス
+  - `concurrent-arakoshi-draft:{id}` — 本文
+  - `concurrent-arakoshi-draftEmojis:{id}` — 絵文字辞書
+  - `concurrent-arakoshi-draftMedias:{id}` — メディア配列
+  - `concurrent-arakoshi-draftDest:{id}` — 宛先タイムライン ID 配列
+
+### `CCPostEditor.draftKey` プロップ
+
+- `draftKey?: string` を追加。指定時は localStorage キーが `concurrent-arakoshi-*` namespace にプレフィックスされる
+- 未指定時は従来の `'draft'`/`'draftEmojis'`/`'draftMedias'` キーを使用（後方互換）
+- `draftKey` 指定時は `destTimelines` の保存/復元 (`concurrent-arakoshi-draftDest:{key}`) も有効化
+
+### `EditorModal.OpenOptions.draftKey`
+
+- `EditorModal.open({ draftKey: 'xxx' })` で特定下書きをモーダルに読み込み可能
+- `PostEditorSwitch` に `key={draftKey}` を付与し、draftKey 変更時にクリーンリマウントを保証
+
+### `draftCommunity` 設定
+
+- `Preference.draftCommunity?: string` — 草稿コミュニティのタイムライン ID（メタデータのみ、Watch/購読は行わない）
+- Settings > Basic に TextField を追加済み
+
+### `DraftList` コンポーネント
+
+- `app/src/components/DraftList.tsx`: 下書き一覧表示
+- ソート: pinned → updatedAt desc
+- アクション: Edit（モーダル起動）/ Delete / Pin toggle
+- 宛先タイムライン ID を Chip で表示
 
 ## 次フェーズ追加条件（提案）
 
