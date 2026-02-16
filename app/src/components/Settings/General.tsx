@@ -178,7 +178,7 @@ export const GeneralSettings = (): JSX.Element => {
                             my: 1
                         }}
                     >
-                        <Typography variant="body1">Post Editor:</Typography>
+                        <Typography variant="body1">{t('postEditorLabel')}</Typography>
                         <Select
                             size="small"
                             value={postEditorVariant}
@@ -186,8 +186,8 @@ export const GeneralSettings = (): JSX.Element => {
                                 setPostEditorVariant(e.target.value as 'original' | 'arakoshi')
                             }}
                         >
-                            <MenuItem value="arakoshi">Arakoshi</MenuItem>
-                            <MenuItem value="original">Original</MenuItem>
+                            <MenuItem value="arakoshi">{t('postEditorArakoshi')}</MenuItem>
+                            <MenuItem value="original">{t('postEditorOriginal')}</MenuItem>
                         </Select>
                     </Box>
                     <Box
@@ -198,15 +198,15 @@ export const GeneralSettings = (): JSX.Element => {
                             my: 1
                         }}
                     >
-                        <Typography variant="body1">Draft Community (timeline ID):</Typography>
+                        <Typography variant="body1">{t('draftCommunityLabel')}</Typography>
                         <TextField
                             size="small"
                             value={draftCommunity ?? ''}
                             onChange={(e) => {
                                 setDraftCommunity(e.target.value || undefined)
                             }}
-                            placeholder="e.g. t-xxxxxxxx@example.com"
-                            helperText="Optional: timeline ID for draft community metadata. Does not subscribe."
+                            placeholder={t('draftCommunityPlaceholder')}
+                            helperText={t('draftCommunityHelperText')}
                         />
                     </Box>
                     <FormControlLabel

@@ -116,7 +116,13 @@
             "inviteCode": "초대코드 (24시간 동안 유효함)",
             "copyInviteCode": "초대코드 복사",
             "copied": "복사됨",
-            "language": "언어"
+            "language": "언어",
+            "postEditorLabel": "게시 에디터:",
+            "postEditorArakoshi": "Arakoshi",
+            "postEditorOriginal": "오리지널",
+            "draftCommunityLabel": "초안 커뮤니티 (타임라인 ID):",
+            "draftCommunityPlaceholder": "예: t-xxxxxxxx@example.com",
+            "draftCommunityHelperText": "선택사항: 초안 커뮤니티 메타데이터용 타임라인 ID. 구독하지 않습니다."
         },
         "profile": {
             "title": "프로필",

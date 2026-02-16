@@ -408,6 +408,12 @@
             "timelineMute": "Timeline mute",
             "fontSize": "Font size",
             "stripExif": "Compress images and remove EXIF information when posting",
+            "postEditorLabel": "Post Editor:",
+            "postEditorArakoshi": "Arakoshi",
+            "postEditorOriginal": "Original",
+            "draftCommunityLabel": "Draft Community (timeline ID):",
+            "draftCommunityPlaceholder": "e.g. t-xxxxxxxx@example.com",
+            "draftCommunityHelperText": "Optional: timeline ID for draft community metadata. Does not subscribe.",
             "notification": {
                 "title": "Notification",
                 "notsupported": "Your domain does not support notifications",

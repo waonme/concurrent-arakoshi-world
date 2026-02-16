@@ -21,6 +21,7 @@ import {
 } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import { usePersistent } from '../../hooks/usePersistent'
+import { resolveEditorStorageKeys } from '../../hooks/useDraftIndex'
 import { type CommunityTimelineSchema, type Timeline, type Message, type User, ProfileSchema } from '@concrnt/worldlib'
 import { useClient } from '../../context/ClientContext'
 import { type WorldMedia, type Emoji, type EmojiLite } from '../../model'
@@ -99,6 +100,8 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
     const { t } = useTranslation('', { keyPrefix: 'ui.draft' })
     const { t: et } = useTranslation('', { keyPrefix: 'ui.postButton' })
 
+    const storageKeys = useMemo(() => resolveEditorStorageKeys(props.draftKey), [props.draftKey])
+
     const [dragging, setDragging] = useState<boolean>(false)
     const [autoSwitchMediaPostType] = usePreference('autoSwitchMediaPostType')
 
@@ -110,16 +113,17 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
     const [destTimelines, setDestTimelines] = useState<Array<Timeline<CommunityTimelineSchema>>>(
         props.streamPickerInitial
     )
+    const draftDestRestoredRef = useRef<boolean>(false)
 
     useEffect(() => {
+        if (props.draftKey && draftDestRestoredRef.current) return
         setDestTimelines(props.streamPickerInitial)
     }, [props.streamPickerInitial])
 
     // Restore destination timelines from stored draft destination on mount
     useEffect(() => {
-        if (!props.draftKey) return
-        const destKey = `concurrent-arakoshi-draftDest:${props.draftKey}`
-        const stored = localStorage.getItem(destKey)
+        if (!storageKeys.destination) return
+        const stored = localStorage.getItem(storageKeys.destination)
         if (!stored) return
         try {
             const timelineIDs: string[] = JSON.parse(stored)
@@ -132,6 +136,7 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
                     .map((r) => r.value)
                     .filter((v): v is Timeline<CommunityTimelineSchema> => v !== null)
                 if (resolved.length > 0) {
+                    draftDestRestoredRef.current = true
                     setDestTimelines(resolved)
                 }
             })
@@ -142,11 +147,10 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
 
     // Persist destination timelines when draftKey is set
     useEffect(() => {
-        if (!props.draftKey) return
-        const destKey = `concurrent-arakoshi-draftDest:${props.draftKey}`
+        if (!storageKeys.destination) return
         const timelineIDs = destTimelines.map((t) => t.fqid).filter((e) => e)
-        localStorage.setItem(destKey, JSON.stringify(timelineIDs))
-    }, [props.draftKey, destTimelines])
+        localStorage.setItem(storageKeys.destination, JSON.stringify(timelineIDs))
+    }, [storageKeys.destination, destTimelines])
 
     const [postHomeButton, setPostHomeButton] = useState<boolean>(props.defaultPostHome ?? true)
     const [holdCtrlShift, setHoldCtrlShift] = useState<boolean>(false)
@@ -168,10 +172,7 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
     }, [props.subprofile])
 
     // draft handling
-    const [draft, setDraft] = usePersistent<string>(
-        props.draftKey ? `concurrent-arakoshi-draft:${props.draftKey}` : 'draft',
-        ''
-    )
+    const [draft, setDraft] = usePersistent<string>(storageKeys.draft, '')
 
     useEffect(() => {
         if (props.value && props.value !== '') {
@@ -181,10 +182,7 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
     }, [props.value])
 
     // emoji
-    const [emojiDict, setEmojiDict] = usePersistent<Record<string, EmojiLite>>(
-        props.draftKey ? `concurrent-arakoshi-draftEmojis:${props.draftKey}` : 'draftEmojis',
-        {}
-    )
+    const [emojiDict, setEmojiDict] = usePersistent<Record<string, EmojiLite>>(storageKeys.draftEmojis, {})
 
     const insertEmoji = (emoji: Emoji): void => {
         const newDraft =
@@ -197,7 +195,7 @@ export const CCPostEditor = memo<CCPostEditorProps>((props: CCPostEditorProps): 
 
     // media
     const [medias, setMedias] = usePersistent<Array<{ key: string; progress: number; media: WorldMedia }>>(
-        props.draftKey ? `concurrent-arakoshi-draftMedias:${props.draftKey}` : 'draftMedias',
+        storageKeys.draftMedias,
         []
     )
     const uploading = medias.some((media) => media.media.mediaURL === '')

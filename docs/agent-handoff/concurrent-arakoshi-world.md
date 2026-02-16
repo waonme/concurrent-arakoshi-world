@@ -148,18 +148,20 @@ type TagRule = { tag: string; display?: DisplayRule }
 
 ---
 
-## 6. 下書き：複数化と表示（実装済み — 案B採用）
+## 6. 下書き：複数化と表示
 
-- `CCPostEditor` に `draftKey?: string` プロップを追加
+方針: draftKey ベースの localStorage 管理（決定済み）
+
+- `CCPostEditor` に `draftKey?: string` プロップを追加 [実装済み]
 - `draftKey` 指定時は localStorage キーが `concurrent-arakoshi-draft:{id}` / `concurrent-arakoshi-draftEmojis:{id}` / `concurrent-arakoshi-draftMedias:{id}` にプレフィックスされる
 - 未指定時は従来の `'draft'`/`'draftEmojis'`/`'draftMedias'` キーを使用（後方互換）
-- `useDraftIndex()` フック（`app/src/hooks/useDraftIndex.ts`）で DraftMeta[] を管理: id/title/createdAt/updatedAt/pinned/destination
-- `EditorModal.open({ draftKey: id })` でモーダルから特定下書きを開く
-- `DraftList` コンポーネント（`app/src/components/DraftList.tsx`）で一覧表示・Edit/Delete/Pin 操作
+- `useDraftIndex()` フック（`app/src/hooks/useDraftIndex.ts`）で DraftMeta[] を管理 [実装済み]
+- `EditorModal.open({ draftKey: id })` でモーダルから特定下書きを開く [実装済み]
+- `EditorModal` ライフサイクル接続: open→ensureDraft / close→updateDraft / post→deleteDraft [実装済み]
+- `DraftList` コンポーネント（`app/src/components/DraftList.tsx`）: 定義あり・未接続 [実装済み（未接続）] ← ルート組み込みは [未実装]
 - 宛先メタ（`destination.timelineIDs`）を Chip で表示
-- 画面/ルート接続は未完了。現在は DraftList コンポーネント単体の実装段階
 
-## 6.1 下書きページインライン保存（ホーム同等）（未実装）
+## 6.1 下書きページインライン保存（ホーム同等） [未実装]
 
 - `/drafts` 画面にホーム画面と同等の `CCPostEditor` を追加し、モーダルを経由せずその場で下書き保存できる経路を追加する。
 - 下書き保存/編集体験はホーム側の `showEditorOnTop` / `showEditorOnTopMobile` 設定を共有し、使い勝手を揃える。
@@ -217,22 +219,23 @@ type TagRule = { tag: string; display?: DisplayRule }
 
 ## 12. 追加実装方針（最新メモ）
 
-### 12.1 投稿エディタ切替（実装済み）
+### 12.1 投稿エディタ切替 [実装済み]
 
 - `Preference.postEditorVariant`: `'original' | 'arakoshi'`（デフォルト: `'arakoshi'`）
 - Settings > Basic に Select UI を追加
 - `PostEditorSwitch`（`app/src/components/Editor/PostEditorSwitch.tsx`）が variant に応じて CCPostEditor を描画
 - `EditorModal` は `PostEditorSwitch` 経由でエディタを表示（desktop/mobile 両方）
-- 現時点では両 variant が同じ CCPostEditor を描画。将来の分岐ポイントとして確立
+- 両 variant が同一 CCPostEditor を描画。分岐ポイントのみ。機能的分岐は未実装
 
-### 12.2 下書き導線の統合（実装済み）
+### 12.2 下書き導線の統合 [実装済み]
 
-- `EditorModal.open({ draftKey: id })` でモーダルから特定下書きを開く
-- `DraftList` コンポーネントで一覧表示、Edit ボタンでモーダル起動
+- `EditorModal.open({ draftKey: id })` でモーダルから特定下書きを開く [実装済み]
+- `EditorModal` ライフサイクル: open→ensureDraft / close→updateDraft / post→deleteDraft [実装済み]
+- `DraftList` コンポーネント: 定義あり・未接続 [実装済み（未接続）]。ルート組み込みは [未実装]
 - 宛先コミュニティは `DraftMeta.destination.timelineIDs` に保持し、一覧で Chip 表示
 - `CCPostEditor` が `draftKey` 指定時に `concurrent-arakoshi-draftDest:{key}` へ destTimelines を保存/復元
 
-### 12.3 下書きコミュニティモード（設定のみ実装済み）
+### 12.3 下書きコミュニティモード [設定のみ実装済み（未接続）]
 
 - `Preference.draftCommunity?: string` — 草稿コミュニティのタイムライン ID を設定可能
 - Settings > Basic に TextField を追加（メタデータのみ、Watch/購読は行わない）

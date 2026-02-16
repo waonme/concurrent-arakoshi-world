@@ -74,7 +74,7 @@
 
 - あらゆる画面で Pin が存在すること
 
-### 4.5 Draft（基盤実装済み）
+### 4.5 Draft
 
 - Community と同等に一覧表示
 - 編集・削除
@@ -87,22 +87,24 @@
   - `/drafts` からも投稿モーダルで開ける導線を基本とし、ホーム側でもモーダル経由で下書き呼び出しを提供する
   - 下書き一覧/カードでは宛先コミュニティ情報を表示する
 - **実装状況**:
-  - `useDraftIndex()` フック: DraftMeta CRUD（createDraft/updateDraft/deleteDraft）
-  - `CCPostEditor.draftKey` プロップ: 指定時に `concurrent-arakoshi-*` namespace の localStorage キーを使用
-  - `EditorModal.open({ draftKey })`: モーダルから特定下書きを開く
-- `DraftList` コンポーネント: ソート済み一覧、Edit/Delete/Pin、宛先 Chip 表示
-- `DraftList` はコンポーネント実装済みだが、ルート/導線接続は未完了（次フェーズ）
-  - 宛先保存/復元: `concurrent-arakoshi-draftDest:{key}` に destTimelines を永続化
-- **未実装**: `/drafts` ルート・ページ、予約投稿連携、ホーム画面インライン保存
+  - `useDraftIndex()` フック: DraftMeta CRUD（createDraft/ensureDraft/updateDraft/deleteDraft） [実装済み]
+  - `CCPostEditor.draftKey` プロップ: 指定時に `concurrent-arakoshi-*` namespace の localStorage キーを使用 [実装済み]
+  - `EditorModal.draftKey` + ライフサイクル接続（open→ensureDraft / close→updateDraft / post→deleteDraft） [実装済み]
+  - `DraftList` コンポーネント: ソート済み一覧、Edit/Delete/Pin、宛先 Chip 表示 [実装済み（未接続）]
+  - 宛先保存/復元: `concurrent-arakoshi-draftDest:{key}` に destTimelines を永続化 [実装済み]
+  - `/drafts` ルート・ページ [未実装]
+  - 予約投稿連携 [未実装]
+  - ホーム画面インライン保存 [未実装]
 
-### 4.5a 下書きコミュニティモード（フォーク側）（設定のみ実装済み）
+### 4.5a 下書きコミュニティモード（フォーク側） [設定のみ実装済み（未接続）]
 
 - 追加設定として「下書き用コミュニティ」を選択可能にする（新規作成 or URL/ID 受け付け）
 - 下書き用モード時は下書き単位で宛先メタを保持するが、本番側のコミュニティ購読/Watch 機能には未接続状態で保持する
 - 送信時のみ有効宛先に解決し、未接続下書き用コミュニティとの混在を防ぐ
 - **実装状況**:
-  - `Preference.draftCommunity?: string` — Settings > Basic に TextField を追加
+  - `Preference.draftCommunity?: string` — Settings > Basic に TextField を追加 [実装済み]
   - メタデータのみの保持。Watch/購読/送信フローとの統合は次フェーズ
+- manual-acceptance: 実体ファイルなし・未再実施
 
 ### 4.6 予約投稿
 

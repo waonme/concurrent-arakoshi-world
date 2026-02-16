@@ -407,6 +407,12 @@
             "timelineMute": "タイムラインミュート",
             "fontSize": "フォントサイズ",
             "stripExif": "投稿時に画像を圧縮及びexif情報を削除する",
+            "postEditorLabel": "投稿エディタ:",
+            "postEditorArakoshi": "Arakoshi",
+            "postEditorOriginal": "オリジナル",
+            "draftCommunityLabel": "下書きコミュニティ（タイムラインID）:",
+            "draftCommunityPlaceholder": "例: t-xxxxxxxx@example.com",
+            "draftCommunityHelperText": "任意: 下書きコミュニティのメタデータ用タイムラインID。購読は行いません。",
             "notification": {
                 "title": "通知",
                 "notsupported": "お使いのドメインは通知をサポートしていません",

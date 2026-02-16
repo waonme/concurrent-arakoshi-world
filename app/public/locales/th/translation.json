@@ -105,7 +105,13 @@
             "inviteCode": "รหัสเชิญ (ใช้ได้ภายใน 24 ชั่วโมง)",
             "copyInviteCode": "คัดลอกรหัสเชิญ",
             "copied": "คัดลอกแล้ว",
-            "language": "ภาษา"
+            "language": "ภาษา",
+            "postEditorLabel": "ตัวแก้ไขโพสต์:",
+            "postEditorArakoshi": "Arakoshi",
+            "postEditorOriginal": "ต้นฉบับ",
+            "draftCommunityLabel": "ชุมชนฉบับร่าง (Timeline ID):",
+            "draftCommunityPlaceholder": "เช่น t-xxxxxxxx@example.com",
+            "draftCommunityHelperText": "ไม่บังคับ: Timeline ID สำหรับข้อมูลเมตาของชุมชนฉบับร่าง ไม่ได้ติดตาม"
         },
         "profile": {
             "title": "โปรไฟล์",

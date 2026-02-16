@@ -7,6 +7,7 @@ import { usePreference } from '../context/PreferenceContext'
 import { isFulfilled, isNonNull, type CommunityTimelineSchema, type Message, type Timeline } from '@concrnt/worldlib'
 import { MessageContainer } from './Message/MessageContainer'
 import { useClient } from '../context/ClientContext'
+import { useDraftIndex } from '../hooks/useDraftIndex'
 
 export interface EditorModalState {
     open: (opts?: OpenOptions) => void
@@ -53,6 +54,7 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
         return () => visualViewport?.removeEventListener('resize', handleResize)
     }, [])
 
+    const { ensureDraft, updateDraft, deleteDraft } = useDraftIndex()
     const { allKnownTimelines, isMobileSize } = useGlobalState()
     const options = useRef<Options | null>(null)
     const registerOptions = useCallback((newOptions: Options) => {
@@ -103,6 +105,9 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
     const open = useCallback(
         (openOpts?: OpenOptions): void => {
             const opts = options.current ?? {}
+            if (openOpts?.draftKey) {
+                ensureDraft(openOpts.draftKey)
+            }
             setPostProps({
                 streamPickerInitial: openOpts?.streamPickerInitial ?? opts.streamPickerInitial ?? homePostTimelines,
                 streamPickerOptions: allKnownTimelines,
@@ -117,13 +122,16 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
                     </Box>
                 ) : undefined,
                 onPost: () => {
+                    if (openOpts?.draftKey) {
+                        deleteDraft(openOpts.draftKey)
+                    }
                     setPostProps(null)
                 },
                 value: openOpts?.draft,
                 draftKey: openOpts?.draftKey
             })
         },
-        [home, allKnownTimelines, homePostTimelines, isMobileSize]
+        [home, allKnownTimelines, homePostTimelines, isMobileSize, ensureDraft, deleteDraft]
     )
 
     const handleKeyPress = useCallback(
@@ -164,6 +172,9 @@ export const EditorModalProvider = (props: EditorModalProps): JSX.Element => {
             <Modal
                 open={postProps !== null}
                 onClose={() => {
+                    if (postProps?.draftKey) {
+                        updateDraft(postProps.draftKey, {})
+                    }
                     setPostProps(null)
                 }}
                 slotProps={modalProps}

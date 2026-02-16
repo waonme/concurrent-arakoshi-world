@@ -405,6 +405,12 @@
             "timelineMute": "時間軸靜音",
             "fontSize": "字型大小",
             "stripExif": "發佈時壓縮圖片並移除 EXIF 資訊",
+            "postEditorLabel": "發文編輯器:",
+            "postEditorArakoshi": "Arakoshi",
+            "postEditorOriginal": "原版",
+            "draftCommunityLabel": "草稿社群（時間軸 ID）:",
+            "draftCommunityPlaceholder": "例如 t-xxxxxxxx@example.com",
+            "draftCommunityHelperText": "選填：草稿社群中繼資料的時間軸 ID。不會訂閱。",
             "notification": {
                 "title": "通知",
                 "notsupported": "您的網域不支援通知",

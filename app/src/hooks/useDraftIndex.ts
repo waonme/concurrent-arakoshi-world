@@ -24,6 +24,24 @@ export function draftStorageKeys(draftKey: string): {
     }
 }
 
+export function resolveEditorStorageKeys(draftKey?: string): {
+    draft: string
+    draftEmojis: string
+    draftMedias: string
+    destination: string | null
+} {
+    if (draftKey) {
+        const keys = draftStorageKeys(draftKey)
+        return { ...keys }
+    }
+    return {
+        draft: 'draft',
+        draftEmojis: 'draftEmojis',
+        draftMedias: 'draftMedias',
+        destination: null
+    }
+}
+
 export function generateDraftId(): string {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
@@ -32,6 +50,7 @@ export function useDraftIndex(): {
     drafts: DraftMeta[]
     setDrafts: (updator: DraftMeta[] | ((old: DraftMeta[]) => DraftMeta[])) => void
     createDraft: (title?: string) => DraftMeta
+    ensureDraft: (id: string, title?: string) => void
     updateDraft: (id: string, updates: Partial<Omit<DraftMeta, 'id' | 'createdAt'>>) => void
     deleteDraft: (id: string) => void
 } {
@@ -49,6 +68,17 @@ export function useDraftIndex(): {
             }
             setDrafts((prev) => [...prev, meta])
             return meta
+        },
+        [setDrafts]
+    )
+
+    const ensureDraft = useCallback(
+        (id: string, title?: string): void => {
+            setDrafts((prev) => {
+                if (prev.some((d) => d.id === id)) return prev
+                const now = Date.now()
+                return [...prev, { id, title: title ?? '', createdAt: now, updatedAt: now, pinned: false }]
+            })
         },
         [setDrafts]
     )
@@ -74,5 +104,5 @@ export function useDraftIndex(): {
         [setDrafts]
     )
 
-    return { drafts, setDrafts, createDraft, updateDraft, deleteDraft }
+    return { drafts, setDrafts, createDraft, ensureDraft, updateDraft, deleteDraft }
 }

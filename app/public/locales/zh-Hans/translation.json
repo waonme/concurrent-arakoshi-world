@@ -405,6 +405,12 @@
             "timelineMute": "时间线静音",
             "fontSize": "字体大小",
             "stripExif": "发布时压缩图片并移除 EXIF 信息",
+            "postEditorLabel": "发帖编辑器:",
+            "postEditorArakoshi": "Arakoshi",
+            "postEditorOriginal": "原版",
+            "draftCommunityLabel": "草稿社区（时间线 ID）:",
+            "draftCommunityPlaceholder": "例如 t-xxxxxxxx@example.com",
+            "draftCommunityHelperText": "可选：草稿社区元数据的时间线 ID。不会订阅。",
             "notification": {
                 "title": "通知",
                 "notsupported": "您的域不支持通知",
