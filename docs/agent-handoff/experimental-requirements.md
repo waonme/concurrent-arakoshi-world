@@ -15,6 +15,11 @@
 - 逆方向（実験側 → 本家）への接触・書き戻しは保留（実験的追加として接触しない）
 - 設定は保存前提で扱う
 
+## 2-α 追加機能の opt-out 方針
+
+- 下書き・草稿モード・エディタ切替などは、`feature flag`（設定）で無効化可能とし、既存挙動との両立を保つ。
+- 追加機能は原則オンでも、フラグOFF時には上流との整合を優先する状態へ戻せることを要件とする。
+
 ## 3) 情報フロー
 
 ### 3.1 共有原則
@@ -85,7 +90,8 @@
   - `useDraftIndex()` フック: DraftMeta CRUD（createDraft/updateDraft/deleteDraft）
   - `CCPostEditor.draftKey` プロップ: 指定時に `concurrent-arakoshi-*` namespace の localStorage キーを使用
   - `EditorModal.open({ draftKey })`: モーダルから特定下書きを開く
-  - `DraftList` コンポーネント: ソート済み一覧、Edit/Delete/Pin、宛先 Chip 表示
+- `DraftList` コンポーネント: ソート済み一覧、Edit/Delete/Pin、宛先 Chip 表示
+- `DraftList` はコンポーネント実装済みだが、ルート/導線接続は未完了（次フェーズ）
   - 宛先保存/復元: `concurrent-arakoshi-draftDest:{key}` に destTimelines を永続化
 - **未実装**: `/drafts` ルート・ページ、予約投稿連携、ホーム画面インライン保存
 

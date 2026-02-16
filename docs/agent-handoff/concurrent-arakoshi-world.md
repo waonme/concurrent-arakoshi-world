@@ -157,6 +157,7 @@ type TagRule = { tag: string; display?: DisplayRule }
 - `EditorModal.open({ draftKey: id })` でモーダルから特定下書きを開く
 - `DraftList` コンポーネント（`app/src/components/DraftList.tsx`）で一覧表示・Edit/Delete/Pin 操作
 - 宛先メタ（`destination.timelineIDs`）を Chip で表示
+- 画面/ルート接続は未完了。現在は DraftList コンポーネント単体の実装段階
 
 ## 6.1 下書きページインライン保存（ホーム同等）（未実装）
 
@@ -208,6 +209,11 @@ type TagRule = { tag: string; display?: DisplayRule }
 - 既存本家挙動を壊す変更は避け、必要時は feature flag（設定）で安全に切替できる構造にする
 - ルーティング・メニュー・設定の差分は専用キーや独立フローで分離し、将来の cherry-pick/meld を容易にする
 - マイグレーション対象データは、既存キーと `concurrent-arakoshi` 系で分離し、衝突を防止する
+
+### 11.1 追加機能の opt-out ルール
+
+- 下書き機能・投稿エディタ差替・メニュー拡張などの追加は、原則として opt-out（設定OFF）で元の挙動に戻せる構成とする。
+- 既定は機能有効寄りでも、上流再導入時はフラグをOFFにして本家挙動に寄せられるようにする。
 
 ## 12. 追加実装方針（最新メモ）
 
